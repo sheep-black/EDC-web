@@ -2,7 +2,7 @@
   <div class="common-layout">
     <el-container>
       <el-header>
-<!--        头部菜单栏-->
+        <!--        头部菜单栏-->
         <el-menu
             :default-active="activeIndex"
             style="margin-left: -25px;margin-right: -25px"
@@ -78,37 +78,25 @@
                   justify-content: center;
                   display: flex;
                   color: #1B497BFF;">
-          What is EDC Network & Database & Predictor?
+          Contact us
         </p>
         <div style="display: flex;
                     justify-content: center;
                     padding: 0 20px; /* 左右间距为 20px，根据需要调整 */">
-          <p class="intro-text">EDC Network & Database & Predictor is a free web server that provides information on endocrine disruptors (EDCs) adverse outcome pathways (AOPs) and retrieval of trial data. It also provides a prediction service for screening potential EDCs. Through predictive modelling, statistical testing and a user-friendly web interface, EDC Network & Database & Predictor helps biologists observe novel EDCs and accelerate related research.
-            <br>
-            We are constantly adding new data and working on improving interfaces to EDCs information. Please check back often!
-            <br>
-            <el-link type="primary" @click="this.$router.push('/Contact')">
-              <p style="font-size: 18px;
-                        text-align: justify; /* 文本两端对齐 */
-                        line-height: 1%; /* 设置行高 */">
-                Learn More About PubChem
-              </p>
-            </el-link>
+          <p class="intro-text"> All chemical information can be found on this platform. If needed, please contact us for further communication and data acquisition. Contact: Prof. Shi Wei, School of Environment, Nanjing University (njushiwei@nju.edu.cn)；
+
           </p>
         </div>
-        <div style="display: flex;
-                    justify-content: center;">
-          <el-image style="width: 800px;" :src=intro_image  />
-        </div>
+
 
       </el-main>
 
     </el-container>
-    <footer class="footer">
+    <footer class="Contact_footer">
       <div class="footer-content">
         <div class="footer-section">
           <h3 style="color: #f8f8f8;letter-spacing: 3px;">授权信息</h3>
-            <el-divider />
+          <el-divider />
           <p style="color: #ffffff;">版权所有 © 2024</p>
           <p style="color: #ffffff;">保留所有权利</p>
         </div>
@@ -159,14 +147,14 @@ const handleSelect = (key: string, keyPath: string[]) => {
 }
 .home-main{
   /* 设置图片作为背景 */
-  //background-image: url('../assets/home-background.png');
+//background-image: url('../assets/home-background.png');
   /* 背景设置为覆盖整个容器 */
   background-size: cover;
   background-position: center;
-  //height: 500px; /* 根据需要设置高度 */
+//height: 500px; /* 根据需要设置高度 */
 }
 
-.footer {
+.Contact_footer {
   margin-left: -8px;
   margin-right: -8px;
   margin-bottom: -8px;

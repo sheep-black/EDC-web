@@ -1,11 +1,11 @@
 <template>
-  <div class="common-layout">
-    <el-container>
+  <div  class="common-layout">
+    <el-container >
       <el-header>
 <!--        头部菜单栏-->
         <el-menu
             :default-active="activeIndex"
-            style="margin-left: -25px;margin-right: -25px"
+            style="min-width: 1080px; margin-left: -25px;margin-right: -25px;margin-top: -5px"
             mode="horizontal"
             background-color="#1A6B9AFF"
             text-color="#fff"
@@ -13,7 +13,7 @@
             :ellipsis="false"
             @select="handleSelect"
         >
-          <el-menu-item index="0">
+          <el-menu-item index="0" @click="this.$router.push('/')">
             <!--      菜单左侧标志-->
             <el-icon
                 color="#409efc"
@@ -53,7 +53,7 @@
               <p style="justify-content: center;">Quantitative predictor</p>
             </el-menu-item>
           </el-sub-menu>
-          <el-menu-item index="3">
+          <el-menu-item index="3" @click="this.$router.push('/About')">
             <template #title>
               <el-icon :size="20"><InfoFilled /></el-icon>
               <p style="font-size: 16px;text-shadow: 0px 0px 2px black;">
@@ -61,7 +61,7 @@
               </p>
             </template>
           </el-menu-item>
-          <el-menu-item index="4">
+          <el-menu-item index="4" @click="this.$router.push('/Contact')">
             <template #title>
               <el-icon :size="20"><UserFilled /></el-icon>
               <p style="font-size: 16px;text-shadow: 0px 0px 2px black;">
@@ -119,11 +119,11 @@
           <p style="color: #ffffff;">电话：123-456-7890</p>
         </div>
         <div class="footer-section">
-          <h3 style="color: #f8f8f8;letter-spacing: 3px;">相关链接</h3>
+          <h3 style="color: #f8f8f8;letter-spacing: 3px;">备案信息</h3>
           <el-divider />
           <ul>
-            <li><a href="#">服务条款</a></li>
-            <li><a href="#">隐私政策</a></li>
+            <li><a href="#">2024测试备案</a></li>
+            <li><a href="#">苏ICP备000000号</a></li>
           </ul>
         </div>
       </div>
@@ -138,7 +138,7 @@
 const intro_image ="/src/assets/homeinfo.jpg"
 import { ref } from 'vue'
 
-const activeIndex = ref('1')
+const activeIndex = ref('0')
 const handleSelect = (key: string, keyPath: string[]) => {
   console.log(key, keyPath)
 }
@@ -161,12 +161,14 @@ const handleSelect = (key: string, keyPath: string[]) => {
   /* 设置图片作为背景 */
   //background-image: url('../assets/home-background.png');
   /* 背景设置为覆盖整个容器 */
+  min-width: 1080px;
   background-size: cover;
   background-position: center;
   //height: 500px; /* 根据需要设置高度 */
 }
 
 .footer {
+  min-width: 1080px;
   margin-left: -8px;
   margin-right: -8px;
   margin-bottom: -8px;

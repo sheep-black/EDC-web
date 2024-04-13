@@ -4,6 +4,8 @@ import { createRouter,createWebHashHistory } from "vue-router";
 import Home from '../components/Home.vue'
 import Contact from '../components/Contact.vue'
 import About from '../components/About.vue'
+import SearchAOP from '../components/SearchAOP.vue'
+
 
 // Vue.use(VueRouter)
 const routes = [
@@ -29,6 +31,14 @@ const routes = [
         component:About,
         meta: {
             title: '关于'
+        }
+    },
+    {
+        path:'/SearchAOP',
+        name:'SearchAOP',
+        component:SearchAOP,
+        meta: {
+            title: 'AOP搜索'
         }
     },
   ]

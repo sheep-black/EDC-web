@@ -1,11 +1,11 @@
 <template>
-  <div class="common-layout">
-    <el-container>
+  <div  class="common-layout">
+    <el-container >
       <el-header>
         <!--        头部菜单栏-->
         <el-menu
             :default-active="activeIndex"
-            style="min-width: 1080px;margin-left: -25px;margin-right: -25px;margin-top: -5px"
+            style="min-width: 1080px; margin-left: -25px;margin-right: -25px;margin-top: -5px"
             mode="horizontal"
             background-color="#1A6B9AFF"
             text-color="#fff"
@@ -32,7 +32,7 @@
                 Search
               </p>
             </template>
-            <el-menu-item index="1-1" style="justify-content: center;"  @click="this.$router.push('/SearchAOP')">
+            <el-menu-item index="1-1" style="justify-content: center;" @click="this.$router.push('/SearchAOP')">
               <p style="justify-content: center;">EDC-AOP</p>
             </el-menu-item>
             <el-menu-item index="1-2" style="justify-content: center;">
@@ -71,28 +71,35 @@
           </el-menu-item>
         </el-menu>
       </el-header>
-      <el-main class="contact-main">
+      <el-main class="SearchAOP-main">
         <p style="font-size: 25px;
                   margin-left: 6px;
                   font-weight: bold;
                   justify-content: center;
                   display: flex;
                   color: #1B497BFF;">
-          Contact us
-        </p>
-        <div style="display: flex;
-                    justify-content: center;
-                    padding: 0 20px; /* 左右间距为 20px，根据需要调整 */">
-          <p class="contact-text"> All chemical information can be found on this platform. If needed, please contact us for further communication and data acquisition. Contact: Prof. Shi Wei, School of Environment, Nanjing University (njushiwei@nju.edu.cn)；
+          EDC-AOP  Search
+        </p><p style="font-size: 16px;
+                  margin-top: -10px;
+                  justify-content: center;
+                  display: flex;
+                  color: #000000;">
+        从这里开始你的搜索描述abababababbaabab
+      </p>
 
-          </p>
-        </div>
-
+        <el-radio-group fill="#377ecb" v-model="selected"
+                        style="font-weight: bold;justify-content: center;display: flex;">
+          <el-radio-button label="TextSearch" value="TextSearch" />
+          <el-radio-button label="NodeSearch" value="NodeSearch" />
+          <el-radio-button label="EventSearch" value="EventSearch" />
+        </el-radio-group>
+        <el-divider />
+        <component :is="selectedComponent" />
 
       </el-main>
 
     </el-container>
-    <footer class="Contact_footer">
+    <footer class="footer">
       <div class="footer-content">
         <div class="footer-section">
           <h3 style="color: #f8f8f8;letter-spacing: 3px;">授权信息</h3>
@@ -123,39 +130,50 @@
 
 <script lang="ts" setup>
 
-const intro_image ="/src/assets/homeinfo.jpg"
-import { ref } from 'vue'
 
-const activeIndex = ref('4')
+import { ref ,computed} from 'vue'
+import SearchAOPText from "../components/SearchAOPText.vue";
+import SearchAOPEvent from "../components/SearchAOPEvent.vue";
+import SearchAOPNode from "../components/SearchAOPNode.vue";
+const activeIndex = ref('1-1')
+const selected = ref('TextSearch')
 const handleSelect = (key: string, keyPath: string[]) => {
   console.log(key, keyPath)
 }
-
-
+const selectedComponent = computed(() => {
+  if (selected.value === 'TextSearch') {
+    return <string>SearchAOPText;
+  } else if (selected.value === 'EventSearch') {
+    return <string>SearchAOPEvent;
+  } else {
+    return <string>SearchAOPNode;
+  }
+});
 </script>
 
 <style>
 .flex-grow {
   flex-grow: 1;
 }
-.contact-text {
+.intro-text {
   /* 中间介绍字体的样式*/
   font-size: 18px;
-  max-width: 800px; /* 设置最大宽度，以避免文本过长 */
+  max-width: 1000px; /* 设置最大宽度，以避免文本过长 */
   text-align: justify; /* 文本两端对齐 */
   line-height: 200%; /* 设置行高 */
 }
-.contact-main{
+.SearchAOP-main{
   /* 设置图片作为背景 */
 //background-image: url('../assets/home-background.png');
   /* 背景设置为覆盖整个容器 */
   min-width: 1080px;
+  min-height: 450px;
   background-size: cover;
   background-position: center;
-  height: 450px; /* 根据需要设置高度 */
+//height: 500px; /* 根据需要设置高度 */
 }
 
-.Contact_footer {
+.footer {
   min-width: 1080px;
   margin-left: -8px;
   margin-right: -8px;

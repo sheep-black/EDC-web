@@ -32,8 +32,8 @@
                 Search
               </p>
             </template>
-            <el-menu-item index="1-1" style="justify-content: center;">
-              <p style="justify-content: center;">EDC-AOP</p>
+            <el-menu-item index="1-1" style="justify-content: center;" @click="this.$router.push('/SearchAOP')">
+              <p style="justify-content: center;" >EDC-AOP</p>
             </el-menu-item>
             <el-menu-item index="1-2" style="justify-content: center;">
               <p style="justify-content: center;">EDC-DATA</p>

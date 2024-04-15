@@ -3,14 +3,14 @@
     <div style="justify-content: center;display: flex;" >
       <el-table :data="currentPageData" border style="width: 60%" height="300" >
         <!-- 这里是表格的列 -->
-        <el-table-column prop="Title" label="Title" >
+        <el-table-column prop="Assay ID" label="ID" >
           <template #default="scope">
-            <el-button type="text" @click="handleRowClick(scope.row)">{{ scope.row.Title}}</el-button>
+            <el-button type="text" @click="handleRowClick(scope.row)">{{ scope.row.ID}}</el-button>
           </template>
         </el-table-column>
-        <el-table-column prop="ID" label="ID"></el-table-column>
-        <el-table-column prop="Type" label="Type"></el-table-column>
-        <el-table-column prop="age" label="年龄" :filters="ageFilters" :filter-method="handleAgeFilter"></el-table-column>
+        <el-table-column prop="Name" label="Name"></el-table-column>
+        <el-table-column prop="Level" label="Level" :filters="ageFilters" :filter-method="handleAgeFilter"></el-table-column>
+        <el-table-column prop="E" label="E" ></el-table-column>
 
       </el-table>
     </div>
@@ -22,26 +22,7 @@
         layout="prev, pager, next, jumper"
         :total="total">
     </el-pagination>
-    <!-- 详情表格 -->
-    <el-divider v-if="showDetailTable">
-      <el-icon><star-filled /></el-icon>
-    </el-divider>
-    <p v-if="showDetailTable" style="font-size: 20px;
-                  margin-top: 30px;
-                  margin-left: 20%;
-                  font-weight: bold;
-                  display: flex;
-                  color: #1B497BFF;">
-      Search Results
-    </p>
-    <div style="justify-content: center;display: flex;">
-      <el-table v-if="showDetailTable" :data="detailTableData" border style="width: 60%" height="300"
-                :header-cell-style="{ background: '#dedede', color: '#000' }">
-        <el-table-column prop="detailName" label="详情名称"></el-table-column>
-        <el-table-column prop="detailValue" label="详情数值"></el-table-column>
-        <!-- 其他列 -->
-      </el-table>
-    </div>
+
   </div>
 </template>
 
@@ -53,11 +34,7 @@ const currentPage = ref(1);
 const pageSize = ref(10);
 const total = ref(100); // 假设总数据量为 100
 const tableData = reactive([]); // 这里是你的数据，假设已经从后端获取
-// 详情表格数据
-const detailTableData = ref([]);
-// 是否显示详情表格
-const showDetailTable = ref(false);
-// 年龄筛选项
+
 const ageFilters = [
   { text: '大于20', value: 'gt20' },
   { text: '小于等于20', value: 'lte20' },
@@ -79,9 +56,8 @@ const handleCurrentChange = (page) => {
   // console.info("currentPage",currentPage.value)
 };
 const handleRowClick = (row) => {
-  // 点击第一列按钮时触发，获取对应的详情数据，并显示详情表格
-  detailTableData.value = row.detail;
-  showDetailTable.value = true;
+  console.info('点击的行数：',row)
+
 };
 // 年龄筛选方法
 const handleAgeFilter = (value, row) => {
@@ -118,10 +94,10 @@ const generateData = (count) => {
   const data = [];
   for (let i = 0; i < count; i++) {
     data.push({
-      Title: (i + 1),
       ID: (i + 1),
-      Type: (i + 1),
-      age: Math.floor(Math.random() * 50) + 18,
+      Name: (i + 1),
+      Level: (i + 1),
+      E: Math.floor(Math.random() * 50) + 18,
       // 其他字段
     });
   }

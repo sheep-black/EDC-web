@@ -3,51 +3,46 @@ import { Search } from '@element-plus/icons-vue'
 import { ref } from 'vue';
 const SearchText = ref('');
 const showTable = ref(false);
-// 推荐搜索关键词列表
-const tableData = [{},
-  {
-    date: '2016-05-03',
-    name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles',
-  },
-  {
-    date: '2016-05-03',
-    name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles',
-  },
-  {
-    date: '2016-05-03',
-    name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles',
-  },  {
-    date: '2016-05-03',
-    name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles',
-  },
-  {
-    date: '2016-05-03',
-    name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles',
-  },
-  {
-    date: '2016-05-03',
-    name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles',
-  },
+// 选中的搜索选项
+const selectedOptions = ref([]);
 
-]
-const recommendations = ref(['Try', 'estrogen', 'androgen', 'thyroid','steroid','Cancer','Reproductive','Metabolic']);
+
+const tableData = ref([]);
+
+const handleRowClick = (row) => {
+  console.info('点击的行数：',row)
+};
 const handleSearch = () => {
+  tableData.value=[];
   // 处理搜索逻辑，这里只是简单地打印搜索关键词
   console.info('搜索关键词:', SearchText);
-  tableData.value = [
-    {
+  console.info('selectedOptions:', selectedOptions.value);
+  if (selectedOptions.value.includes('Name')) {
+    // 模拟按名称搜索逻辑
+    tableData.value.push({
+      ID:'11111',
       date: '2016-05-03',
       name: 'Tom',
       address: 'No. 189, Grove St, Los Angeles',
-    },
-    // 其他搜索结果
-  ];
+    },);
+  }
+  if (selectedOptions.value.includes('ID')) {
+    // 模拟按日期搜索逻辑
+    tableData.value.push({
+      ID:'11111',
+      date: '111111111111111111',
+      name: '2',
+      address: 'N1111geles',
+    },);
+  };
+  if(selectedOptions.value.length===0){
+    tableData.value.push({
+      ID:'11111',
+      date: '空空空空空空空空空空',
+      name: '2',
+      address: 'N1111geles',
+    },);
+  }
   showTable.value = true;
 };
 
@@ -68,10 +63,18 @@ const handleSearch = () => {
     </el-input>
 
   </div>
-  <div style="justify-content: center;display: flex; margin-top: 10px;">
-    <span v-for="recommendation in recommendations" :key="recommendation" class="recommendation" >
-        {{ recommendation }}
-      </span>
+  <div style="justify-content: center;display: flex; margin-top: 0px;">
+    <el-space wrap>
+      <p style="font-size: 14px;font-weight: bold;justify-content: center;display: flex;margin-right: 20px" >Search By</p>
+      <el-checkbox-group v-model="selectedOptions">
+        <el-checkbox label="Smiles"></el-checkbox>
+        <el-checkbox label="Cas"></el-checkbox>
+        <el-checkbox label="Name"></el-checkbox>
+        <el-checkbox label="ID"></el-checkbox>
+        <!-- 其他复选框 -->
+      </el-checkbox-group>
+    </el-space>
+
   </div>
   <p v-if="showTable" style="font-size: 20px;
                   margin-top: 30px;
@@ -88,6 +91,11 @@ const handleSearch = () => {
         style="width: 60%"
         :header-cell-style="{ background: '#dedede', color: '#000' }"
         v-if="showTable">
+      <el-table-column prop="Assay ID" label="ID" align="center" >
+        <template #default="scope">
+          <el-button type="text" @click="handleRowClick(scope.row)">{{ scope.row.ID}}</el-button>
+        </template>
+      </el-table-column>
       <el-table-column prop="date" label="Date" width="180" align="center" />
       <el-table-column prop="name" label="Name" width="180" align="center" />
       <el-table-column prop="address" label="Address" align="center" />
@@ -97,19 +105,5 @@ const handleSearch = () => {
 </template>
 
 <style scoped>
-.recommendations {
-  margin-top: 10px;
-}
 
-.recommendation {
-  margin-top: -2px;
-  margin-right: 10px;
-  font-size: 14px;
-  color: #1890ff;
-  cursor: pointer;
-}
-
-.recommendation:hover {
-  text-decoration: underline;
-}
 </style>

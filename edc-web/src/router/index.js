@@ -5,6 +5,7 @@ import Home from '../components/Home.vue'
 import Contact from '../components/Contact.vue'
 import About from '../components/About.vue'
 import SearchAOP from '../components/SearchAOP.vue'
+import SearchDATA from '../components/SearchDATA.vue'
 
 
 // Vue.use(VueRouter)
@@ -39,6 +40,14 @@ const routes = [
         component:SearchAOP,
         meta: {
             title: 'AOP搜索'
+        }
+    },
+    {
+        path:'/SearchDATA',
+        name:'SearchDATA',
+        component:SearchDATA,
+        meta: {
+            title: 'DATA搜索'
         }
     },
   ]

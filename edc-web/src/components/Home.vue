@@ -35,7 +35,7 @@
             <el-menu-item index="1-1" style="justify-content: center;" @click="this.$router.push('/SearchAOP')">
               <p style="justify-content: center;" >EDC-AOP</p>
             </el-menu-item>
-            <el-menu-item index="1-2" style="justify-content: center;">
+            <el-menu-item index="1-2" style="justify-content: center;" @click="this.$router.push('/SearchDATA')">
               <p style="justify-content: center;">EDC-DATA</p>
             </el-menu-item>
           </el-sub-menu>
@@ -87,7 +87,7 @@
             <br>
             We are constantly adding new data and working on improving interfaces to EDCs information. Please check back often!
             <br>
-            <el-link type="primary" @click="this.$router.push('/Contact')">
+            <el-link type="primary" @click="this.$router.push('/About')">
               <p style="font-size: 18px;
                         text-align: justify; /* 文本两端对齐 */
                         line-height: 1%; /* 设置行高 */">

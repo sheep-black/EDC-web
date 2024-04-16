@@ -6,7 +6,7 @@ import Contact from '../components/Contact.vue'
 import About from '../components/About.vue'
 import SearchAOP from '../components/SearchAOP.vue'
 import SearchDATA from '../components/SearchDATA.vue'
-
+import SearchDATAResult from "@/components/SearchDATAResult.vue";
 
 // Vue.use(VueRouter)
 const routes = [
@@ -50,6 +50,15 @@ const routes = [
             title: 'DATA搜索'
         }
     },
+    {
+        path:'/SearchDATAResult',
+        name:'SearchDATAResult',
+        component:SearchDATAResult,
+        meta: {
+            title: 'DATA搜索结果'
+        }
+    },
+
   ]
 const router = createRouter({
     history:createWebHashHistory(),

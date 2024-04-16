@@ -150,6 +150,7 @@ const handleSelect = (key: string, keyPath: string[]) => {
 //background-image: url('../assets/home-background.png');
   /* 背景设置为覆盖整个容器 */
   min-width: 1080px;
+  min-height: 550px;
   background-size: cover;
   background-position: center;
   height: 450px; /* 根据需要设置高度 */

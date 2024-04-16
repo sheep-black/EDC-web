@@ -1,16 +1,18 @@
 <script setup>
 import { Search } from '@element-plus/icons-vue'
+import { useRouter } from 'vue-router'
 import { ref } from 'vue';
 const SearchText = ref('');
 const showTable = ref(false);
 // 选中的搜索选项
 const selectedOptions = ref([]);
-
+const router = useRouter();
 
 const tableData = ref([]);
 
 const handleRowClick = (row) => {
   console.info('点击的行数：',row)
+  router.push('/SearchDATAResult')
 };
 const handleSearch = () => {
   tableData.value=[];

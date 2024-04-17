@@ -39,20 +39,14 @@
               <p style="justify-content: center;">EDC-DATA</p>
             </el-menu-item>
           </el-sub-menu>
-          <el-sub-menu index="2">
+          <el-menu-item index="2" @click="this.$router.push('/Predict')">
             <template #title>
               <el-icon :size="20"><Odometer /></el-icon>
               <p style="font-size: 16px;text-shadow: 0px 0px 2px black;">
                 Predict
               </p>
             </template>
-            <el-menu-item index="2-1" style="justify-content: center;">
-              <p style="justify-content: center;">Qualitative predictor</p>
-            </el-menu-item>
-            <el-menu-item index="2-2" style="justify-content: center;">
-              <p style="justify-content: center;">Quantitative predictor</p>
-            </el-menu-item>
-          </el-sub-menu>
+          </el-menu-item>
           <el-menu-item index="3" @click="this.$router.push('/About')">
             <template #title>
               <el-icon :size="20"><InfoFilled /></el-icon>
@@ -159,12 +153,12 @@ const handleSelect = (key: string, keyPath: string[]) => {
 }
 .home-main{
   /* 设置图片作为背景 */
-  //background-image: url('../assets/home-background.png');
+  /* //background-image: url('../assets/home-background.png'); */
   /* 背景设置为覆盖整个容器 */
   min-width: 1080px;
   background-size: cover;
   background-position: center;
-  //height: 500px; /* 根据需要设置高度 */
+  /* //height: 500px; 根据需要设置高度 */
 }
 
 .footer {

@@ -38,20 +38,14 @@
               <p style="justify-content: center;">EDC-DATA</p>
             </el-menu-item>
           </el-sub-menu>
-          <el-sub-menu index="2">
+          <el-menu-item index="2" @click="this.$router.push('/Predict')">
             <template #title>
               <el-icon :size="20"><Odometer /></el-icon>
               <p style="font-size: 16px;text-shadow: 0px 0px 2px black;">
                 Predict
               </p>
             </template>
-            <el-menu-item index="2-1" style="justify-content: center;">
-              <p style="justify-content: center;">Qualitative predictor</p>
-            </el-menu-item>
-            <el-menu-item index="2-2" style="justify-content: center;">
-              <p style="justify-content: center;">Quantitative predictor</p>
-            </el-menu-item>
-          </el-sub-menu>
+          </el-menu-item>
           <el-menu-item index="3" @click="this.$router.push('/About')">
             <template #title>
               <el-icon :size="20"><InfoFilled /></el-icon>
@@ -147,7 +141,7 @@
 import { ref, Ref, onMounted } from 'vue';
 import Content1 from './Network.vue';
 import Content2 from './Database.vue';
-import Content3 from './Predict.vue';
+import Content3 from './AboutPredict.vue';
 const activeIndex = ref('3')
 const selectedContent = ref('');
 const selectedContentComponent = ref('');

@@ -1,7 +1,7 @@
 <template>
   <div >
     <div style="justify-content: center;display: flex;" >
-      <el-table :data="currentPageData" border style="width: 60%" height="300" >
+      <el-table :data="currentPageData" border style="width: 60%" height="350" >
         <!-- 这里是表格的列 -->
         <el-table-column prop="Assay ID" label="ID" >
           <template #default="scope">
@@ -15,7 +15,7 @@
       </el-table>
     </div>
     <el-pagination
-        style="justify-content: center;display: flex;"
+        style="justify-content: center;display: flex; margin-top: 2vh;"
         @current-change="handleCurrentChange"
         :current-page="currentPage"
         :page-size="10"

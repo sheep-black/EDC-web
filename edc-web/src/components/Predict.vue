@@ -1,43 +1,205 @@
-<script setup>
-const predictor1 ="/src/assets/predictor1.png"
-const predictor2 ="/src/assets/predictor2.png"
-</script>
-
 <template>
-  <p style="font-size: 20px;
-                  padding: 0 20px;
+  <div  class="common-layout">
+    <el-container >
+      <el-header>
+        <!--        头部菜单栏-->
+        <el-menu
+            :default-active="activeIndex"
+            style="min-width: 1080px; margin-left: -25px;margin-right: -25px;margin-top: -5px"
+            mode="horizontal"
+            background-color="#1A6B9AFF"
+            text-color="#fff"
+            active-text-color="#ffcc66"
+            :ellipsis="false"
+            @select="handleSelect"
+        >
+          <el-menu-item index="0" @click="this.$router.push('/')">
+            <!--      菜单左侧标志-->
+            <el-icon
+                color="#409efc"
+                :size="30">
+              <SwitchFilled />
+            </el-icon>
+            <p style="font-size: 18px; font-style: italic; margin-left: 6px;font-weight: bold;text-shadow: 1px 1px 2px black;">
+              EDC  Database & Network & Predictor
+            </p>
+          </el-menu-item>
+          <div class="flex-grow" />
+          <el-sub-menu index="1">
+            <template #title >
+              <el-icon :size="20"><Search /></el-icon>
+              <p style="font-size: 16px;text-shadow: 0px 0px 2px black;">
+                Search
+              </p>
+            </template>
+            <el-menu-item index="1-1" style="justify-content: center;" @click="this.$router.push('/SearchAOP')">
+              <p style="justify-content: center;">EDC-AOP</p>
+            </el-menu-item>
+            <el-menu-item index="1-2" style="justify-content: center;" @click="this.$router.push('/SearchDATA')">
+              <p style="justify-content: center;">EDC-DATA</p>
+            </el-menu-item>
+          </el-sub-menu>
+          <el-menu-item index="2" @click="this.$router.push('/Predict')">
+            <template #title>
+              <el-icon :size="20"><Odometer /></el-icon>
+              <p style="font-size: 16px;text-shadow: 0px 0px 2px black;">
+                Predict
+              </p>
+            </template>
+          </el-menu-item>
+          <el-menu-item index="3" @click="this.$router.push('/About')">
+            <template #title>
+              <el-icon :size="20"><InfoFilled /></el-icon>
+              <p style="font-size: 16px;text-shadow: 0px 0px 2px black;">
+                About
+              </p>
+            </template>
+          </el-menu-item>
+          <el-menu-item index="4" @click="this.$router.push('/Contact')">
+            <template #title>
+              <el-icon :size="20"><UserFilled /></el-icon>
+              <p style="font-size: 16px;text-shadow: 0px 0px 2px black;">
+                Contact
+              </p>
+            </template>
+          </el-menu-item>
+        </el-menu>
+      </el-header>
+      <el-main class="Predict-main">
+        <p style="font-size: 45px;
+                  margin-left: 6px;
                   font-weight: bold;
+                  justify-content: center;
+                  display: flex;
+                  color: #1B497BFF;">
+          EDC Predictor
+        </p><p style="font-size: 25px;
+                  margin-top: -10px;
+                  justify-content: center;
                   display: flex;
                   color: #000000;">
-    EDC Database
-  </p>
-  <el-divider border-style="dashed" />
-  <div style="display: flex;justify-content: center;">
-    <el-image style="width: 1100px;" :src=predictor1  />
-  </div>
-  <div style="display: flex;justify-content: center;">
-    <el-image style="width: 1100px;" :src=predictor2  />
-  </div>
-  <div style="display: flex;
-                    justify-content: center;
-                    padding: 0 20px; /* 左右间距为 20px，根据需要调整 */">
-    <p class="predict-text"> Screening for EDCs needs to be supported by a large amount of experimental data. The EDC database covers 13,307 qualitative data from standard screening tests and 6,713 quantitative data from standard screening tests that meet the data requirements. We also combined five machine learning algorithms to construct an optimal model of test endpoint events to predict and fill data gaps, and a total of 64,336 qualitative data were filled. The compilation and information sharing of test data was promoted, providing data support for the promotion of rapid screening of EDCs.
-      <br>
-    </p>
-  </div>
+            Quick screening EDC using qualitative screening model
+      </p>
+        <el-radio-group fill="#377ecb" v-model="selected"
+                        style="font-weight: bold;justify-content: center;display: flex;">
+          <el-radio-button label="Inputting a SMILES" value="Smiles" size="large" />
+          <el-radio-button label="Drawing a molecule in the JSME" value="Drawing" size="large" />
+        </el-radio-group>
+        <el-divider />
+        <component :is="selectedComponent" />
 
+      </el-main>
 
+    </el-container>
+    <footer class="footer">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3 style="color: #f8f8f8;letter-spacing: 3px;">授权信息</h3>
+          <el-divider />
+          <p style="color: #ffffff;">版权所有 © 2024</p>
+          <p style="color: #ffffff;">保留所有权利</p>
+        </div>
+        <div class="footer-section">
+          <h3 style="color: #f8f8f8;letter-spacing: 3px;">联系方式</h3>
+          <el-divider />
+          <p style="color: #ffffff;">联系邮箱：example@example.com</p>
+          <p style="color: #ffffff;">电话：123-456-7890</p>
+        </div>
+        <div class="footer-section">
+          <h3 style="color: #f8f8f8;letter-spacing: 3px;">备案信息</h3>
+          <el-divider />
+          <ul>
+            <li><a href="#">2024测试备案</a></li>
+            <li><a href="#">苏ICP备000000号</a></li>
+          </ul>
+        </div>
+      </div>
+    </footer>
+
+  </div>
 
 </template>
 
-<style scoped>
-.predict-text {
-  /* 中间介绍字体的样式*/
-  font-size: 18px;
-  margin-top: 20px;
-  max-width: 1000px; /* 设置最大宽度，以避免文本过长 */
-  text-align: justify; /* 文本两端对齐 */
-  line-height: 200%; /* 设置行高 */
+<script lang="ts" setup>
 
+
+import { ref ,computed} from 'vue'
+import PredictSmiles from "./PredictSmiles.vue";
+import PredictDrawing from "./PredictDrawing.vue";
+const activeIndex = ref('2')
+const selected = ref('Smiles')
+const handleSelect = (key: string, keyPath: string[]) => {
+  console.log(key, keyPath)
 }
+const selectedComponent = computed(() => {
+  if (selected.value === 'Smiles') {
+    return PredictSmiles;
+  } else{
+    return PredictDrawing;
+  }
+});
+</script>
+
+<style>
+.flex-grow {
+  flex-grow: 1;
+}
+
+.Predict-main{
+  /* 背景设置为覆盖整个容器 */
+  min-width: 1080px;
+  min-height: 80vh;
+  background-size: cover;
+  background-position: center;
+}
+
+.footer {
+  min-width: 1080px;
+  margin-left: -8px;
+  margin-right: -8px;
+  margin-bottom: -8px;
+  background-color: #2b5e8d;
+  padding: 15px 0;
+  text-align: center;
+}
+
+.footer-content {
+  display: flex;
+  justify-content: space-around;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.footer-section {
+  flex: 1;
+}
+
+.footer-section h3 {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.footer-section p {
+  margin: 5px 0;
+}
+
+.footer-section ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.footer-section ul li {
+  margin-bottom: 5px;
+}
+
+.footer-section ul li a {
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.footer-section ul li a:hover {
+  text-decoration: underline;
+}
+
+
 </style>

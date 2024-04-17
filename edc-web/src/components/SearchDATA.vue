@@ -39,20 +39,14 @@
               <p style="justify-content: center;">EDC-DATA</p>
             </el-menu-item>
           </el-sub-menu>
-          <el-sub-menu index="2">
+          <el-menu-item index="2" @click="this.$router.push('/Predict')">
             <template #title>
               <el-icon :size="20"><Odometer /></el-icon>
               <p style="font-size: 16px;text-shadow: 0px 0px 2px black;">
                 Predict
               </p>
             </template>
-            <el-menu-item index="2-1" style="justify-content: center;">
-              <p style="justify-content: center;">Qualitative predictor</p>
-            </el-menu-item>
-            <el-menu-item index="2-2" style="justify-content: center;">
-              <p style="justify-content: center;">Quantitative predictor</p>
-            </el-menu-item>
-          </el-sub-menu>
+          </el-menu-item>
           <el-menu-item index="3" @click="this.$router.push('/About')">
             <template #title>
               <el-icon :size="20"><InfoFilled /></el-icon>
@@ -72,14 +66,14 @@
         </el-menu>
       </el-header>
       <el-main class="SearchDATA-main">
-        <p style="font-size: 25px;
+        <p style="font-size: 45px;
                   margin-left: 6px;
                   font-weight: bold;
                   justify-content: center;
                   display: flex;
                   color: #1B497BFF;">
           EDC-Database  Search
-        </p><p style="font-size: 16px;
+        </p><p style="font-size: 25px;
                   margin-top: -10px;
                   justify-content: center;
                   display: flex;
@@ -88,8 +82,8 @@
       </p>
         <el-radio-group fill="#377ecb" v-model="selected"
                         style="font-weight: bold;justify-content: center;display: flex;">
-          <el-radio-button label="TextSearch" value="TextSearch" />
-          <el-radio-button label="AssaySearch" value="AssaySearch" />
+          <el-radio-button label="TextSearch" value="TextSearch" size="large" />
+          <el-radio-button label="AssaySearch" value="AssaySearch" size="large" />
         </el-radio-group>
         <el-divider />
         <component :is="selectedComponent" />
@@ -139,9 +133,9 @@ const handleSelect = (key: string, keyPath: string[]) => {
 }
 const selectedComponent = computed(() => {
   if (selected.value === 'TextSearch') {
-    return <string>SearchDATAText;
+    return SearchDATAText;
   } else{
-    return <string>SearchDATAAssay;
+    return SearchDATAAssay;
   }
 });
 </script>
@@ -152,14 +146,11 @@ const selectedComponent = computed(() => {
 }
 
 .SearchDATA-main{
-  /* 设置图片作为背景 */
-//background-image: url('../assets/home-background.png');
   /* 背景设置为覆盖整个容器 */
   min-width: 1080px;
-  min-height: 450px;
+  min-height: 80vh;
   background-size: cover;
   background-position: center;
-//height: 500px; /* 根据需要设置高度 */
 }
 
 .footer {

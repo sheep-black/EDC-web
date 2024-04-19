@@ -9,6 +9,7 @@ import SearchDATA from '../components/SearchDATA.vue'
 import SearchDATAResult from "@/components/SearchDATAResult.vue"
 import Predict from '../components/Predict.vue'
 
+
 // Vue.use(VueRouter)
 const routes = [
     {
@@ -67,7 +68,6 @@ const routes = [
             title: '预测'
         }
     },
-
   ]
 const router = createRouter({
     history:createWebHashHistory(),

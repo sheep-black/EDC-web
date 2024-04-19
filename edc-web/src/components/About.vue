@@ -64,10 +64,7 @@
           </el-menu-item>
         </el-menu>
       </el-header>
-      <el-container style="background-size: cover;
-                           background-position: center;
-                           height: 105%;"
-                           >
+      <el-container class="about-main">
         <el-aside width="220px">
           <el-menu
               default-active="EDC AOP Network"
@@ -109,22 +106,22 @@
       <footer class="footer">
         <div class="footer-content">
           <div class="footer-section">
-            <h3 style="color: #f8f8f8;letter-spacing: 3px;">授权信息</h3>
+            <h3 style="color: #f8f8f8;letter-spacing: 1px;">Copyright</h3>
             <el-divider />
-            <p style="color: #ffffff;">版权所有 © 2024</p>
-            <p style="color: #ffffff;">保留所有权利</p>
+            <p style="color: #ffffff;">All Rights © 2024</p>
+            <p style="color: #ffffff;">Reserved</p>
           </div>
           <div class="footer-section">
-            <h3 style="color: #f8f8f8;letter-spacing: 3px;">联系方式</h3>
+            <h3 style="color: #f8f8f8;letter-spacing: 1px;">Contact</h3>
             <el-divider />
-            <p style="color: #ffffff;">联系邮箱：example@example.com</p>
-            <p style="color: #ffffff;">电话：123-456-7890</p>
+            <p style="color: #ffffff;">E-mail：example@example.com</p>
+            <p style="color: #ffffff;">Tel：123-456-7890</p>
           </div>
           <div class="footer-section">
-            <h3 style="color: #f8f8f8;letter-spacing: 3px;">备案信息</h3>
+            <h3 style="color: #f8f8f8;letter-spacing: 1px;">Registration</h3>
             <el-divider />
             <ul>
-              <li><a href="#">2024测试备案</a></li>
+              <li><a href="#">2024--</a></li>
               <li><a href="#">苏ICP备000000号</a></li>
             </ul>
           </div>
@@ -169,7 +166,11 @@ onMounted(() => {
 .flex-grow {
   flex-grow: 1;
 }
-
+.about-main{
+  background-size: cover;
+  background-position: center;
+  height: 105%;
+}
 
 
 </style>

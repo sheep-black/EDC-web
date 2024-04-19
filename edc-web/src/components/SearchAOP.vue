@@ -95,22 +95,22 @@
     <footer class="footer">
       <div class="footer-content">
         <div class="footer-section">
-          <h3 style="color: #f8f8f8;letter-spacing: 3px;">授权信息</h3>
+          <h3 style="color: #f8f8f8;letter-spacing: 1px;">Copyright</h3>
           <el-divider />
-          <p style="color: #ffffff;">版权所有 © 2024</p>
-          <p style="color: #ffffff;">保留所有权利</p>
+          <p style="color: #ffffff;">All Rights © 2024</p>
+          <p style="color: #ffffff;">Reserved</p>
         </div>
         <div class="footer-section">
-          <h3 style="color: #f8f8f8;letter-spacing: 3px;">联系方式</h3>
+          <h3 style="color: #f8f8f8;letter-spacing: 1px;">Contact</h3>
           <el-divider />
-          <p style="color: #ffffff;">联系邮箱：example@example.com</p>
-          <p style="color: #ffffff;">电话：123-456-7890</p>
+          <p style="color: #ffffff;">E-mail：example@example.com</p>
+          <p style="color: #ffffff;">Tel：123-456-7890</p>
         </div>
         <div class="footer-section">
-          <h3 style="color: #f8f8f8;letter-spacing: 3px;">备案信息</h3>
+          <h3 style="color: #f8f8f8;letter-spacing: 1px;">Registration</h3>
           <el-divider />
           <ul>
-            <li><a href="#">2024测试备案</a></li>
+            <li><a href="#">2024--</a></li>
             <li><a href="#">苏ICP备000000号</a></li>
           </ul>
         </div>
@@ -148,16 +148,9 @@ const selectedComponent = computed(() => {
 .flex-grow {
   flex-grow: 1;
 }
-.intro-text {
-  /* 中间介绍字体的样式*/
-  font-size: 18px;
-  max-width: 1000px; /* 设置最大宽度，以避免文本过长 */
-  text-align: justify; /* 文本两端对齐 */
-  line-height: 200%; /* 设置行高 */
-}
 .SearchAOP-main{
   /* 设置图片作为背景 */
-/* // background-image: url('../assets/home-background.png'); */
+  background-image: url('../assets/background4.png');
   /* 背景设置为覆盖整个容器 */
   min-width: 1080px;
   min-height: 80vh;

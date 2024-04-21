@@ -2,26 +2,22 @@
 import axios from "axios";
 
 const intro_image ="/src/assets/network-image.png"
-const DownloadNetwork = (filename) => {
+const DownloadNetwork = async (filename) => {
   // 处理搜索逻辑，这里只是简单地打印搜索关键词
-  console.info('搜索关键词:');
-  axios.get('/download', {
-    params: {
-      filename: filename
-    },
-    responseType: 'blob' // 指定响应类型为 blob，以处理二进制文件
-  })
-      .then(response => {
-        const url = window.URL.createObjectURL(new Blob([response.data]));
-        const link = document.createElement('a');
-        link.href = url;
-        link.setAttribute('download', filename);
-        document.body.appendChild(link);
-        link.click();
-      })
-      .catch(error => {
-        console.error('File download failed:', error);
-      });
+  console.info('文件名:',filename);
+  const url =`/download?fileName=${filename}`;
+  try {
+    const response = await axios.get(url, { responseType: 'blob' });
+    const downloadUrl = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = downloadUrl;
+    link.setAttribute('download', filename);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  } catch (error) {
+    console.error('Error downloading file:', error);
+  }
 };
 </script>
 
@@ -40,7 +36,7 @@ const DownloadNetwork = (filename) => {
                     padding: 0 20px; /* 左右间距为 20px，根据需要调整 */">
         <p class="network-text">The mechanism of EDCs is complex. However, AOP can help deepen the understanding of the mechanisms of endocrine disruptor toxicity by cascading a range of biological effects caused by endocrine disruptors at different levels. Therefore, the mechanisms of action related to the four modes of action of EDCs (estrogen receptor interference, androgen receptor interference, thyroid hormone receptor interference, and steroid hormone synthesis interference) were collected based on manual searching and screening of databases as well as massive literature mining by natural language processing. Finally, a more complete AOP-network of current EDCs was constructed, containing 673 AOPs covering 1617 Key Event Relationships (KER), 59 Molecular Initiation Events (MIE), 624 Key Events (KE), and 181 Adverse Outcomes (AO). Event (KE), 624 Key Events (KE), and 181 Adverse Outcomes (AO).
           <br>
-          <el-link type="primary" @click="DownloadNetwork('111111.txt')">
+          <el-link type="primary" @click="DownloadNetwork('test_data.xlsx')">
             <el-icon size="20" style="margin-right: 5px"><Memo /></el-icon>
             <p style="font-size: 18px;
                         text-align: justify; /* 文本两端对齐 */

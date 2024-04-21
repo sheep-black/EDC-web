@@ -1,31 +1,26 @@
 package com.example.edcspring.controller;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-@CrossOrigin
+
+
+@RestController
 public class DownloadController {
     @GetMapping("/download")
-    public ResponseEntity<Resource> downloadFile(@RequestParam String filename) throws IOException {
-        System.out.println("111111111111");
-        // 指定要下载的文件路径
-        Path file = Paths.get("./" + filename);
-        Resource resource = new org.springframework.core.io.ByteArrayResource(Files.readAllBytes(file));
-
-        // 设置响应头
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename);
-
+    public ResponseEntity<Resource> downloadFile(@RequestParam String fileName) throws IOException {
+        System.out.println("文件名：");
+        System.out.print(fileName);
+        Resource resource = new ClassPathResource("files/" + fileName); //文件路径：src/main/resources/files
         return ResponseEntity.ok()
-                .headers(headers)
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
                 .body(resource);
     }
 }
+

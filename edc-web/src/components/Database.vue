@@ -1,5 +1,24 @@
 <script setup>
+import axios from "axios";
+
 const databaseimage ="/src/assets/database-image.png"
+const DownloadAOPData = async (filename) => {
+  // 处理搜索逻辑，这里只是简单地打印搜索关键词
+  console.info('文件名:',filename);
+  const url =`/download?fileName=${filename}`;
+  try {
+    const response = await axios.get(url, { responseType: 'blob' });
+    const downloadUrl = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = downloadUrl;
+    link.setAttribute('download', filename);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  } catch (error) {
+    console.error('Error downloading file:', error);
+  }
+};
 </script>
 
 <template>
@@ -22,7 +41,7 @@ const databaseimage ="/src/assets/database-image.png"
       <div style="display: flex;justify-content: center;">
         <el-row :gutter="50">
           <el-col :span="12">
-            <el-link type="primary" @click="this.$router.push('/Contact')">
+            <el-link type="primary" @click="DownloadAOPData('test_data.xlsx')">
               <el-icon size="20" style="margin-right: 5px"><Memo /></el-icon>
               <p style="font-size: 18px;
                         text-align: justify; /* 文本两端对齐 */
@@ -34,7 +53,7 @@ const databaseimage ="/src/assets/database-image.png"
             </el-link>
           </el-col>
           <el-col :span="12">
-            <el-link type="primary" @click="this.$router.push('/Contact')">
+            <el-link type="primary"  @click="DownloadAOPData('test_data.xlsx')">
               <el-icon size="20" style="margin-right: 5px"><Memo /></el-icon>
               <p style="font-size: 18px;
                         text-align: justify; /* 文本两端对齐 */

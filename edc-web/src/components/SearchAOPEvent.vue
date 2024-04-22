@@ -1,16 +1,22 @@
 <template>
   <div >
     <div style="justify-content: center;display: flex;" >
-      <el-table :data="currentPageData" border style="width: 60%" height="300" >
+      <el-table :data="currentPageData" border style="width: 80%" height="500"
+                :header-cell-style="{ background: '#dedede', color: '#000' }">
         <!-- 这里是表格的列 -->
-        <el-table-column prop="Title" label="Title" >
-          <template #default="scope">
-            <el-button type="text" @click="handleRowClick(scope.row)">{{ scope.row.Title}}</el-button>
-          </template>
-        </el-table-column>
-        <el-table-column prop="ID" label="ID"></el-table-column>
-        <el-table-column prop="Type" label="Type"></el-table-column>
-        <el-table-column prop="age" label="年龄" :filters="ageFilters" :filter-method="handleAgeFilter"></el-table-column>
+<!--        <el-table-column prop="Title" label="Title" >-->
+<!--          <template #default="scope">-->
+<!--            <el-button type="text" @click="handleRowClick(scope.row)">{{ scope.row.Title}}</el-button>-->
+<!--          </template>-->
+<!--        </el-table-column>-->
+        <el-table-column prop="id" label="ID" width="60"></el-table-column>
+        <el-table-column prop="cas" label="Cas" width="120"></el-table-column>
+        <el-table-column prop="activity" label="Activity" width="80"></el-table-column>
+        <el-table-column prop="noael" label="NOAEL" width="80"></el-table-column>
+        <el-table-column prop="unit" label="UNIT" width="150"></el-table-column>
+        <el-table-column prop="assay" label="Assay" width="150"></el-table-column>
+        <el-table-column prop="source" label="Source" width="120"></el-table-column>
+        <el-table-column prop="smiles" label="Smiles" :filters="ageFilters" :filter-method="handleAgeFilter"></el-table-column>
 
       </el-table>
     </div>
@@ -47,6 +53,7 @@
 
 <script setup>
 import { ref, reactive, watch, onMounted } from "vue";
+import axios from "axios";
 
 // 定义响应式数据
 const currentPage = ref(1);
@@ -57,6 +64,7 @@ const tableData = reactive([]); // 这里是你的数据，假设已经从后端
 const detailTableData = ref([]);
 // 是否显示详情表格
 const showDetailTable = ref(false);
+
 // 年龄筛选项
 const ageFilters = [
   { text: '大于20', value: 'gt20' },
@@ -69,7 +77,7 @@ const currentPageData = ref(tableData.slice(0, 10));
 watch([currentPage, pageSize], () => {
   const startIndex = (currentPage.value - 1) * pageSize.value;
   const endIndex = startIndex + pageSize.value;
-  currentPageData.value = tableData.slice(startIndex, endIndex);
+  currentPageData.value = tableData.value.slice(startIndex, endIndex);
 });
 
 
@@ -93,38 +101,33 @@ const handleAgeFilter = (value, row) => {
   }
 };
 
-// 模拟从后端获取数据
-const fetchData = () => {
-  // 模拟异步请求
-  setTimeout(() => {
-    tableData.splice(0, tableData.length, ...generateData(total.value));
-  }, 500);
+
+const fetchData = async () => {
+  try {
+    const response = await axios.get('/getData');
+    // console.info("response",response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    return [];
+  }
 };
 
 onMounted(() => {
-  fetchData();
-  console.info("tableData",tableData)
   // 手动调用一次处理当前页码改变的方法，确保在页面刚加载时显示第一页的内容
   handleCurrentChange(currentPage.value);
   // 初始时先接收数据
-  tableData.splice(0, tableData.length, ...generateData(total.value));
-  currentPageData.value = tableData.slice(0, 10);
-  // console.info("tableData",tableData)
-  // console.info("currentPageData",currentPageData)
+  fetchData().then(data => {
+    tableData.value = data; // 将获取到的数据赋值给 tabledata
+    // console.info("tableData.value",tableData.value); // 打印获取到的数据
+    currentPageData.value = tableData.value.slice(0, 10);
+    total.value=data.length;
+    console.info("size",total.value);
+  }).catch(error => {
+    console.error('Error:', error); // 打印错误信息
+  });
+
 });
 
-// 模拟生成数据
-const generateData = (count) => {
-  const data = [];
-  for (let i = 0; i < count; i++) {
-    data.push({
-      Title: (i + 1),
-      ID: (i + 1),
-      Type: (i + 1),
-      age: Math.floor(Math.random() * 50) + 18,
-      // 其他字段
-    });
-  }
-  return data;
-};
+
 </script>

@@ -8,9 +8,11 @@ import java.util.List;
 
 @Mapper
 public interface edcMapper {
-    @Select("SELECT * FROM testdata")
+    @Select("SELECT * FROM refine")
     public List<TestData> getAllData();
-    @Select("SELECT * FROM testdata WHERE cas LIKE CONCAT('%', #{keyword}, '%')")
-    List<TestData> searchData(@Param("keyword") String keyword);
+//    @Select("SELECT * FROM refine WHERE cas LIKE CONCAT('%', #{keyword}, '%')")
+//    List<TestData> searchData(@Param("keyword") String keyword);
 
+    @Select("SELECT * FROM refine WHERE ${columnName} LIKE CONCAT('%', #{keyword}, '%')")
+    List<TestData> searchData(@Param("columnName") String columnName, @Param("keyword") String keyword);
 }

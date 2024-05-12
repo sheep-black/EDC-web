@@ -6,7 +6,7 @@ import Contact from '../components/Contact.vue'
 import About from '../components/About.vue'
 import SearchAOP from '../components/SearchAOP.vue'
 import SearchDATA from '../components/SearchDATA.vue'
-import SearchDATAResult from "@/components/SearchDATAResult.vue"
+import SearchDATAResult from "../components/SearchDATAResult.vue"
 import Predict from '../components/Predict.vue'
 
 

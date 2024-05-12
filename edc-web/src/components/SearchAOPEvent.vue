@@ -136,6 +136,7 @@ watch([filterData,currentPage, pageSize], () => {
 // 当前页码改变时的回调
 const handleCurrentChange = (page) => {
   currentPage.value = page;
+  console.info("currentPageData",currentPageData);
 };
 
 

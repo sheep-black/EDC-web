@@ -78,7 +78,7 @@
                   justify-content: center;
                   display: flex;
                   color: #000000;">
-        从这里开始你的搜索描述abababababbaabab
+        Begin your AOP data search from over about 130,000 records
       </p>
         <el-radio-group fill="#377ecb" v-model="selected"
                         style="font-weight: bold;justify-content: center;display: flex;">

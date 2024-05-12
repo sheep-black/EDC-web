@@ -9,6 +9,23 @@ public class TestData {
     private String UNIT;
     private String Assay;
     private String Source;
+    private String Name;
+    private String Endpoint;
+    public String getName() {
+        return Name;
+    }
+
+    public void setName(String name) {
+        Name = name;
+    }
+
+    public String getEndpoint() {
+        return Endpoint;
+    }
+
+    public void setEndpoint(String endpoint) {
+        Endpoint = endpoint;
+    }
 
     public int getId() {
         return Id;
@@ -85,6 +102,8 @@ public class TestData {
                 ", UNIT='" + UNIT + '\'' +
                 ", Assay='" + Assay + '\'' +
                 ", Source='" + Source + '\'' +
+                ", Name='" + Name + '\'' +
+                ", Endpoint='" + Endpoint + '\'' +
                 '}';
     }
 }

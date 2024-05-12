@@ -13,9 +13,9 @@ import java.util.List;
 public class SearchController {
     @Autowired
     private edcMapper edcMapper;
-    @GetMapping("/search")
-    public List<TestData> getData(@RequestParam String keyword) {
-        return edcMapper.searchData(keyword);
+    @GetMapping("/searchDATA")
+    public List<TestData> getData(@RequestParam String columnName, @RequestParam String keyword) {
+        return edcMapper.searchData(columnName,keyword);
     }
 
 }

@@ -1,11 +1,97 @@
 <template>
   <div >
+    <div style="justify-content: center;display: flex; margin-top: 0px;">
+      <el-space direction="vertical">
+        <el-row :gutter="100">
+          <el-col :span="6" style="width: 90px;">
+            <p class="font">Activity:</p>
+          </el-col>
+          <el-col :span="18">
+            <el-select
+                v-model="ActivityScreen"
+                placeholder="Select"
+                style="width: 300px;"
+            >
+              <el-option
+                  v-for="item in ActivityOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+              />
+            </el-select>
+          </el-col>
+        </el-row>
+        <el-row :gutter="100">
+          <el-col :span="6" style="width: 90px">
+            <p class="font">Assay:</p>
+          </el-col>
+          <el-col :span="18">
+            <el-select
+                v-model="AssayScreen"
+                multiple
+                collapse-tags
+
+                placeholder="Select"
+                style="width: 300px;"
+            >
+              <el-option
+                  v-for="item in AssayOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+              />
+            </el-select>
+          </el-col>
+        </el-row>
+        <el-row :gutter="100">
+          <el-col :span="6" style="width: 90px">
+            <p class="font">Endpoint:</p>
+          </el-col>
+          <el-col :span="18">
+            <el-select
+                v-model="EndpointScreen"
+                multiple
+                collapse-tags
+
+                placeholder="Select"
+                style="width: 300px;"
+            >
+              <el-option
+                  v-for="item in EndpointOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+              />
+            </el-select>
+          </el-col>
+        </el-row>
+
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-button type="primary" style="width: 100px" @click="handleScreen">Confirm</el-button>
+          </el-col>
+          <el-col :span="12">
+            <el-button type="primary" plain style="width: 100px" @click="cancelScreen">Reset</el-button>
+          </el-col>
+        </el-row>
+      </el-space>
+
+    </div>
+
+    <p v-if="showTable" style="font-size: 20px;
+                  margin-top: 30px;
+                  margin-left: 10%;
+                  font-weight: bold;
+                  display: flex;
+                  color: #1B497BFF;">
+      Search Results
+    </p>
     <div style="justify-content: center;display: flex; margin-top: 10px;">
-      <el-table
+      <el-table v-if="showTable"
                 v-loading="loading"
                 stripe
                 max-height="600"
-                :data="currentPageData" border style="width: 80%;"
+                :data="currentPageData" border style="width: 90%;"
                 :header-cell-style="{ background: '#dedede', color: '#000' }">
         <el-table-column prop="id" label="ID" width="80" align="center">
           <template #default="scope">
@@ -17,14 +103,15 @@
         <el-table-column prop="noael" label="NOAEL" width="100"></el-table-column>
         <el-table-column prop="unit" label="UNIT" width="150"></el-table-column>
         <el-table-column prop="assay" label="Assay" width="150"></el-table-column>
-        <el-table-column prop="source" label="Source" width="120"></el-table-column>
+        <el-table-column prop="endpoint" label="Endpoint" width="120"></el-table-column>
         <el-table-column prop="smiles" label="Smiles"></el-table-column>
         <el-table-column prop="name" label="Name"></el-table-column>
         <el-table-column prop="endpoint" label="Endpoint"></el-table-column>
       </el-table>
     </div>
     <el-pagination
-        style="justify-content: center;display: flex;"
+        v-if="showTable"
+        style="justify-content: center;display: flex;margin-top: 10px"
         @current-change="handleCurrentChange"
         :current-page="currentPage"
         :page-size=pageSize
@@ -42,92 +129,58 @@ import router from "@/router/index.js";
 // 定义响应式数据
 const currentPage = ref(1);
 const pageSize = ref(20);
+const showTable = ref(false);
 const total = ref(100); // 假设总数据量为 100
 const tableData = reactive([]); // 这里是你的数据，假设已经从后端获取
-const filterData = ref([]);
-// const selectFilter=ref('');
-// const NoaelFilterResult=ref([]);
-// const ActivityFilterResult=ref([]);
+const EndpointScreen = ref([]);
+const AssayScreen = ref([]);
+const ActivityScreen = ref([]);
+const ActivityOptions = ref([])
+const AssayOptions = ref([])
+const EndpointOptions = ref([])
+
+
 const currentPageData = ref(tableData.slice(0, 20));
 const loading = ref(true);
 const handleRowClick = (row) => {
   console.info('点击的行数：',row)
   router.push('/SearchDATAResult')
 };
-// const handleSortChange = ({ prop,order })=>{
-//   if(prop==='id'){
-//     if (order === 'ascending') {
-//       filterData.value.sort((a, b) => a.id - b.id); // 升序排序
-//     } else if (order === 'descending'){
-//       filterData.value.sort((a, b) => b.id - a.id); // 降序排序
-//     }else{
-//       filterData.value.sort((a, b) => a.id - b.id); // 升序排序
-//     }
-//     console.info("order",order)
-//   }
-// }
-// const handleFilterChange=(filter)=>{
-//   console.log("filter",filter)
-//   const originData=reactive([...tableData.value]);
-//   // console.info("originData",originData);
-//   if(filter['noael']){
-//     selectFilter.value='noael';
-//     console.info("处理",selectFilter.value,"筛选")
-//     NoaelFilterResult.value=handleNoaelFilter(filter['noael'],originData)
-//   }
-//   if(filter['activity']){
-//     selectFilter.value='activity';
-//     console.info("处理",selectFilter.value,"筛选")
-//     ActivityFilterResult.value=handleActivityFilter(filter['activity'],originData)
-//   }
-//   filterData.value=NoaelFilterResult.value.filter(value => ActivityFilterResult.value.includes(value));
-//   console.info("filterData",filterData.value)
-// }
-//专门处理activity筛选
-// const handleActivityFilter = (values,originData) => {
-//   if(values.length===0){
-//     console.info('1')
-//     return originData;
-//   }else{
-//     const temp = [];
-//     for (const range of values) {
-//       let filteredRange = [];
-//       console.info("range",range)
-//       if (range === 'yes') {
-//         filteredRange = tableData.value.filter(item => item.activity === 'yes');
-//       } else if (range === 'no') {
-//         filteredRange = tableData.value.filter(item => item.activity ==='no');
-//       }
-//       temp.push(...filteredRange);
-//     }
-//     return temp;
-//   }
-//
-// };
-// //专门处理noael筛选
-// const handleNoaelFilter = (values,originData) => {
-//   if(values.length===0){
-//     return originData;
-//   }else{
-//     const temp = [];
-//     for (const range of values) {
-//       let filteredRange = [];
-//       if (range === '1') {
-//         filteredRange = tableData.value.filter(item => item.noael <= 1000);
-//       } else if (range === '2') {
-//         filteredRange = tableData.value.filter(item => item.noael > 1000 && item.noael <= 2000);
-//       } else if (range === '3') {
-//         filteredRange = tableData.value.filter(item => item.noael > 2000 && item.noael <= 3000);
-//       } else if (range === '4') {
-//         filteredRange = tableData.value.filter(item => item.noael > 3000);
-//       }
-//       temp.push(...filteredRange);
-//     }
-//     return temp;
-//     // console.log("filterData",filterData.value)
-//   }
-//
-// };
+const handleScreen = async () =>{
+  showTable.value = true;
+  loading.value = true;
+
+  const requestData = {
+    endpoint: EndpointScreen.value,
+    assay: AssayScreen.value,
+    activity: [ActivityScreen.value]
+  };
+  console.info("activity",ActivityScreen.value)
+// 发送 POST 请求给后端
+    axios.post('/dataScreen', requestData)
+        .then(response => {
+          // 请求成功处理逻辑
+          console.log('后端返回的数据：', response.data);
+          tableData.value =  response.data; // 将获取到的数据赋值给 tabledata
+          //拿到数据之后 需要初始化一系列参数
+          currentPageData.value = tableData.value.slice(0, pageSize.value);
+          loading.value = false;
+          total.value= tableData.value.length;
+        })
+        .catch(error => {
+          // 请求失败处理逻辑
+          console.error('请求出错：', error);
+        });
+
+}
+const  cancelScreen =() =>{
+  showTable.value=false;
+  EndpointScreen.value = [];
+  AssayScreen.value = [];
+  ActivityScreen.value =" ";
+
+}
+
 watch([currentPage, pageSize], () => {
   const startIndex = (currentPage.value - 1) * pageSize.value;
   const endIndex = startIndex + pageSize.value;
@@ -146,6 +199,7 @@ const handleCurrentChange = (page) => {
 const fetchData = async () => {
   try {
     const response = await axios.get('/getData');
+
     // console.info("response",response.data);
     return response.data;
   } catch (error) {
@@ -160,15 +214,57 @@ onMounted(() => {
   // 手动调用一次处理当前页码改变的方法，确保在页面刚加载时显示第一页的内容
   handleCurrentChange(currentPage.value);
   // 初始时先接收数据
+
+  axios.get('/findDistinct', {
+    params: {
+      fieldName: 'Activity' // 这里将 fieldName 设置为 Activity，如果需要动态传入参数，可以修改成对应的变量名
+    }
+  }).then(response => {
+    // 将 activityObject 转换为数组
+    const activityArray = Object.values(response.data);
+// 遍历 activityArray，并将每个值作为 value 和 label 添加到 ActivityOptions 中
+    activityArray.forEach(item => {
+      ActivityOptions.value.push({ value: item, label: item });
+    });
+    // console.log('ActivityOptions data:', ActivityOptions.value);
+  }).catch(error => {
+    console.error('Error fetching data:', error);});
+
+  axios.get('/findDistinct', {
+    params: {
+      fieldName: 'assay'
+    }
+  }).then(response => {
+    const assayArray = Object.values(response.data);
+    assayArray.forEach(item => {
+      if (item!== null) {//判断是否空白
+        AssayOptions.value.push({ value: item, label: item });
+      }
+    });
+    // console.log('AssayOptions data:', AssayOptions.value);
+  }).catch(error => {
+    console.error('Error fetching data:', error);});
+
+  axios.get('/findDistinct', {
+    params: {
+      fieldName: 'endpoint'
+    }
+  }).then(response => {
+    const endpointArray = Object.values(response.data);
+    endpointArray.forEach(item => {
+      if (item!== null) {//判断是否空白
+        EndpointOptions.value.push({value: item, label: item});
+      }
+    });
+    // console.log('EndpointScreen data:', EndpointOptions.value);
+  }).catch(error => {
+    console.error('Error fetching data:', error);});
+
   fetchData().then(data => {
     tableData.value = data; // 将获取到的数据赋值给 tabledata
-    // console.info("tableData.value",tableData.value); // 打印获取到的数据
     //拿到数据之后 需要初始化一系列参数
     currentPageData.value = tableData.value.slice(0, 20);
     loading.value = false;
-    // filterData.value = reactive([...tableData.value]);
-    // NoaelFilterResult.value=reactive([...tableData.value]);
-    // ActivityFilterResult.value=reactive([...tableData.value]);
     total.value=data.length;
   }).catch(error => {
     console.error('Error:', error); // 打印错误信息
@@ -180,14 +276,15 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* 使用更具体的选择器覆盖默认样式 */
-.my-el-select{
-  width: 80px;
-}
-.my-el-select .el-input__suffix {
-  display: block !important; /* 显示下拉箭头 */
-}
-.my-el-select .el-input__inner {
-  display: none; /* 隐藏输入框 */
+
+.font{
+  display: flex;
+  justify-content: left; /* 水平居中 */
+  margin-top: 0;
+  font-size: 20px; /* 修改字体大小 */
+  font-weight: bold; /* 修改字体粗细 */
+  //font-family: '宋体', 'SimSun', 'STSong',serif; /* 修改字体为宋体 */
+  color: #151583; /* 修改字体颜色 */
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 </style>

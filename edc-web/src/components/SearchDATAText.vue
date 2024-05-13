@@ -97,7 +97,7 @@ watch([tableData,currentPage, pageSize], () => {
               v-loading="loading"
               stripe
               max-height="600"
-              :data="currentPageData" border style="width: 80%;"
+              :data="currentPageData" border style="width: 90%;"
               :header-cell-style="{ background: '#dedede', color: '#000' }">
       <el-table-column prop="id" label="ID" width="80" align="center">
         <template #default="scope">
@@ -116,7 +116,7 @@ watch([tableData,currentPage, pageSize], () => {
     </el-table>
   </div>
   <el-pagination
-      style="justify-content: center;display: flex;"
+      style="justify-content: center;display: flex;margin-top: 10px"
       v-if="showTable"
       @current-change="handleCurrentChange"
       :current-page="currentPage"

@@ -83,7 +83,7 @@
         <el-radio-group fill="#377ecb" v-model="selected"
                         style="font-weight: bold;justify-content: center;display: flex;">
           <el-radio-button label="TextSearch" value="TextSearch" size="large" />
-          <el-radio-button label="AssaySearch" value="AssaySearch" size="large" />
+          <el-radio-button label="DataScreen" value="DataScreen" size="large" />
         </el-radio-group>
         <el-divider />
         <component :is="selectedComponent" />

@@ -25,21 +25,28 @@ public class SearchController {
     public List<String> findDistinctField(@RequestParam String fieldName) {
         return edcMapper.findDistinctFieldNames(fieldName);
     }
+    @GetMapping("/findID")
+    public List<TestData> findID(@RequestParam String ID) {
+        int id = Integer.parseInt(ID); // 将字符串类型的 ID 转换为整数
+        System.out.println(id);
+        List<TestData> result = edcMapper.findByID(id);
+        // 打印查询结果
+        System.out.println("查询结果：" + result);
+        return edcMapper.findByID(id);
+    }
 
     @PostMapping("/dataScreen")
     public List<TestData> Screen(@RequestBody ScreenData filterRequest) {
-        String[] endpoints = filterRequest.getEndpoint();
-        String[] assays = filterRequest.getAssay();
-        String[] activities = filterRequest.getActivity();
-        String endpointString = Arrays.stream(endpoints).collect(Collectors.joining(","));
-        String assayString = Arrays.stream(assays).collect(Collectors.joining(","));
-        String activityString = Arrays.stream(activities).collect(Collectors.joining(","));
-        if(endpointString.isEmpty()){
-            System.out.println("111111111111");
 
-        }
-        List<TestData> filterRes = edcMapper.combinedFilter(endpointString,assayString,activityString);
-        return filterRes;
+        // 获取前端发送的筛选条件
+        List<String> assay = filterRequest.getAssay();
+        List<String> endpoints = filterRequest.getEndpoint();
+        String activities = filterRequest.getActivity();
+
+        // 调用TestDataMapper中的方法进行数据库查询
+
+        return edcMapper.combinedFilter(endpoints,assay, activities);
+
     }
 
 }

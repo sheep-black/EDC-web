@@ -53,7 +53,7 @@ const routes = [
         }
     },
     {
-        path:'/SearchDATAResult',
+        path:'/SearchDATAResult/:dataId',
         name:'SearchDATAResult',
         component:SearchDATAResult,
         meta: {

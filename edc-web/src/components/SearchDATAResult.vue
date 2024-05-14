@@ -1,5 +1,5 @@
 <template>
-  <div  class="common-layout">
+  <div  class="common-layout" >
     <el-container >
       <el-header>
         <!--        头部菜单栏-->
@@ -97,7 +97,7 @@
                   justify-content: left;
                   display: flex;
                   color: #1B497BFF;">
-            Name
+            ID:{{ dataId }}
           </p>
               <div class="collapse">
                 <el-collapse v-model="activeNames" class="custom-collapse">
@@ -183,14 +183,31 @@
 
 <script lang="ts" setup>
 
-import { ref } from 'vue'
+import {onMounted, ref} from 'vue'
 const intro_image ="/src/assets/test-result.png"
 const activeIndex = ref('1-2')
 const handleSelect = (key: string, keyPath: string[]) => {
   console.log(key, keyPath)
 }
 const activeNames = ref(['1'])
+import { useRoute } from 'vue-router';
+import axios from "axios";
+const data=ref([])
+const route = useRoute();
+const loading = ref(true); // 用于控制加载状态
+const dataId = route.params.dataId;
 
+onMounted(async () => {
+  try {
+    console.info("id",dataId)
+    const response = await axios.get(`/findID?ID=${dataId}`);
+    console.info("response",response.data)
+  } catch (error) {
+    console.error('获取数据失败:', error);
+  } finally {
+    loading.value=false
+  }
+});
 </script>
 
 <style>

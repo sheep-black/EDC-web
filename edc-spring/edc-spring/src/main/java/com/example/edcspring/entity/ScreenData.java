@@ -1,32 +1,33 @@
 package com.example.edcspring.entity;
 
-public class ScreenData {
-    private String[] endpoint;
-    private String[] assay;
-    private String[] activity;
+import java.util.List;
 
-    public String[] getEndpoint() {
+public class ScreenData {
+    private List<String> endpoint;
+    private List<String> assay;
+    private String activity;
+
+    public List<String> getEndpoint() {
         return endpoint;
     }
 
-    public void setEndpoint(String[] endpoint) {
+    public void setEndpoint(List<String> endpoint) {
         this.endpoint = endpoint;
     }
 
-    public String[] getAssay() {
+    public List<String> getAssay() {
         return assay;
     }
 
-    public void setAssay(String[] assay) {
+    public void setAssay(List<String> assay) {
         this.assay = assay;
     }
 
-    public String[] getActivity() {
+    public String getActivity() {
         return activity;
     }
 
-    public void setActivity(String[] activity) {
+    public void setActivity(String activity) {
         this.activity = activity;
     }
-// 省略 getter 和 setter 方法
 }

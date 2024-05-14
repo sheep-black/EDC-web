@@ -30,10 +30,16 @@
                 v-model="AssayScreen"
                 multiple
                 collapse-tags
-
                 placeholder="Select"
                 style="width: 300px;"
             >
+              <el-option
+                  v-if="selectAllOptionVisible1"
+                  :key="'selectAll'"
+                  :label="'All'"
+                  :value="selectAllValue1"
+                  @click="handleSelectAll1"
+              />
               <el-option
                   v-for="item in AssayOptions"
                   :key="item.value"
@@ -52,10 +58,16 @@
                 v-model="EndpointScreen"
                 multiple
                 collapse-tags
-
                 placeholder="Select"
                 style="width: 300px;"
             >
+              <el-option
+                  v-if="selectAllOptionVisible2"
+                  :key="'selectAll'"
+                  :label="'All'"
+                  :value="selectAllValue2"
+                  @click="handleSelectAll2"
+              />
               <el-option
                   v-for="item in EndpointOptions"
                   :key="item.value"
@@ -138,24 +150,52 @@ const ActivityScreen = ref([]);
 const ActivityOptions = ref([])
 const AssayOptions = ref([])
 const EndpointOptions = ref([])
-
-
+// 定义全选按钮的可见性、值和点击事件处理函数
+const selectAllOptionVisible1 = ref(true);
+const selectAllValue1 = 'selectAll';
+let selectAllClicked1 = false; // 记录全选按钮点击状态，默认为 false
+const selectAllOptionVisible2 = ref(true);
+const selectAllValue2 = 'selectAll';
+let selectAllClicked2 = false; // 记录全选按钮点击状态，默认为 false
 const currentPageData = ref(tableData.slice(0, 20));
 const loading = ref(true);
-const handleRowClick = (row) => {
-  console.info('点击的行数：',row)
-  router.push('/SearchDATAResult')
+const handleSelectAll1 = () => {
+  if (selectAllClicked1) {
+    // 如果是第二次点击全选按钮，则清空已选项
+    AssayScreen.value = [];
+    selectAllClicked1 = false;
+  } else {
+    // 如果是第一次点击全选按钮，则选中所有选项
+    AssayScreen.value = AssayOptions.value.map(item => item.value);
+    selectAllClicked1 = true;
+  }
+};
+const handleSelectAll2 = () => {
+  if (selectAllClicked2) {
+    // 如果是第二次点击全选按钮，则清空已选项
+    EndpointScreen.value = [];
+    selectAllClicked2 = false;
+  } else {
+    // 如果是第一次点击全选按钮，则选中所有选项
+    EndpointScreen.value = EndpointOptions.value.map(item => item.value);
+    selectAllClicked2 = true;
+  }
+};
+const handleRowClick = (id) => {
+  console.info('点击的id：',id.id)
+  router.push('/SearchDATAResult/'+ id.id);
 };
 const handleScreen = async () =>{
+
   showTable.value = true;
   loading.value = true;
 
   const requestData = {
     endpoint: EndpointScreen.value,
     assay: AssayScreen.value,
-    activity: [ActivityScreen.value]
+    activity: ActivityScreen.value
   };
-  console.info("activity",ActivityScreen.value)
+  console.info(requestData)
 // 发送 POST 请求给后端
     axios.post('/dataScreen', requestData)
         .then(response => {
@@ -177,7 +217,7 @@ const  cancelScreen =() =>{
   showTable.value=false;
   EndpointScreen.value = [];
   AssayScreen.value = [];
-  ActivityScreen.value =" ";
+  ActivityScreen.value ='';
 
 }
 

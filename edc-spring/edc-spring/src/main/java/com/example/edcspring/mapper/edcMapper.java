@@ -21,11 +21,12 @@ public interface edcMapper {
     @Select("SELECT DISTINCT ${fieldName} FROM refine")
     List<String> findDistinctFieldNames(@Param("fieldName") String fieldName);
 
+    @Select("SELECT * FROM refine WHERE id = #{id}")
+    List<TestData> findByID(@Param("id") int id);
+
     @SelectProvider(type = TestSqlProvider.class, method = "combinedFilter")
-    List<TestData> combinedFilter(
-            @Param("endpoints") String endpoints,
-            @Param("assays") String assays,
-            @Param("activities") String activities
-    );
+    List<TestData> combinedFilter(@Param("endpoint") List<String> endpoint,
+                                  @Param("assay") List<String> assay,
+                                  @Param("activity") String activity);
 
 }

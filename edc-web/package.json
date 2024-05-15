@@ -10,8 +10,10 @@
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.1",
+    "@rdkit/rdkit": "^2023.9.2-1.0.0",
     "axios": "^1.6.8",
     "element-plus": "^2.6.3",
+    "rdkit": "^0.5.1",
     "vue": "^3.4.21",
     "vue-router": "^4.3.0"
   },

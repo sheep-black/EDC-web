@@ -1,20 +1,22 @@
 <script setup>
 import { ref } from 'vue';
+import axios from "axios";
 const SearchText = ref('');
 const showTable = ref(false);
 const tableData = ref([]);
 const Result_image ="/src/assets/PredictResult.png"
 const showDialog = ref(false);
-const handleSearch = () => {
-  // 处理搜索逻辑，这里只是简单地打印搜索关键词
-  console.info('搜索关键词:', SearchText);
-  tableData.value.push({
-      ID:'11111',
-      date: '2016-05-03',
-      name: 'Tom',
-      address: 'No. 189, Grove St, Los Angeles',
-    },);
-  showTable.value = true;
+const handleSearch = async () => {
+  const keyword = encodeURIComponent(SearchText.value)
+  console.info('搜索关键词:', keyword);
+  try {
+    const response = await axios.get(`/Predict?input=${keyword}`);
+    console.info('response:', response.data.result);
+  } catch (error) {
+    console.error('Error searching:', error);
+  } finally {
+    showTable.value = true;
+  }
 };
 
 const handleRowClick=()=>{
@@ -38,7 +40,7 @@ const handleRowClick=()=>{
         </el-button>
       </template>
     </el-input>
-    
+
   </div>
   <p v-if="showTable" style="font-size: 20px;
                   margin-top: 30px;

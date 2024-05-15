@@ -3,7 +3,7 @@ import axios from "axios";
 
 const databaseimage ="/src/assets/database-image.png"
 const DownloadAOPData = async (filename) => {
-  // 处理搜索逻辑，这里只是简单地打印搜索关键词
+
   console.info('文件名:',filename);
   const url =`/download?fileName=${filename}`;
   try {
@@ -40,26 +40,26 @@ const DownloadAOPData = async (filename) => {
       <br>
       <div style="display: flex;justify-content: center;">
         <el-row :gutter="50">
-          <el-col :span="12">
-            <el-link type="primary" @click="DownloadAOPData('test_data.xlsx')">
+          <el-col :span="30">
+            <el-link type="primary" @click="DownloadAOPData('web_data.xlsx')">
               <el-icon size="20" style="margin-right: 5px"><Memo /></el-icon>
-              <p style="font-size: 18px;
+              <p style="font-size: 16px;
                         text-align: justify; /* 文本两端对齐 */
                         line-height: 1%; /* 设置行高 */
                         ">
-                EDC AOP Network Data Download
+                EDC Database (xlsx)
               </p>
               <el-icon size="20" style="margin-left: 5px"><Memo /></el-icon>
             </el-link>
           </el-col>
-          <el-col :span="12">
-            <el-link type="primary"  @click="DownloadAOPData('test_data.xlsx')">
+          <el-col :span="30">
+            <el-link type="primary"  @click="DownloadAOPData('web_data.zip')">
               <el-icon size="20" style="margin-right: 5px"><Memo /></el-icon>
-              <p style="font-size: 18px;
+              <p style="font-size: 16px;
                         text-align: justify; /* 文本两端对齐 */
                         line-height: 1%; /* 设置行高 */
                         ">
-                EDC AOP Network Data Download
+                EDC Database (zip)
               </p>
               <el-icon size="20" style="margin-left: 5px"><Memo /></el-icon>
             </el-link>

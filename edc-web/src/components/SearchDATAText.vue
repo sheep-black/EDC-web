@@ -40,9 +40,9 @@ const handleSearch = async () => {
 
 };
 
-const handleRowClick = (row) => {
-  console.info('点击的行数：',row)
-  router.push('/SearchDATAResult')
+const handleRowClick = (id) => {
+  // console.info('点击的id：',id.id)
+  router.push('/SearchDATAResult/'+ id.id);
 };
 const handleCurrentChange = (page) => {
   currentPage.value = page;

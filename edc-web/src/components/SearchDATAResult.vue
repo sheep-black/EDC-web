@@ -11,7 +11,7 @@
             text-color="#fff"
             active-text-color="#ffcc66"
             :ellipsis="false"
-            @select="handleSelect"
+
         >
           <el-menu-item index="0" @click="this.$router.push('/')">
             <!--      菜单左侧标志-->
@@ -74,19 +74,27 @@
         Research result
       </p>
       <el-divider style="margin-top: -5px;min-width: 1080px" />
-      <el-main class="SearchResult-main">
+      <el-main class="SearchResult-main" v-if="dataLoaded">
         <el-row :gutter="20" style="margin-left: 10%">
           <el-col :span="8">
             <el-card style="max-width: 480px;">
             <template #header>
               <div class="card-header">
-                <span>Card name</span>
+                <span style="display: flex;justify-content: center">
+                  <strong style="margin-right: 5px;">Name: </strong> {{ Data[0].name ? Data[0].name : 'null' }}
+                </span>
               </div>
             </template>
-              <div style="display: flex;justify-content: center">
-                <el-image style="width: 350px;" :src=intro_image  />
-              </div>
-            <template #footer>Footer content</template>
+<!--              <div style="display: flex;justify-content: center">-->
+<!--                <el-image style="width: 350px;" :src=intro_image  />-->
+<!--              </div>-->
+              <div id="structure" ref="structure" v-html="svgContent"
+                   style="display: flex;justify-content: center"></div>
+            <template #footer >
+              <span style="display: flex;justify-content: center">
+                <strong style="margin-right: 5px;">Cas: </strong> {{ Data[0].cas ? Data[0].cas : 'null' }}
+              </span>
+            </template>
           </el-card>
           </el-col>
           <el-col :span="16">
@@ -97,52 +105,55 @@
                   justify-content: left;
                   display: flex;
                   color: #1B497BFF;">
-            ID:{{ dataId }}
+            ID:#{{ Data[0].id }}
           </p>
               <div class="collapse">
                 <el-collapse v-model="activeNames" class="custom-collapse">
-                  <el-collapse-item title="Consistency" name="1">
-                    <div>
-                      Consistent with real life: in line with the process and logic of real
-                      life, and comply with languages and habits that the users are used to;
-                    </div>
-                    <div>
-                      Consistent within interface: all elements should be consistent, such
-                      as: design style, icons and texts, position of elements, etc.
+                  <el-collapse-item title="Smiles" name="Smiles" title-class="custom-title">
+                    <div class="my_intro" style="">
+                        {{ Data[0].smiles }}
                     </div>
                   </el-collapse-item>
-                  <el-collapse-item title="Feedback" name="2">
-                    <div>
-                      Operation feedback: enable the users to clearly perceive their
-                      operations by style updates and interactive effects;
-                    </div>
-                    <div>
-                      Visual feedback: reflect current state by updating or rearranging
-                      elements of the page.
-                    </div>
-                  </el-collapse-item>
-                  <el-collapse-item title="Efficiency" name="3">
-                    <div>
-                      Simplify the process: keep operating process simple and intuitive;
-                    </div>
-                    <div>
-                      Definite and clear: enunciate your intentions clearly so that the
-                      users can quickly understand and make decisions;
-                    </div>
-                    <div>
-                      Easy to identify: the interface should be straightforward, which helps
-                      the users to identify and frees them from memorizing and recalling.
+                  <el-collapse-item title="Cas and Name" name="Cas">
+                    <div class="my_intro" style="">
+                      <el-space direction="vertical">
+                        <el-row :gutter="20">
+                          <strong style="margin-right: 5px;">Cas:</strong> {{ Data[0].cas }}
+                        </el-row>
+                        <el-row :gutter="20">
+                          <strong style="margin-right: 5px;">Name:</strong> {{ Data[0].name ? Data[0].name : 'null' }}
+                        </el-row>
+                      </el-space>
                     </div>
                   </el-collapse-item>
-                  <el-collapse-item title="Controllability" name="4">
-                    <div>
-                      Decision making: giving advices about operations is acceptable, but do
-                      not make decisions for the users;
+                  <el-collapse-item title="Endpoint, Assay and Source" name="endpoint">
+                    <div class="my_intro" style="">
+                      <el-space direction="vertical">
+                        <el-row :gutter="20">
+                          <strong style="margin-right: 5px;">Endpoint:</strong> {{ Data[0].endpoint }}
+                        </el-row>
+                        <el-row :gutter="20">
+                          <strong style="margin-right: 5px;">Assay:</strong> {{ Data[0].assay }}
+                        </el-row>
+                        <el-row :gutter="20">
+                          <strong style="margin-right: 5px;">Source:</strong> {{ Data[0].source }}
+                        </el-row>
+                      </el-space>
                     </div>
-                    <div>
-                      Controlled consequences: users should be granted the freedom to
-                      operate, including canceling, aborting or terminating current
-                      operation.
+                  </el-collapse-item>
+                  <el-collapse-item title="Other parameters" name="activity">
+                    <div class="my_intro" style="">
+                      <el-space direction="vertical">
+                        <el-row :gutter="20">
+                          <strong style="margin-right: 5px;">Activity:</strong> {{ Data[0].activity }}
+                        </el-row>
+                        <el-row :gutter="20">
+                          <strong style="margin-right: 5px;">NOAEL:</strong> {{ Data[0].noael ? Data[0].noael : 'null' }}
+                        </el-row>
+                        <el-row :gutter="20">
+                          <strong style="margin-right: 5px;">Unit:</strong> {{ Data[0].unit ? Data[0].unit : 'null' }}
+                        </el-row>
+                      </el-space>
                     </div>
                   </el-collapse-item>
                 </el-collapse>
@@ -181,36 +192,70 @@
 
 </template>
 
-<script lang="ts" setup>
+<script  setup>
 
 import {onMounted, ref} from 'vue'
-const intro_image ="/src/assets/test-result.png"
-const activeIndex = ref('1-2')
-const handleSelect = (key: string, keyPath: string[]) => {
-  console.log(key, keyPath)
-}
-const activeNames = ref(['1'])
+
+
 import { useRoute } from 'vue-router';
 import axios from "axios";
-const data=ref([])
+const Data = ref([]);
 const route = useRoute();
 const loading = ref(true); // 用于控制加载状态
 const dataId = route.params.dataId;
+const dataLoaded = ref(false);
+const intro_image = "/src/assets/test-result.png";
+const activeIndex = ref('1-2');
+const structureElement = ref(null);
+const activeNames = ref(['Smiles']);
+const svgContent = ref('');
+const renderStructure = () => {
+  if (window.RDKit && Data.value.length > 0 && Data.value[0].smiles) {
+    try {
+      const mol = window.RDKit.get_mol(Data.value[0].smiles); // 确保 Data.value[0].smiles 是有效的 SMILES 字符串
+      const svg = mol.get_svg();
+      svgContent.value = svg;
+      if (structureElement.value) {
+        structureElement.value.innerHTML = svg;
+      }
+    } catch (error) {
+      console.error('Error rendering structure:', error);
+      if (structureElement.value) {
+        structureElement.value.innerHTML = '<p>Invalid SMILES string</p>';
+      }
+    }
+  } else {
+    if (structureElement.value) {
+      structureElement.value.innerHTML = '<p>No SMILES data available</p>';
+    }
+  }
+};
 
 onMounted(async () => {
   try {
-    console.info("id",dataId)
     const response = await axios.get(`/findID?ID=${dataId}`);
-    console.info("response",response.data)
+    Data.value=response.data;
+    dataLoaded.value = true; // 标志数据加载完成
   } catch (error) {
     console.error('获取数据失败:', error);
   } finally {
     loading.value=false
+    console.info("data",Data)
+    structureElement.value = document.getElementById('structure');
+    // 在数据加载完成后直接渲染化学结构图
+    renderStructure();
   }
 });
 </script>
 
 <style>
+.my_intro {
+  word-wrap: break-word;
+  margin-top: 20px;
+  font-family: Arial;
+  font-size: 16px;
+  text-align: center;
+}
 .flex-grow {
   flex-grow: 1;
 }
@@ -237,6 +282,7 @@ onMounted(async () => {
 .custom-collapse .el-collapse-item__header {
   background-color: #3574ad; /* 设置折叠面板标题的背景色 */
   color: #fff; /* 设置折叠面板标题的文本颜色 */
+  font-size: 16px;
 }
 .footer {
   min-width: 1080px;

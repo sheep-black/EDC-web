@@ -182,7 +182,7 @@ const handleSelectAll2 = () => {
   }
 };
 const handleRowClick = (id) => {
-  console.info('点击的id：',id.id)
+  // console.info('点击的id：',id.id)
   router.push('/SearchDATAResult/'+ id.id);
 };
 const handleScreen = async () =>{
@@ -195,12 +195,11 @@ const handleScreen = async () =>{
     assay: AssayScreen.value,
     activity: ActivityScreen.value
   };
-  console.info(requestData)
 // 发送 POST 请求给后端
     axios.post('/dataScreen', requestData)
         .then(response => {
           // 请求成功处理逻辑
-          console.log('后端返回的数据：', response.data);
+          // console.log('后端返回的数据：', response.data);
           tableData.value =  response.data; // 将获取到的数据赋值给 tabledata
           //拿到数据之后 需要初始化一系列参数
           currentPageData.value = tableData.value.slice(0, pageSize.value);
@@ -226,7 +225,7 @@ watch([currentPage, pageSize], () => {
   const endIndex = startIndex + pageSize.value;
   currentPageData.value = tableData.value.slice(startIndex, endIndex);
   total.value = tableData.value.length;
-  console.info("数据变化")
+
 },{ deep: true });
 
 // 当前页码改变时的回调

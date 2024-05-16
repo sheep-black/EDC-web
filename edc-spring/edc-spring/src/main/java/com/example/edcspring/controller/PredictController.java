@@ -29,7 +29,6 @@ public class PredictController {
             // 确保脚本路径正确
             String scriptPath = "src/scripts/script.py";
             ProcessBuilder pb = new ProcessBuilder("python", scriptPath, input);
-            System.out.println(scriptPath);
             Process process = pb.start();
             BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream()));
             String result = in.readLine();

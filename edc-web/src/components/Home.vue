@@ -142,7 +142,7 @@
 
 <script lang="ts" setup>
 
-const intro_image ="/src/assets/homeinfo.jpg"
+const intro_image ="./src/assets/homeinfo.jpg"
 import { ref } from 'vue'
 
 const activeIndex = ref('0')

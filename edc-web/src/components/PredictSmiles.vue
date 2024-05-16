@@ -48,7 +48,7 @@ const handleRowClick=()=>{
                   font-weight: bold;
                   display: flex;
                   color: #1B497BFF;">
-    Search Results
+    Predict Results
   </p>
   <div style="justify-content: center;display: flex; margin-top: 10px;">
     <el-table

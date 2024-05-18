@@ -1,7 +1,7 @@
 <script setup>
 import axios from "axios";
-
-const databaseimage ="/src/assets/database-image.png"
+import router from '../router'
+import databaseimage from '../assets/database-image.png'
 const DownloadAOPData = async (filename) => {
 
   console.info('文件名:',filename);
@@ -31,7 +31,8 @@ const DownloadAOPData = async (filename) => {
   </p>
   <el-divider border-style="dashed" />
   <div style="display: flex;justify-content: center;">
-    <el-image style="width: 1100px;" :src=databaseimage  />
+    <img style="width: 90%;" src="../assets/database-image.png">
+<!--    <el-image style="width: 1100px;" :src=databaseimage  />-->
   </div>
   <div style="display: flex;
                     justify-content: center;
@@ -80,7 +81,7 @@ const DownloadAOPData = async (filename) => {
   /* 中间介绍字体的样式*/
   font-size: 18px;
   margin-top: 40px;
-  max-width: 1000px; /* 设置最大宽度，以避免文本过长 */
+  width: 95%; /* 设置最大宽度，以避免文本过长 */
   text-align: justify; /* 文本两端对齐 */
   line-height: 200%; /* 设置行高 */
 

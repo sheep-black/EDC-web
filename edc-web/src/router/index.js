@@ -10,7 +10,6 @@ import SearchDATAResult from "../components/SearchDATAResult.vue"
 import Predict from '../components/Predict.vue'
 
 
-// Vue.use(VueRouter)
 const routes = [
     {
         path:'/',

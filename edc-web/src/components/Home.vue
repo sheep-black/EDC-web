@@ -13,7 +13,7 @@
             :ellipsis="false"
             @select="handleSelect"
         >
-          <el-menu-item index="0" @click="this.$router.push('/')">
+          <el-menu-item index="0" @click="router.push('/')">
             <!--      菜单左侧标志-->
             <el-icon
                 color="#409efc"
@@ -32,14 +32,14 @@
                 Search
               </p>
             </template>
-            <el-menu-item index="1-1" style="justify-content: center;" @click="this.$router.push('/SearchAOP')">
+            <el-menu-item index="1-1" style="justify-content: center;" @click="router.push('/SearchAOP')">
               <p style="justify-content: center;" >EDC-AOP</p>
             </el-menu-item>
-            <el-menu-item index="1-2" style="justify-content: center;" @click="this.$router.push('/SearchDATA')">
+            <el-menu-item index="1-2" style="justify-content: center;" @click="router.push('/SearchDATA')">
               <p style="justify-content: center;">EDC-DATA</p>
             </el-menu-item>
           </el-sub-menu>
-          <el-menu-item index="2" @click="this.$router.push('/Predict')">
+          <el-menu-item index="2" @click="router.push('/Predict')">
             <template #title>
               <el-icon :size="20"><Odometer /></el-icon>
               <p style="font-size: 16px;text-shadow: 0px 0px 2px black;">
@@ -47,7 +47,7 @@
               </p>
             </template>
           </el-menu-item>
-          <el-menu-item index="3" @click="this.$router.push('/About')">
+          <el-menu-item index="3" @click="router.push('/About')">
             <template #title>
               <el-icon :size="20"><InfoFilled /></el-icon>
               <p style="font-size: 16px;text-shadow: 0px 0px 2px black;">
@@ -55,7 +55,7 @@
               </p>
             </template>
           </el-menu-item>
-          <el-menu-item index="4" @click="this.$router.push('/Contact')">
+          <el-menu-item index="4" @click="router.push('/Contact')">
             <template #title>
               <el-icon :size="20"><UserFilled /></el-icon>
               <p style="font-size: 16px;text-shadow: 0px 0px 2px black;">
@@ -85,7 +85,7 @@
                 <br>
                 We are constantly adding new data and working on improving interfaces to EDCs information. Please check back often!
                 <br>
-                <el-link type="primary" @click="this.$router.push('/About')">
+                <el-link type="primary" @click="router.push('/About')">
 <!--                  <el-button type="primary" plain>Learn More About PubChem</el-button>-->
                   <p style="font-size: 18px;
                         text-align: justify; /* 文本两端对齐 */
@@ -104,7 +104,7 @@
                         height: 100%;
                         padding-left: 10vh;
                         ">
-              <el-image style="width: 600px;" :src=intro_image  />
+              <img @load="ImageLoad" v-loading="ifImageload" style="width: 600px;" src="../assets/homeinfo.jpg">
             </div>
           </el-col>
         </el-row>
@@ -142,14 +142,16 @@
 
 <script lang="ts" setup>
 
-const intro_image ="./src/assets/homeinfo.jpg"
 import { ref } from 'vue'
-
+import router from '../router'
+const ifImageload=ref(true)
 const activeIndex = ref('0')
 const handleSelect = (key: string, keyPath: string[]) => {
   console.log(key, keyPath)
 }
-
+const ImageLoad=()=>{
+  ifImageload.value=false
+}
 
 </script>
 
@@ -172,7 +174,7 @@ const handleSelect = (key: string, keyPath: string[]) => {
   background-image: url('../assets/background4.png');
   /* 背景设置为覆盖整个容器 */
   min-width: 1080px;
-  min-height: 75vh;
+  min-height: 560px;
   background-size: cover;
   background-position: center;
   /* //height: 500px; 根据需要设置高度 */

@@ -1,5 +1,6 @@
 <script setup>
-const Node_image ="/src/assets/Node_image.png"
+import Node_image from '../assets/Node_image.png';
+import router from '../router'
 </script>
 
 <template>

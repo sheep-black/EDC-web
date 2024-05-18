@@ -39,7 +39,7 @@
 <script setup>
 import { ref, reactive, watch, onMounted } from "vue";
 import axios from "axios";
-
+import router from '../router'
 // 定义响应式数据
 const currentPage = ref(1);
 const pageSize = ref(10);

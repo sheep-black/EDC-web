@@ -13,7 +13,7 @@
             :ellipsis="false"
 
         >
-          <el-menu-item index="0" @click="this.$router.push('/')">
+          <el-menu-item index="0" @click="router.push('/')">
             <!--      菜单左侧标志-->
             <el-icon
                 color="#409efc"
@@ -32,14 +32,14 @@
                 Search
               </p>
             </template>
-            <el-menu-item index="1-1" style="justify-content: center;" @click="this.$router.push('/SearchAOP')">
+            <el-menu-item index="1-1" style="justify-content: center;" @click="router.push('/SearchAOP')">
               <p style="justify-content: center;" >EDC-AOP</p>
             </el-menu-item>
-            <el-menu-item index="1-2" style="justify-content: center;" @click="this.$router.push('/SearchDATA')">
+            <el-menu-item index="1-2" style="justify-content: center;" @click="router.push('/SearchDATA')">
               <p style="justify-content: center;">EDC-DATA</p>
             </el-menu-item>
           </el-sub-menu>
-          <el-menu-item index="2" @click="this.$router.push('/Predict')">
+          <el-menu-item index="2" @click="router.push('/Predict')">
             <template #title>
               <el-icon :size="20"><Odometer /></el-icon>
               <p style="font-size: 16px;text-shadow: 0px 0px 2px black;">
@@ -47,7 +47,7 @@
               </p>
             </template>
           </el-menu-item>
-          <el-menu-item index="3" @click="this.$router.push('/About')">
+          <el-menu-item index="3" @click="router.push('/About')">
             <template #title>
               <el-icon :size="20"><InfoFilled /></el-icon>
               <p style="font-size: 16px;text-shadow: 0px 0px 2px black;">
@@ -55,7 +55,7 @@
               </p>
             </template>
           </el-menu-item>
-          <el-menu-item index="4" @click="this.$router.push('/Contact')">
+          <el-menu-item index="4" @click="router.push('/Contact')">
             <template #title>
               <el-icon :size="20"><UserFilled /></el-icon>
               <p style="font-size: 16px;text-shadow: 0px 0px 2px black;">
@@ -195,7 +195,7 @@
 <script  setup>
 
 import {onMounted, ref} from 'vue'
-
+import router from '../router'
 
 import { useRoute } from 'vue-router';
 import axios from "axios";
@@ -204,7 +204,6 @@ const route = useRoute();
 const loading = ref(true); // 用于控制加载状态
 const dataId = route.params.dataId;
 const dataLoaded = ref(false);
-const intro_image = "/src/assets/test-result.png";
 const activeIndex = ref('1-2');
 const structureElement = ref(null);
 const activeNames = ref(['Smiles']);

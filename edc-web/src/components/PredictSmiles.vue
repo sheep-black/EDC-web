@@ -4,8 +4,8 @@ import axios from "axios";
 const SearchText = ref('');
 const showTable = ref(false);
 const tableData = ref([]);
-const Result_image ="/src/assets/PredictResult.png"
 const showDialog = ref(false);
+import router from '../router'
 const handleSearch = async () => {
   const keyword = encodeURIComponent(SearchText.value)
   console.info('搜索关键词:', keyword);
@@ -72,9 +72,6 @@ const handleRowClick=()=>{
     width="500"
     :before-close="handleClose"
   >
-  <div style="justify-content: center;display: flex;">
-    <el-image style="width: 600px;" :src=Result_image  />
-  </div>
 
     <template #footer>
       <div class="dialog-footer">

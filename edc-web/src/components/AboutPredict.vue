@@ -1,6 +1,6 @@
 <script setup>
-const predictor1 ="/src/assets/predictor1.png"
-const predictor2 ="/src/assets/predictor2.png"
+import router from '../router'
+
 </script>
 
 <template>
@@ -13,10 +13,12 @@ const predictor2 ="/src/assets/predictor2.png"
   </p>
   <el-divider border-style="dashed" />
   <div style="display: flex;justify-content: center;">
-    <el-image style="width: 1100px;" :src=predictor1  />
+    <img style="width: 90%;" src="../assets/predictor1.png">
+<!--    <el-image style="width: 1100px;" :src=predictor1  />-->
   </div>
   <div style="display: flex;justify-content: center;">
-    <el-image style="width: 1100px;" :src=predictor2  />
+    <img style="width: 90%;" src="../assets/predictor2.png">
+<!--    <el-image style="width: 1100px;" :src=predictor2  />-->
   </div>
   <div style="display: flex;
                     justify-content: center;
@@ -35,7 +37,7 @@ const predictor2 ="/src/assets/predictor2.png"
   /* 中间介绍字体的样式*/
   font-size: 18px;
   margin-top: 20px;
-  max-width: 1000px; /* 设置最大宽度，以避免文本过长 */
+  width: 95%; /* 设置最大宽度，以避免文本过长 */
   text-align: justify; /* 文本两端对齐 */
   line-height: 200%; /* 设置行高 */
 

@@ -2,6 +2,7 @@
 import { Search } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
 import { ref } from 'vue';
+
 const SearchText = ref('');
 const showTable = ref(false);
 const recommendations = ref(['123', '11', '3213', '321','steroid','Cancer','Reproductive','Metabolic']);

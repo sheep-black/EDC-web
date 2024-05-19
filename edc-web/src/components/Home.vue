@@ -66,7 +66,7 @@
         </el-menu>
       </el-header>
       <el-main class="home-main">
-        <el-row :gutter="20">
+        <el-row :gutter="20" style="width: 100%;margin-top: 5vh">
           <el-col :span="12">
             <p style="font-size: 40px;
                   font-weight: bold;
@@ -174,10 +174,10 @@ const ImageLoad=()=>{
   background-image: url('../assets/background4.png');
   /* 背景设置为覆盖整个容器 */
   min-width: 1080px;
-  min-height: 560px;
+
   background-size: cover;
   background-position: center;
-  /* //height: 500px; 根据需要设置高度 */
+  min-height: 75vh;
 }
 
 .footer {

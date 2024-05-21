@@ -15,6 +15,7 @@
         >
           <el-menu-item index="0" @click="router.push('/')">
             <!--      菜单左侧标志-->
+
             <el-icon
                 color="#409efc"
                 :size="30">
@@ -159,7 +160,7 @@ const selectedComponent = computed(() => {
   margin-left: -8px;
   margin-right: -8px;
   margin-bottom: -8px;
-  background-color: #2b5e8d;
+  background-color: #4d4d50;
   padding: 15px 0;
   text-align: center;
 }

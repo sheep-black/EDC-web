@@ -165,7 +165,7 @@ const selectedComponent = computed(() => {
   min-width: 1080px;
   margin-left: -8px;
   margin-right: -8px;
-  background-color: #2b5e8d;
+  background-color: #3a3b3d;
   padding: 15px 0;
   text-align: center;
 }

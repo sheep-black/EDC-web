@@ -7,7 +7,7 @@
             :default-active="activeIndex"
             style="min-width: 1080px; margin-left: -25px;margin-right: -25px;margin-top: -5px"
             mode="horizontal"
-            background-color="#1A6B9AFF"
+            background-color="#3a3b3d"
             text-color="#fff"
             active-text-color="#ffcc66"
             :ellipsis="false"
@@ -15,13 +15,9 @@
         >
           <el-menu-item index="0" @click="router.push('/')">
             <!--      菜单左侧标志-->
-            <el-icon
-                color="#409efc"
-                :size="30">
-              <SwitchFilled />
-            </el-icon>
-            <p style="font-size: 18px; font-style: italic; margin-left: 6px;font-weight: bold;text-shadow: 1px 1px 2px black;">
-              EDC  Database & Network & Predictor
+            <img src="../assets/network.svg" style="height: 45px; width: 45px;" alt="Your Icon" />
+            <p style="font-size: 18px;margin-left: 6px;font-weight: bold;text-shadow: 1px 1px 2px black;">
+              EDC-Web
             </p>
           </el-menu-item>
           <div class="flex-grow" />
@@ -71,7 +67,9 @@
                   font-weight: bold;
                   justify-content: center;
                   display: flex;
-                  color: #1B497BFF;">
+                  color: #1e1a1a;
+                  text-shadow: 2px 2px 2px #ffcc66;"
+        >
           EDC-Database  Search
         </p><p style="font-size: 25px;
                   margin-top: -10px;
@@ -80,7 +78,7 @@
                   color: #000000;">
         Quickly find EDCs information from authoritative sources
       </p>
-        <el-radio-group fill="#377ecb" v-model="selected"
+        <el-radio-group fill="#ffcc66" v-model="selected" text-color="#1e1a1a"
                         style="font-weight: bold;justify-content: center;display: flex;">
           <el-radio-button label="TextSearch" value="TextSearch" size="large" />
           <el-radio-button label="DataScreen" value="DataScreen" size="large" />
@@ -147,11 +145,13 @@ const selectedComponent = computed(() => {
 }
 
 .SearchDATA-main{
-  background-image: url('../assets/background4.png');
-  min-width: 1080px;
+  /* 设置图片作为背景 */
+  background-image: url('../assets/back.png');
+  /* 背景设置为覆盖整个容器 */
   min-height: 80vh;
   background-size: cover;
   background-position: center;
+  /* //height: 500px; 根据需要设置高度 */
 }
 
 .footer {

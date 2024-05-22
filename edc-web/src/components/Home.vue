@@ -16,12 +16,6 @@
 
           <el-menu-item index="0" @click="router.push('/')">
             <!--      菜单左侧标志-->
-
-<!--            <el-icon-->
-<!--                color="#409efc"-->
-<!--                :size="30">-->
-<!--              <SwitchFilled />-->
-<!--            </el-icon>-->
             <img src="../assets/network.svg" style="height: 45px; width: 45px;" alt="Your Icon" />
             <p style="font-size: 18px;margin-left: 6px;font-weight: bold;text-shadow: 1px 1px 2px black;">
               EDC-Web
@@ -132,7 +126,7 @@
 <!--            </div>-->
           </el-col>
         </el-row>
-        <el-link style="margin-left: 8%;margin-top: 2%" type="primary" @click="router.push('/About')">
+        <el-link style="margin-left: 8%;margin-top: 2%" type="primary" @click="router.push('/About')" :underline="false">
           <p style="font-size: 3vh;margin-top: -5%;font-weight: bold;color: #ffffff;text-shadow: 2px 2px 2px #054079;">
             Learn More About PubChem >
           </p>
@@ -203,7 +197,8 @@ const ImageLoad=()=>{
   /* 背景设置为覆盖整个容器 */
   min-width: 1080px;
   margin-top: -1%;
-  margin-right: -8px;
+  margin-right: -5px;
+  margin-left: -5px;
   background-size: cover;
   background-position: center;
   min-height: 90vh;

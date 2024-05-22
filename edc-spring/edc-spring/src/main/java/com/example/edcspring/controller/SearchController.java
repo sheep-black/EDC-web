@@ -1,5 +1,6 @@
 package com.example.edcspring.controller;
 
+import com.example.edcspring.entity.EventData;
 import com.example.edcspring.entity.ScreenData;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ public class SearchController {
     public List<TestData> getData(@RequestParam String columnName, @RequestParam String keyword) {
         return edcMapper.searchData(columnName,keyword);
     }
+
 
     @GetMapping("/findDistinct")
     public List<String> findDistinctField(@RequestParam String fieldName) {

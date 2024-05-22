@@ -80,10 +80,10 @@
 
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-button type="primary" style="width: 100px" @click="handleScreen">Confirm</el-button>
+            <el-button class="yellow-button" type="primary" style="width: 100px" @click="handleScreen">Confirm</el-button>
           </el-col>
           <el-col :span="12">
-            <el-button type="primary" plain style="width: 100px" @click="cancelScreen">Reset</el-button>
+            <el-button  type="warning" plain style="width: 100px" @click="cancelScreen">Reset</el-button>
           </el-col>
         </el-row>
       </el-space>
@@ -323,7 +323,31 @@ onMounted(() => {
   font-size: 20px; /* 修改字体大小 */
   font-weight: bold; /* 修改字体粗细 */
   //font-family: '宋体', 'SimSun', 'STSong',serif; /* 修改字体为宋体 */
-  color: #151583; /* 修改字体颜色 */
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  color: #1e1a1a;
+  text-shadow: 2px 2px 2px #dabf91;
+}
+.yellow-button {
+  background-color: #ffcc66; /* 按钮背景颜色 */
+  border-color: #ffcc66; /* 按钮边框颜色 */
+  color: #fff; /* 按钮文本颜色 */
+}
+
+/* 悬停状态样式 */
+.yellow-button:hover {
+  background-color: #ffb84d; /* 悬停背景颜色 */
+  border-color: #ffb84d; /* 悬停边框颜色 */
+  color: #fff; /* 悬停文本颜色 */
+}
+
+/* 点击状态样式 */
+.yellow-button:active {
+  background-color: #e6a843; /* 点击背景颜色 */
+  border-color: #e6a843; /* 点击边框颜色 */
+  color: #fff; /* 点击文本颜色 */
+}
+
+/* 聚焦状态样式 */
+.yellow-button:focus {
+  box-shadow: 0 0 0 2px rgba(255, 204, 102, 0.3); /* 聚焦时的阴影效果 */
 }
 </style>

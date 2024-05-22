@@ -12,14 +12,11 @@ import router from '../router'
     EDC Database
   </p>
   <el-divider border-style="dashed" />
-  <div style="display: flex;justify-content: center;">
-    <img style="width: 90%;" src="../assets/predictor1.png">
+    <img style="display: flex;justify-content: center;width: 80%;margin-left: 10%" src="../assets/predictor1.png">
 <!--    <el-image style="width: 1100px;" :src=predictor1  />-->
-  </div>
-  <div style="display: flex;justify-content: center;">
-    <img style="width: 90%;" src="../assets/predictor2.png">
+    <img style="display: flex;justify-content: center;width:80%;margin-left: 10%" src="../assets/predictor2.png">
 <!--    <el-image style="width: 1100px;" :src=predictor2  />-->
-  </div>
+
   <div style="display: flex;
                     justify-content: center;
                     padding: 0 20px; /* 左右间距为 20px，根据需要调整 */">

@@ -5,9 +5,9 @@
         <!--        头部菜单栏-->
         <el-menu
             :default-active="activeIndex"
-            style="min-width: 1080px;margin-left: -25px;margin-right: -25px;margin-top: -5px"
+            style="min-width: 1080px; margin-left: -25px;margin-right: -25px;margin-top: -5px"
             mode="horizontal"
-            background-color="#1A6B9AFF"
+            background-color="#3a3b3d"
             text-color="#fff"
             active-text-color="#ffcc66"
             :ellipsis="false"
@@ -15,13 +15,9 @@
         >
           <el-menu-item index="0" @click="router.push('/')">
             <!--      菜单左侧标志-->
-            <el-icon
-                color="#409efc"
-                :size="30">
-              <SwitchFilled />
-            </el-icon>
-            <p style="font-size: 18px; font-style: italic; margin-left: 6px;font-weight: bold;text-shadow: 1px 1px 2px black;">
-              EDC  Database & Network & Predictor
+            <img src="../assets/network.svg" style="height: 45px; width: 45px;" alt="Your Icon" />
+            <p style="font-size: 18px;margin-left: 6px;font-weight: bold;text-shadow: 1px 1px 2px black;">
+              EDC-Web
             </p>
           </el-menu-item>
           <div class="flex-grow" />
@@ -66,12 +62,12 @@
         </el-menu>
       </el-header>
       <el-main class="contact-main">
-        <p style="font-size: 25px;
+        <p style="font-size: 35px;
                   margin-left: 6px;
                   font-weight: bold;
                   justify-content: center;
                   display: flex;
-                  color: #1B497BFF;">
+                  color: #181818;">
           Contact us
         </p>
         <div style="display: flex;
@@ -139,11 +135,14 @@ const handleSelect = (key: string, keyPath: string[]) => {
   line-height: 200%; /* 设置行高 */
 }
 .contact-main{
-  background-image: url('../assets/background4.png');
+  /* 设置图片作为背景 */
+  background-image: url('../assets/back.png');
+  /* 背景设置为覆盖整个容器 */
   min-width: 1080px;
-  min-height: 75vh;
+  min-height: 80vh;
   background-size: cover;
   background-position: center;
+  /* //height: 500px; 根据需要设置高度 */
 }
 
 .Contact_footer {

@@ -5,22 +5,18 @@
         <!--头部菜单栏-->
         <el-menu
             :default-active="activeIndex"
-            style="min-width: 1080px;margin-left: -25px;margin-right: -25px;margin-top: -5px"
+            style="min-width: 1080px; margin-left: -25px;margin-right: -25px;margin-top: -5px"
             mode="horizontal"
-            background-color="#1A6B9AFF"
+            background-color="#3a3b3d"
             text-color="#fff"
             active-text-color="#ffcc66"
             :ellipsis="false"
         >
           <el-menu-item index="0" @click="router.push('/')">
             <!--      菜单左侧标志-->
-            <el-icon
-                color="#409efc"
-                :size="30">
-              <SwitchFilled />
-            </el-icon>
-            <p style="font-size: 18px; font-style: italic; margin-left: 6px;font-weight: bold;text-shadow: 1px 1px 2px black;">
-              EDC  Database & Network & Predictor
+            <img src="../assets/network.svg" style="height: 45px; width: 45px;" alt="Your Icon" />
+            <p style="font-size: 18px;margin-left: 6px;font-weight: bold;text-shadow: 1px 1px 2px black;">
+              EDC-Web
             </p>
           </el-menu-item>
           <div class="flex-grow" />

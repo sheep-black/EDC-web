@@ -128,19 +128,27 @@ watch([tableData,currentPage, pageSize], () => {
 </template>
 
 <style scoped>
-.recommendations {
-  margin-top: 10px;
+:deep(.el-radio__input.is-checked .el-radio__inner) {
+  border-color: #ffcc66;
+  background-color: #ffcc66;
 }
 
-.recommendation {
-  margin-top: -2px;
-  margin-right: 10px;
-  font-size: 14px;
-  color: #1890ff;
-  cursor: pointer;
+:deep(.el-radio__input.is-checked + .el-radio__label) {
+  color: #0c0c0c; /* 修改文字颜色 */
+  font-weight: bold;
 }
 
-.recommendation:hover {
-  text-decoration: underline;
+/* 修改 hover 和 focus 状态的颜色 */
+:deep(.el-radio__input:hover .el-radio__inner),
+:deep(.el-radio__input:focus .el-radio__inner) {
+  border-color: #ffcc66;
+}
+/* 覆盖 el-pagination 的样式 */
+
+:deep(.el-pagination .el-pager li:not(.is-active):hover) {
+  color: #ffcc66; /* 悬停文本颜色 */
+}
+:deep(.el-pagination .el-pager li.is-active) {
+  color: #ffcc66; /* 活动分页按钮文本颜色 */
 }
 </style>

@@ -1,5 +1,6 @@
 package com.example.edcspring.mapper;
 
+import com.example.edcspring.entity.EventData;
 import com.example.edcspring.entity.TestData;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -17,6 +18,9 @@ public interface edcMapper {
 
     @Select("SELECT * FROM refine WHERE ${columnName} LIKE CONCAT('%', #{keyword}, '%')")
     List<TestData> searchData(@Param("columnName") String columnName, @Param("keyword") String keyword);
+
+    @Select("SELECT * FROM event_title")
+    List<EventData> getEventData();
 
     @Select("SELECT DISTINCT ${fieldName} FROM refine")
     List<String> findDistinctFieldNames(@Param("fieldName") String fieldName);

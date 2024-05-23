@@ -12,6 +12,7 @@
     "@element-plus/icons-vue": "^2.3.1",
     "@rdkit/rdkit": "^2023.9.2-1.0.0",
     "axios": "^1.6.8",
+    "cytoscape": "^3.29.2",
     "element-plus": "^2.6.3",
     "rdkit": "^0.5.1",
     "vue": "^3.4.21",

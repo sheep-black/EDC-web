@@ -19,9 +19,11 @@ public class TestFind {
     public List<TestData> getData() {
         return edcMapper.getAllData(); // 直接调用Mapper接口的方法
     }
+
     @GetMapping("/getEventData")
     public List<EventData> getEventData() {
         return edcMapper.getEventData();
+
     }
 
 }

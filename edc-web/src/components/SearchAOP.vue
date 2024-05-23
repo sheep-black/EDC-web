@@ -96,7 +96,7 @@
           <el-space wrap>
             <p style="font-size: 14px;font-weight: bold;justify-content: center;display: flex;margin-right: 20px" >Search By</p>
             <el-radio-group  v-model="selectedOptions">
-              <el-radio label="EventName"></el-radio>
+              <el-radio label="EventTitle"></el-radio>
               <el-radio label="EventID"></el-radio>
             </el-radio-group>
           </el-space>
@@ -110,7 +110,7 @@
                   :header-cell-style="{ background: '#dedede', color: '#000' }">
           <el-table-column prop="eventId" label="ID" width="150" align="center"></el-table-column>
           <el-table-column prop="eventTitle" label="Title" width="200" align="center"></el-table-column>
-          <el-table-column prop="AOP" label="AOP" align="center"></el-table-column>
+          <el-table-column prop="aops" label="AOPs" align="center"></el-table-column>
         </el-table>
         </div>
         <el-pagination
@@ -165,10 +165,10 @@ const activeIndex = ref('1-1')
 const selected = ref('TextSearch')
 const pageSize = ref(20);
 const SearchText = ref('');
-const loading = ref(false);
+const loading = ref(true);
 
 const currentPageData = ref(tableData.slice(0, pageSize.value));
-const selectedOptions = ref('EventName');
+const selectedOptions = ref('EventTitle');
 const currentPage = ref(1);
 const total = ref(100); // 假设总数据量为 100
 const handleCurrentChange = (page) => {
@@ -177,8 +177,29 @@ const handleCurrentChange = (page) => {
 const handleRowClick = (id) => {
   console.info('点击的id：',id)
 };
-const handleSearch = () => {
-  console.info('搜索关键词:', SearchText);
+const handleSearch = async () => {
+  currentPage.value=1
+  const keyword = encodeURIComponent(SearchText.value)
+  const columnName = encodeURIComponent(selectedOptions.value)
+  console.info("keyword",keyword)
+  console.info("columnName",columnName)
+  loading.value = true;
+  // 处理搜索逻辑，这里只是简单地打印搜索关键词
+  // console.info('搜索关键词:', SearchText.value);
+  try {
+    const response = await axios.get(`/searchEvent?keyword=${keyword}&columnName=${columnName}`);
+    tableData.value = response.data;
+    //拿到数据之后 需要初始化一系列参数
+    currentPageData.value = tableData.value.slice(0, pageSize.value);
+    total.value=response.data.length;
+    console.info('currentPageData:', currentPageData.value);
+    console.info('total:', total.value);
+  } catch (error) {
+    console.error('Error searching:', error);
+  } finally {
+    loading.value = false;
+  }
+
 
 };
 const fetchData = async () => {
@@ -207,10 +228,10 @@ onMounted( () => {
   // 初始时先接收数据
   fetchData().then(data => {
     tableData.value = data; // 将获取到的数据赋值给 tabledata
-
     //拿到数据之后 需要初始化一系列参数
     currentPageData.value = tableData.value.slice(0, pageSize.value);
     total.value=data.length;
+    loading.value=false
     console.info("currentPageData.value",currentPageData.value); // 打印获取到的数据
   }).catch(error => {
     console.error('Error:', error); // 打印错误信息

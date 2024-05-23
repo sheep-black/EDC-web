@@ -21,7 +21,10 @@ public class SearchController {
     public List<TestData> getData(@RequestParam String columnName, @RequestParam String keyword) {
         return edcMapper.searchData(columnName,keyword);
     }
-
+    @GetMapping("/searchEvent")
+    public List<EventData> searchEvent(@RequestParam String columnName, @RequestParam String keyword) {
+        return edcMapper.searchEvent(columnName,keyword);
+    }
 
     @GetMapping("/findDistinct")
     public List<String> findDistinctField(@RequestParam String fieldName) {

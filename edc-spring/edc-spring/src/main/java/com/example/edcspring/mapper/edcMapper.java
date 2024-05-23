@@ -18,6 +18,8 @@ public interface edcMapper {
 
     @Select("SELECT * FROM refine WHERE ${columnName} LIKE CONCAT('%', #{keyword}, '%')")
     List<TestData> searchData(@Param("columnName") String columnName, @Param("keyword") String keyword);
+    @Select("SELECT * FROM event_title WHERE ${columnName} LIKE CONCAT('%', #{keyword}, '%')")
+    List<EventData> searchEvent(@Param("columnName") String columnName, @Param("keyword") String keyword);
 
     @Select("SELECT * FROM event_title")
     List<EventData> getEventData();
@@ -32,5 +34,6 @@ public interface edcMapper {
     List<TestData> combinedFilter(@Param("endpoint") List<String> endpoint,
                                   @Param("assay") List<String> assay,
                                   @Param("activity") String activity);
+
 
 }

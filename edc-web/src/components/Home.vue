@@ -1,7 +1,7 @@
 <template>
   <div  class="common-layout">
     <el-container >
-      <el-header>
+      <el-header >
 <!--        头部菜单栏-->
         <el-menu
             :default-active="activeIndex"
@@ -11,9 +11,7 @@
             text-color="#fff"
             active-text-color="#ffcc66"
             :ellipsis="false"
-            @select="handleSelect"
         >
-
           <el-menu-item index="0" @click="router.push('/')">
             <!--      菜单左侧标志-->
             <img src="../assets/network.svg" style="height: 45px; width: 45px;" alt="Your Icon" />
@@ -168,14 +166,10 @@
 
 import { ref } from 'vue'
 import router from '../router'
-const ifImageload=ref(true)
+
 const activeIndex = ref('0')
-const handleSelect = (key: string, keyPath: string[]) => {
-  console.log(key, keyPath)
-}
-const ImageLoad=()=>{
-  ifImageload.value=false
-}
+
+
 
 </script>
 
@@ -209,7 +203,7 @@ const ImageLoad=()=>{
   margin-left: -8px;
   margin-right: -8px;
   margin-bottom: -8px;
-  background-color: #3a3b3d;
+  background-color: #4d4d50;
   padding: 15px 0;
   text-align: center;
 }

@@ -110,7 +110,18 @@
                   :header-cell-style="{ background: '#dedede', color: '#000' }">
           <el-table-column prop="eventId" label="ID" width="150" align="center"></el-table-column>
           <el-table-column prop="eventTitle" label="Title" width="200" align="center"></el-table-column>
-          <el-table-column prop="aops" label="AOPs" align="center"></el-table-column>
+          <el-table-column prop="aops" label="AOPs" align="center">
+            <template #default="scope">
+              <div>
+                <el-button
+                    v-for="number in scope.row.aops.split(',')"
+                    :key="number"
+                    type="text"
+                    @click="handleRowClick(number)"
+                >AOP_{{ number }}</el-button>
+              </div>
+            </template>
+          </el-table-column>
         </el-table>
         </div>
         <el-pagination
@@ -157,8 +168,8 @@
 
 import { ref, reactive, watch, onMounted } from "vue";
 import axios from "axios";
-import router from '../router'
 import {Search} from "@element-plus/icons-vue";
+import router from "@/router/index.js";
 
 const tableData = reactive([]);
 const activeIndex = ref('1-1')
@@ -166,7 +177,6 @@ const selected = ref('TextSearch')
 const pageSize = ref(20);
 const SearchText = ref('');
 const loading = ref(true);
-
 const currentPageData = ref(tableData.slice(0, pageSize.value));
 const selectedOptions = ref('EventTitle');
 const currentPage = ref(1);
@@ -175,7 +185,8 @@ const handleCurrentChange = (page) => {
   currentPage.value = page;
 };
 const handleRowClick = (id) => {
-  console.info('点击的id：',id)
+
+  router.push('/SearchAOPResult/'+ id);
 };
 const handleSearch = async () => {
   currentPage.value=1
@@ -192,8 +203,8 @@ const handleSearch = async () => {
     //拿到数据之后 需要初始化一系列参数
     currentPageData.value = tableData.value.slice(0, pageSize.value);
     total.value=response.data.length;
-    console.info('currentPageData:', currentPageData.value);
-    console.info('total:', total.value);
+    // console.info('currentPageData:', currentPageData.value);
+    // console.info('total:', total.value);
   } catch (error) {
     console.error('Error searching:', error);
   } finally {
@@ -218,7 +229,7 @@ watch([tableData,currentPage, pageSize], () => {
   const endIndex = startIndex + pageSize.value;
   currentPageData.value = tableData.value.slice(startIndex, endIndex);
   total.value = tableData.value.length;
-  console.info("数据变化")
+  // console.info("数据变化")
 },{ deep: true });
 
 onMounted( () => {
@@ -232,7 +243,7 @@ onMounted( () => {
     currentPageData.value = tableData.value.slice(0, pageSize.value);
     total.value=data.length;
     loading.value=false
-    console.info("currentPageData.value",currentPageData.value); // 打印获取到的数据
+    // console.info("currentPageData.value",currentPageData.value); // 打印获取到的数据
   }).catch(error => {
     console.error('Error:', error); // 打印错误信息
   });

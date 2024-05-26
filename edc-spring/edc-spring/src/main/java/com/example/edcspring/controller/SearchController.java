@@ -1,5 +1,6 @@
 package com.example.edcspring.controller;
 
+import com.example.edcspring.entity.AOPData;
 import com.example.edcspring.entity.EventData;
 import com.example.edcspring.entity.ScreenData;
 import org.apache.ibatis.annotations.Param;
@@ -25,6 +26,10 @@ public class SearchController {
     public List<EventData> searchEvent(@RequestParam String columnName, @RequestParam String keyword) {
         return edcMapper.searchEvent(columnName,keyword);
     }
+    @GetMapping("/searchEventAOP")
+    public EventData searchEventAOP(@RequestParam String eventID) {
+        return edcMapper.searchEventAOP(eventID);
+    }
 
     @GetMapping("/findDistinct")
     public List<String> findDistinctField(@RequestParam String fieldName) {
@@ -39,7 +44,15 @@ public class SearchController {
         System.out.println("查询结果：" + result);
         return edcMapper.findByID(id);
     }
-
+    @GetMapping("/findAOPID")
+    public List<AOPData> findAOPID(@RequestParam String ID) {
+        int id = Integer.parseInt(ID); // 将字符串类型的 ID 转换为整数
+        System.out.println(id);
+        List<AOPData> result = edcMapper.findByAOPID(id);
+        // 打印查询结果
+        System.out.println("查询结果：" + result);
+        return edcMapper.findByAOPID(id);
+    }
     @PostMapping("/dataScreen")
     public List<TestData> Screen(@RequestBody ScreenData filterRequest) {
 

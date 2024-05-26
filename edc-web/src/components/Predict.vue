@@ -167,7 +167,7 @@ const selectedComponent = computed(() => {
 .footer-content {
   display: flex;
   justify-content: space-around;
-  max-width: 1200px;
+  min-width:60%;
   margin: 0 auto;
 }
 

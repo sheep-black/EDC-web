@@ -1,11 +1,11 @@
 import pandas as pd
 
 # 读取原始数据
-# 读取原始数据，手动指定列名为 "AOPs" 和 "AOP_ID"
 df = pd.read_excel("AOPs.xlsx", header=None, names=["AOPs", "AOP_ID"])
 
-# 创建一个空的字典来存储每个事件所属的AOP序号
+# 创建两个空的字典来分别存储每个类型事件所属的AOP序号
 event_to_aop = {}
+aop_wiki_event_to_aop = {}
 
 # 遍历每一行数据
 for index, row in df.iterrows():
@@ -14,15 +14,24 @@ for index, row in df.iterrows():
     events = aop_str.split(",")  # 按逗号分割AOP字符串，得到事件列表
     for event in events:
         if "event_" in event:
-            event_id = int(event.split("_")[1])  # 将事件序号转换为整数类型
-            event_to_aop.setdefault(event_id, set()).add(aop_id)
+            event_id = event.split("_")[1]  # 获取事件序号
+            if "AOP-wiki-" in event:
+                event_id = "AOP-wiki-event_" + event_id
+                aop_wiki_event_to_aop.setdefault(event_id, set()).add(aop_id)
+            else:
+                event_to_aop.setdefault("event_" + event_id, set()).add(aop_id)
 
-# 创建一个DataFrame来存储结果
-result_df = pd.DataFrame(columns=["Event ID", "Associated AOPs"])
-print(result_df)
+# 创建两个DataFrame来存储结果
+result_df_event = pd.DataFrame(columns=["Event ID", "Associated AOPs"])
+result_df_aop_wiki_event = pd.DataFrame(columns=["Event ID", "Associated AOPs"])
+
 # 将事件及其对应的AOP序号添加到结果DataFrame中
-for event_id, aop_ids in event_to_aop.items():
-    result_df = result_df.append({"Event ID": event_id, "Associated AOPs": ",".join(map(str, aop_ids))}, ignore_index=True)
-result_df = result_df.sort_values(by="Event ID")
+for event_id, aop_ids in sorted(event_to_aop.items(), key=lambda x: int(x[0].split("_")[1])):
+    result_df_event = result_df_event.append({"Event ID": event_id, "Associated AOPs": ",".join(map(str, aop_ids))}, ignore_index=True)
+
+for event_id, aop_ids in sorted(aop_wiki_event_to_aop.items(), key=lambda x: int(x[0].split("_")[1])):
+    result_df_aop_wiki_event = result_df_aop_wiki_event.append({"Event ID": event_id, "Associated AOPs": ",".join(map(str, aop_ids))}, ignore_index=True)
+
 # 将结果写入到新的Excel文件
-result_df.to_excel("output_file.xlsx", index=False)
+result_df_event.to_excel("output_file_event.xlsx", index=False)
+result_df_aop_wiki_event.to_excel("output_file_aop_wiki_event.xlsx", index=False)

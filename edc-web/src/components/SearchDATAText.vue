@@ -18,8 +18,7 @@ const handleSearch = async () => {
   currentPage.value=1
   const keyword = encodeURIComponent(SearchText.value)
   const columnName = encodeURIComponent(selectedOptions.value)
-  console.info("keyword",keyword)
-  console.info("columnName",columnName)
+
   showTable.value = true;
   loading.value = true;
   // 处理搜索逻辑，这里只是简单地打印搜索关键词
@@ -30,8 +29,7 @@ const handleSearch = async () => {
     //拿到数据之后 需要初始化一系列参数
     currentPageData.value = tableData.value.slice(0, 20);
     total.value=response.data.length;
-    console.info('currentPageData:', currentPageData.value);
-    console.info('total:', total.value);
+
   } catch (error) {
     console.error('Error searching:', error);
   } finally {
@@ -52,7 +50,7 @@ watch([tableData,currentPage, pageSize], () => {
   const endIndex = startIndex + pageSize.value;
   currentPageData.value = tableData.value.slice(startIndex, endIndex);
   total.value = tableData.value.length;
-  console.info("数据变化")
+
 },{ deep: true });
 
 </script>

@@ -1,5 +1,6 @@
 package com.example.edcspring.mapper;
 
+import com.example.edcspring.entity.AOPData;
 import com.example.edcspring.entity.EventData;
 import com.example.edcspring.entity.TestData;
 import org.apache.ibatis.annotations.Mapper;
@@ -21,6 +22,7 @@ public interface edcMapper {
     @Select("SELECT * FROM event_title WHERE ${columnName} LIKE CONCAT('%', #{keyword}, '%')")
     List<EventData> searchEvent(@Param("columnName") String columnName, @Param("keyword") String keyword);
 
+
     @Select("SELECT * FROM event_title")
     List<EventData> getEventData();
 
@@ -29,6 +31,11 @@ public interface edcMapper {
 
     @Select("SELECT * FROM refine WHERE id = #{id}")
     List<TestData> findByID(@Param("id") int id);
+    @Select("SELECT * FROM aop WHERE AOP_ID = #{id}")
+    List<AOPData> findByAOPID(@Param("id") int id);
+
+    @Select("SELECT * FROM event_title WHERE EventID = #{eventID}")
+    EventData searchEventAOP(@Param("eventID") String eventID);
 
     @SelectProvider(type = TestSqlProvider.class, method = "combinedFilter")
     List<TestData> combinedFilter(@Param("endpoint") List<String> endpoint,

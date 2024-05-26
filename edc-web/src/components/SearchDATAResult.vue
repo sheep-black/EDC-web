@@ -7,21 +7,16 @@
             :default-active="activeIndex"
             style="min-width: 1080px; margin-left: -25px;margin-right: -25px;margin-top: -5px"
             mode="horizontal"
-            background-color="#1A6B9AFF"
+            background-color="#3a3b3d"
             text-color="#fff"
             active-text-color="#ffcc66"
             :ellipsis="false"
-
         >
           <el-menu-item index="0" @click="router.push('/')">
             <!--      菜单左侧标志-->
-            <el-icon
-                color="#409efc"
-                :size="30">
-              <SwitchFilled />
-            </el-icon>
-            <p style="font-size: 18px; font-style: italic; margin-left: 6px;font-weight: bold;text-shadow: 1px 1px 2px black;">
-              EDC  Database & Network & Predictor
+            <img src="../assets/network.svg" style="height: 45px; width: 45px;" alt="Your Icon" />
+            <p style="font-size: 18px;margin-left: 6px;font-weight: bold;text-shadow: 1px 1px 2px black;">
+              EDC-Web
             </p>
           </el-menu-item>
           <div class="flex-grow" />
@@ -65,16 +60,17 @@
           </el-menu-item>
         </el-menu>
       </el-header>
-      <p style="font-size: 25px;
+      <el-main class="SearchResult-main" v-if="dataLoaded">
+        <p style="font-size: 25px;
                   margin-left: 11%;
                   font-weight: bold;
                   justify-content: left;
                   display: flex;
-                  color: #1B497BFF;">
-        Research result
-      </p>
-      <el-divider style="margin-top: -5px;min-width: 1080px" />
-      <el-main class="SearchResult-main" v-if="dataLoaded">
+                  color: #1e1a1a;
+                  text-shadow: 2px 2px 2px #ffcc66;">
+          Search result
+        </p>
+        <el-divider style="margin-top: -5px;min-width: 1080px" />
         <el-row :gutter="20" style="margin-left: 10%">
           <el-col :span="8">
             <el-card style="max-width: 480px;">
@@ -104,11 +100,11 @@
                   margin-top: -5px;
                   justify-content: left;
                   display: flex;
-                  color: #1B497BFF;">
+                  color: #1e1a1a;">
             ID:#{{ Data[0].id }}
           </p>
               <div class="collapse">
-                <el-collapse v-model="activeNames" class="custom-collapse">
+                <el-collapse v-model="activeNames" class="custom-collapse" accordion>
                   <el-collapse-item title="Smiles" name="Smiles" title-class="custom-title">
                     <div class="my_intro" style="">
                         {{ Data[0].smiles }}
@@ -116,42 +112,42 @@
                   </el-collapse-item>
                   <el-collapse-item title="Cas and Name" name="Cas">
                     <div class="my_intro" style="">
-                      <el-space direction="vertical">
-                        <el-row :gutter="20">
-                          <strong style="margin-right: 5px;">Cas:</strong> {{ Data[0].cas }}
+                      <el-space direction="vertical" style="align-items: baseline">
+                        <el-row >
+                          <strong >Cas:</strong> {{ Data[0].cas }}
                         </el-row>
-                        <el-row :gutter="20">
-                          <strong style="margin-right: 5px;">Name:</strong> {{ Data[0].name ? Data[0].name : 'null' }}
+                        <el-row >
+                          <strong>Name:</strong> {{ Data[0].name ? Data[0].name : 'null' }}
                         </el-row>
                       </el-space>
                     </div>
                   </el-collapse-item>
                   <el-collapse-item title="Endpoint, Assay and Source" name="endpoint">
                     <div class="my_intro" style="">
-                      <el-space direction="vertical">
-                        <el-row :gutter="20">
-                          <strong style="margin-right: 5px;">Endpoint:</strong> {{ Data[0].endpoint }}
+                      <el-space direction="vertical" style="align-items: baseline">
+                        <el-row>
+                          <strong>Endpoint:</strong> {{ Data[0].endpoint }}
                         </el-row>
-                        <el-row :gutter="20">
-                          <strong style="margin-right: 5px;">Assay:</strong> {{ Data[0].assay }}
+                        <el-row>
+                          <strong >Assay:</strong> {{ Data[0].assay }}
                         </el-row>
-                        <el-row :gutter="20">
-                          <strong style="margin-right: 5px;">Source:</strong> {{ Data[0].source }}
+                        <el-row>
+                          <strong>Source:</strong> {{ Data[0].source }}
                         </el-row>
                       </el-space>
                     </div>
                   </el-collapse-item>
                   <el-collapse-item title="Other parameters" name="activity">
                     <div class="my_intro" style="">
-                      <el-space direction="vertical">
-                        <el-row :gutter="20">
-                          <strong style="margin-right: 5px;">Activity:</strong> {{ Data[0].activity }}
+                      <el-space direction="vertical" style="align-items: baseline">
+                        <el-row>
+                          <strong>Activity:</strong> {{ Data[0].activity }}
                         </el-row>
-                        <el-row :gutter="20">
-                          <strong style="margin-right: 5px;">NOAEL:</strong> {{ Data[0].noael ? Data[0].noael : 'null' }}
+                        <el-row>
+                          <strong>NOAEL:</strong> {{ Data[0].noael ? Data[0].noael : 'null' }}
                         </el-row>
-                        <el-row :gutter="20">
-                          <strong style="margin-right: 5px;">Unit:</strong> {{ Data[0].unit ? Data[0].unit : 'null' }}
+                        <el-row>
+                          <strong>Unit:</strong> {{ Data[0].unit ? Data[0].unit : 'null' }}
                         </el-row>
                       </el-space>
                     </div>
@@ -252,22 +248,25 @@ onMounted(async () => {
   word-wrap: break-word;
   margin-top: 20px;
   font-family: Arial;
+  padding: 4%;
   font-size: 16px;
-  text-align: center;
+  text-align: left;
 }
 .flex-grow {
   flex-grow: 1;
 }
 .SearchResult-main{
-  background-image: url('../assets/background4.png');
-  justify-content: center;
+  /* 设置图片作为背景 */
+  background-image: url('../assets/back-none.png');
+  /* 背景设置为覆盖整个容器 */
   min-width: 1080px;
-  min-height: 550px;
+  min-height: 80vh;
   background-size: cover;
   background-position: center;
+  /* //height: 500px; 根据需要设置高度 */
 }
 .collapse{
-  width: 600px;
+  width: 100%;
   margin-left: 50px;
  }
 /* 自定义折叠面板容器的背景色 */
@@ -279,7 +278,7 @@ onMounted(async () => {
 }
 /* 可以根据需要设置折叠面板标题和内容的样式 */
 .custom-collapse .el-collapse-item__header {
-  background-color: #3574ad; /* 设置折叠面板标题的背景色 */
+  background-color: #939292; /* 设置折叠面板标题的背景色 */
   color: #fff; /* 设置折叠面板标题的文本颜色 */
   font-size: 16px;
 }

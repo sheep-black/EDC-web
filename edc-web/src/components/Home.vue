@@ -1,11 +1,10 @@
 <template>
-  <div  class="common-layout">
     <el-container >
-      <el-header >
+      <el-header style="height: 6vh" >
 <!--        头部菜单栏-->
         <el-menu
             :default-active="activeIndex"
-            style="min-width: 1080px; margin-left: -25px;margin-right: -25px;margin-top: -5px"
+            style="min-width: 1080px; margin-left: -25px;margin-right: -25px;margin-top: -5px;height: 100%"
             mode="horizontal"
             background-color="#3a3b3d"
             text-color="#fff"
@@ -14,46 +13,46 @@
         >
           <el-menu-item index="0" @click="router.push('/')">
             <!--      菜单左侧标志-->
-            <img src="../assets/network.svg" style="height: 45px; width: 45px;" alt="Your Icon" />
-            <p style="font-size: 18px;margin-left: 6px;font-weight: bold;text-shadow: 1px 1px 2px black;">
+            <img src="../assets/network.svg" style="height: 3vw; width: 3vw;" alt="Your Icon" />
+            <p style="font-size: 2.5vh;margin-left: 6px;font-weight: bold;text-shadow: 0.2vw 0.2vw 0.2vw black;">
               EDC-Web
             </p>
           </el-menu-item>
           <div class="flex-grow" />
-          <el-sub-menu index="1">
+          <el-sub-menu index="1" style="width: 8vw">
             <template #title >
-              <el-icon :size="20"><Search /></el-icon>
-              <p style="font-size: 16px;text-shadow: 0px 0px 2px black;">
+              <el-icon><Search /></el-icon>
+              <p style="font-size: 2vh;margin-left: 0.5vh;">
                 Search
               </p>
             </template>
-            <el-menu-item index="1-1" style="justify-content: center;" @click="router.push('/SearchAOP')">
-              <p style="justify-content: center;" >EDC-AOP</p>
+            <el-menu-item index="1-1" style="justify-content: center;height: 5vh;min-width: 20vh"  @click="router.push('/SearchAOP')">
+              <p style="justify-content: center; font-size: 1.5vh" >EDC-AOP</p>
             </el-menu-item>
-            <el-menu-item index="1-2" style="justify-content: center;" @click="router.push('/SearchDATA')">
-              <p style="justify-content: center;">EDC-DATA</p>
+            <el-menu-item index="1-2" style="justify-content: center;height: 5vh;min-width: 20vh" @click="router.push('/SearchDATA')">
+              <p style="justify-content: center;font-size: 1.5vh">EDC-DATA</p>
             </el-menu-item>
           </el-sub-menu>
-          <el-menu-item index="2" @click="router.push('/Predict')">
+          <el-menu-item index="2" style="width: 8vw" @click="router.push('/Predict')">
             <template #title>
-              <el-icon :size="20"><Odometer /></el-icon>
-              <p style="font-size: 16px;text-shadow: 0px 0px 2px black;">
+              <el-icon><Odometer /></el-icon>
+              <p style="font-size: 2vh;text-shadow: 0px 0px 2px black;">
                 Predict
               </p>
             </template>
           </el-menu-item>
-          <el-menu-item index="3" @click="router.push('/About')">
+          <el-menu-item index="3" style="width: 8vw" @click="router.push('/About')">
             <template #title>
-              <el-icon :size="20"><InfoFilled /></el-icon>
-              <p style="font-size: 16px;text-shadow: 0px 0px 2px black;">
+              <el-icon><InfoFilled /></el-icon>
+              <p style="font-size: 2vh;text-shadow: 0px 0px 2px black;">
                 About
               </p>
             </template>
           </el-menu-item>
-          <el-menu-item index="4" @click="router.push('/Contact')">
+          <el-menu-item index="4" style="width: 8vw" @click="router.push('/Contact')">
             <template #title>
-              <el-icon :size="20"><UserFilled /></el-icon>
-              <p style="font-size: 16px;text-shadow: 0px 0px 2px black;">
+              <el-icon><UserFilled /></el-icon>
+              <p style="font-size: 2vh;text-shadow: 0px 0px 2px black;">
                 Contact
               </p>
             </template>
@@ -124,8 +123,8 @@
 <!--            </div>-->
           </el-col>
         </el-row>
-        <el-link style="margin-left: 8%;margin-top: 2%" type="primary" @click="router.push('/About')" :underline="false">
-          <p style="font-size: 3vh;margin-top: -5%;font-weight: bold;color: #ffffff;text-shadow: 2px 2px 2px #054079;">
+        <el-link style="margin-left: 15vh;margin-top: 2%" type="primary" @click="router.push('/About')" :underline="false">
+          <p style="font-size: 3vh;margin-top: -5%;font-weight: bold;color: #ffffff;text-shadow: 5px 5px 5px #054079;">
             Learn More About PubChem >
           </p>
 
@@ -136,44 +135,64 @@
     <footer class="footer">
       <div class="footer-content">
         <div class="footer-section">
-          <h3 style="color: #f8f8f8;letter-spacing: 1px;">Copyright</h3>
+          <h3 style="color: #f8f8f8;letter-spacing: 1px; font-size: 2vh">Copyright</h3>
             <el-divider />
-          <p style="color: #ffffff;">All Rights © 2024</p>
-          <p style="color: #ffffff;">Reserved</p>
+          <p style="color: #ffffff;font-size: 1.8vh" >All Rights © 2024</p>
+          <p style="color: #ffffff;font-size: 1.8vh">Reserved</p>
         </div>
         <div class="footer-section">
-          <h3 style="color: #f8f8f8;letter-spacing: 1px;">Contact</h3>
+          <h3 style="color: #f8f8f8;letter-spacing: 1px;font-size: 2vh">Contact</h3>
           <el-divider />
-          <p style="color: #ffffff;">E-mail：example@example.com</p>
-          <p style="color: #ffffff;">Tel：123-456-7890</p>
+          <p style="color: #ffffff;font-size: 1.8vh">E-mail：njushiwei@nju.edu.cn</p>
+          <p style="color: #ffffff;font-size: 1.8vh">Tel：123-456-7890</p>
         </div>
         <div class="footer-section">
-          <h3 style="color: #f8f8f8;letter-spacing: 1px;">Registration</h3>
+          <h3 style="color: #f8f8f8;letter-spacing: 1px;font-size: 2vh">Registration</h3>
           <el-divider />
-          <ul>
-            <li><a href="#">2024--</a></li>
-            <li><a href="#">苏ICP备000000号</a></li>
-          </ul>
+          <p style="color: #ffffff;font-size: 1.8vh" >2024--</p>
+          <p style="color: #ffffff;font-size: 1.8vh">苏ICP备000000号</p>
         </div>
       </div>
     </footer>
 
-  </div>
+
 
 </template>
 
 <script lang="ts" setup>
 
-import { ref } from 'vue'
+import {nextTick, onMounted, ref} from 'vue'
 import router from '../router'
+import axios from "axios";
 
 const activeIndex = ref('0')
 
 
-
 </script>
 
-<style>
+<style scoped>
+:deep(.el-sub-menu .el-sub-menu__icon-arrow) {
+    font-size: 2vh;
+    margin-top: -0.9vh;
+    position: absolute;
+    left: 12vh;
+    top: 50%;
+    transition: transform var(--el-transition-duration);
+    width: inherit;
+}
+
+:deep(.el-sub-menu .el-icon) {
+  width:2vh;
+  font-size: 2vh;
+}
+:deep(.el-menu-item [class^=el-icon]) {
+  font-size: 2vh;
+  margin-right: 10px; /* 修改右边距为10px */
+  text-align: center; /* 修改文本水平居中对齐 */
+  vertical-align: middle; /* 修改垂直对齐方式为居中 */
+  width:2vh; /* 保留自定义宽度 */
+}
+
 .flex-grow {
   flex-grow: 1;
 }

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-container >
+    <el-container style="margin-top: -2px;">
       <el-header>
         <!--        头部菜单栏-->
         <el-menu

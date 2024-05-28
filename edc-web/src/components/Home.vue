@@ -60,7 +60,7 @@
         </el-menu>
       </el-header>
       <el-main class="my_home-main">
-        <el-row :gutter="20" style="width: 100%;">
+        <el-row :gutter="20" style="width: 100%;display: flex;align-items: center; /* 垂直居中 */">
           <el-col :span="12">
             <p style="font-size: 45px;
                   font-weight: bold;
@@ -109,27 +109,19 @@
                     Predict Activity
                   </p>
                 </el-space>
+
               </el-col>
             </el-row>
+            <el-link style="margin-left: 15vh;margin-top: 2%" type="primary" @click="router.push('/About')" :underline="false">
+              <p style="font-size: 25px;margin-top: -5%;font-weight: bold;color: #ffffff;text-shadow: 5px 5px 5px #054079;">
+                Learn More About PubChem >
+              </p>
 
+            </el-link>
           </el-col>
-          <el-col :span="10">
-<!--            <div style="display: flex;-->
-<!--                        /*justify-content: flex-start; !* 左对齐 *!*/-->
-<!--                        align-items: center; /* 垂直居中 */-->
-<!--                        height: 100%;-->
-<!--                        padding-left: 10vh;-->
-<!--                        ">-->
-<!--              <img @load="ImageLoad" v-loading="ifImageload" style="width: 600px;" src="../assets/homeinfo.jpg">-->
-<!--            </div>-->
-          </el-col>
+
         </el-row>
-        <el-link style="margin-left: 15vh;margin-top: 2%" type="primary" @click="router.push('/About')" :underline="false">
-          <p style="font-size: 25px;margin-top: -5%;font-weight: bold;color: #ffffff;text-shadow: 5px 5px 5px #054079;">
-            Learn More About PubChem >
-          </p>
 
-        </el-link>
       </el-main>
 
     </el-container>
@@ -188,6 +180,7 @@ const activeIndex = ref('0')
 }
 .my_home-main{
   /* 设置图片作为背景 */
+  display: flex;align-items: center;
   background-image: url('../assets/background4.png');
   /* 背景设置为覆盖整个容器 */
   min-width: 1080px;
@@ -196,7 +189,7 @@ const activeIndex = ref('0')
   margin-left: -5px;
   background-size: cover;
   background-position: center;
-  min-height: 80vh;
+  height: 100vh;
 }
 
 .footer {

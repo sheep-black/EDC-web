@@ -88,7 +88,7 @@
               <el-col :span="8">
                 <el-space direction="vertical">
                   <el-icon :style="{ fontSize: '70px' }"><Document /></el-icon>
-                  <p style="font-size: 20px;margin-top: -5%;font-weight: bold;">
+                  <p style="font-size: 1.2em;margin-top: -5%;font-weight: bold;">
                     AOP Search
                   </p>
                 </el-space>
@@ -96,7 +96,7 @@
               <el-col :span="8">
                 <el-space direction="vertical">
                   <el-icon :style="{ fontSize: '70px' }"><EditPen /></el-icon>
-                  <p style="font-size: 20px;margin-top: -5%;font-weight: bold;">
+                  <p style="font-size: 1.2em;margin-top: -5%;font-weight: bold;">
                     Free Drawing
                   </p>
                 </el-space>
@@ -105,7 +105,7 @@
               <el-col :span="8">
                 <el-space direction="vertical">
                   <el-icon :style="{ fontSize: '70px' }"><DataLine /></el-icon>
-                  <p style="font-size: 20px;margin-top: -5%;font-weight: bold;">
+                  <p style="font-size: 1.2em;margin-top: -5%;font-weight: bold;">
                     Predict Activity
                   </p>
                 </el-space>
@@ -180,7 +180,7 @@ const activeIndex = ref('0')
 }
 .my_home-main{
   /* 设置图片作为背景 */
-  display: flex;align-items: center;
+  display: flex;
   background-image: url('../assets/background4.png');
   /* 背景设置为覆盖整个容器 */
   min-width: 1080px;

@@ -124,6 +124,7 @@ import { ref ,computed} from 'vue'
 import router from '../router'
 import PredictSmiles from "./PredictSmiles.vue";
 import PredictDrawing from "./PredictDrawing.vue";
+import Database from "@/components/Database.vue";
 const activeIndex = ref('2')
 const selected = ref('Smiles')
 const handleSelect = (key: string, keyPath: string[]) => {

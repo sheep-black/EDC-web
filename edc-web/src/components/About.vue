@@ -61,42 +61,42 @@
         </el-menu>
       </el-header>
       <el-container class="about-main">
-        <el-aside width="220px">
+        <el-aside>
           <el-menu
               default-active="EDC AOP Network"
               class="el-menu-vertical-demo"
               @select="SelectAbout"
-              style="height: 100%;"
+              style="height: 100%;width: 100%"
               active-text-color="#1A6B9AFF"
           >
-            <el-menu-item index="EDC AOP Network" @click="showContent('Network')">
+            <el-menu-item index="EDC AOP Network" @click="showContent('Network')" style="display: flex;">
               <template #title>
                 <el-icon><share /></el-icon>
-                <p style="font-size: 16px;text-shadow: 0px 0px 1px black;">
+                <p style="font-size: 18px;font-weight: bold;">
                   EDC AOP Network
                 </p>
               </template>
             </el-menu-item>
-            <el-menu-item index="EDC Database" @click="showContent('Database')">
+            <el-menu-item index="EDC Database" @click="showContent('Database')" style="display: flex;">
               <template #title>
                 <el-icon><coin /></el-icon>
-                <p style="font-size: 16px;text-shadow: 0px 0px 1px black;">
+                <p style="font-size: 18px;font-weight: bold;">
                   EDC Database
                 </p>
               </template>
             </el-menu-item>
-            <el-menu-item index="EDC Predictor" @click="showContent('Predict')">
+            <el-menu-item index="EDC Predictor" @click="showContent('Predict')" style="display: flex;">
               <template #title>
                 <el-icon><DataLine /></el-icon>
-                <p style="font-size: 16px;text-shadow: 0px 0px 1px black;">
+                <p style="font-size: 18px;font-weight: bold;">
                   EDC Predictor
                 </p>
               </template>
             </el-menu-item>
           </el-menu>
         </el-aside>
-        <el-main style="height: 100%;min-width: 900px">
-          <component :is="selectedContentComponent" />
+        <el-main style="height: 100%;justify-content: center;">
+          <component :is="selectedContentComponent"/>
         </el-main>
       </el-container>
       <footer class="footer">
@@ -163,9 +163,11 @@ onMounted(() => {
   flex-grow: 1;
 }
 .about-main{
+  flex: auto;
+  justify-content: center;
   background-size: cover;
   background-position: center;
-  height: 105%;
+  height: 80vh;
 }
 
 

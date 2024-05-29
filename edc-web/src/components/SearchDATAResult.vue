@@ -60,20 +60,20 @@
           </el-menu-item>
         </el-menu>
       </el-header>
-      <el-main class="SearchResult-main" v-if="dataLoaded">
+      <el-main class="SearchDataResult-main" v-if="dataLoaded">
         <p style="font-size: 25px;
-                  margin-left: 11%;
+                  padding-right: 1000px;
                   font-weight: bold;
-                  justify-content: left;
+                  justify-content: center;
                   display: flex;
                   color: #1e1a1a;
                   text-shadow: 2px 2px 2px #ffcc66;">
           Search result
         </p>
         <el-divider style="margin-top: -5px;min-width: 1080px" />
-        <el-row :gutter="20" style="margin-left: 10%">
-          <el-col :span="8">
-            <el-card style="max-width: 480px;">
+        <el-row :gutter="10" style="margin-left: 10%">
+          <el-col :span="10" style="display: flex;align-items: center;justify-content: right;padding-right: 100px">
+            <el-card style="width: 500px;">
             <template #header>
               <div class="card-header">
                 <span style="display: flex;justify-content: center">
@@ -85,7 +85,7 @@
 <!--                <el-image style="width: 350px;" :src=intro_image  />-->
 <!--              </div>-->
               <div id="structure" ref="structure" v-html="svgContent"
-                   style="display: flex;justify-content: center"></div>
+                   style="display: flex;justify-content: center;height: 100%"></div>
             <template #footer >
               <span style="display: flex;justify-content: center">
                 <strong style="margin-right: 5px;">Cas: </strong> {{ Data[0].cas ? Data[0].cas : 'null' }}
@@ -93,8 +93,8 @@
             </template>
           </el-card>
           </el-col>
-          <el-col :span="16">
-            <p style="font-size: 25px;
+          <el-col :span="14">
+            <p style="font-size: 30px;
                   margin-left: 50px;
                   font-weight: bold;
                   margin-top: -5px;
@@ -243,6 +243,17 @@ onMounted(async () => {
 });
 </script>
 
+<style scoped>
+:deep(.custom-collapse .el-collapse-item__header){
+  height: 70px;
+  background-color: #939292; /* 设置折叠面板标题的背景色 */
+  color: #fff; /* 设置折叠面板标题的文本颜色 */
+  font-size: 16px;
+  padding: 10px; /* 调整标题文本的内边距，使其与边框之间有一定间距 */
+}
+
+</style>
+
 <style>
 .my_intro {
   word-wrap: break-word;
@@ -255,33 +266,25 @@ onMounted(async () => {
 .flex-grow {
   flex-grow: 1;
 }
-.SearchResult-main{
+.SearchDataResult-main{
   /* 设置图片作为背景 */
   background-image: url('../assets/back-none.png');
   /* 背景设置为覆盖整个容器 */
   min-width: 1080px;
-  min-height: 80vh;
+  height: 80vh;
   background-size: cover;
   background-position: center;
   /* //height: 500px; 根据需要设置高度 */
 }
 .collapse{
-  width: 100%;
-  margin-left: 50px;
+  width: 80%;
+  margin-left: 20px;
  }
 /* 自定义折叠面板容器的背景色 */
 .custom-collapse {
   background-color: #f0f0f0; /* 设置折叠面板容器的背景色 */
 }
-.custom-collapse .el-collapse-item__header {
-  padding: 10px; /* 调整标题文本的内边距，使其与边框之间有一定间距 */
-}
-/* 可以根据需要设置折叠面板标题和内容的样式 */
-.custom-collapse .el-collapse-item__header {
-  background-color: #939292; /* 设置折叠面板标题的背景色 */
-  color: #fff; /* 设置折叠面板标题的文本颜色 */
-  font-size: 16px;
-}
+
 .footer {
   min-width: 1080px;
   margin-left: -8px;

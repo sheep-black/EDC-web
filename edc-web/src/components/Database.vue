@@ -81,7 +81,7 @@ const DownloadAOPData = async (filename) => {
   /* 中间介绍字体的样式*/
   font-size: 18px;
   margin-top: 40px;
-  width: 95%; /* 设置最大宽度，以避免文本过长 */
+  max-width: 80%; /* 设置最大宽度，以避免文本过长 */
   text-align: justify; /* 文本两端对齐 */
   line-height: 200%; /* 设置行高 */
 

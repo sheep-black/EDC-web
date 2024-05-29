@@ -26,13 +26,14 @@ const DownloadNetwork = async (filename) => {
                   padding: 0 20px;
                   font-weight: bold;
                   display: flex;
-                  color: #000000;">
+                  color: #1e1a1a;
+                  text-shadow: 1px 1px 2px #ffcc66;">
     EDC AOP Network
   </p>
   <el-divider border-style="dashed" />
-  <el-row style="display: flex;justify-content: center;margin-top: -20px;" :gutter="10">
-    <el-col :span="12" style="display: flex;align-items: center;">
-      <img style="display: flex;width: 90%;" src="../assets/network-image.png">
+  <el-row style="display: flex;justify-content: center;align-items: center;margin-top: -20px;height: 100%" :gutter="10">
+    <el-col :span="12">
+      <img style="margin-left: 15%; max-height: 50%;max-width: 75%" src="../assets/network-image.png">
       <!--      <el-image style="display: flex;max-height: 100vh;width: auto" :src=intro_image  />-->
     </el-col>
     <el-col :span="12" >

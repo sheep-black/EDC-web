@@ -101,7 +101,7 @@
             </div>
           </el-col>
           <el-col :span="16">
-            <el-card style="width: 100%;">
+            <el-card style="width: 90%;">
               <template #header>
                 <div class="card-header">
                 <span style="display: flex;justify-content: center">
@@ -114,11 +114,6 @@
                 <div ref="cyContainer" style="width: 100%; height:60vh; border: 1px solid black;"></div>
               </div>
 
-<!--              <template #footer >-->
-<!--              <span style="display: flex;justify-content: center" >-->
-<!--                <strong style="margin-right: 5px;">Cas: </strong> {{ Data[0].cas ? Data[0].cas : 'null' }}-->
-<!--              </span>-->
-<!--              </template>-->
             </el-card>
           </el-col>
 

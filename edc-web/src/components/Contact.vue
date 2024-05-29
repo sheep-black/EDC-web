@@ -67,7 +67,8 @@
                   font-weight: bold;
                   justify-content: center;
                   display: flex;
-                  color: #181818;">
+                  color: #1e1a1a;
+                  text-shadow: 2px 2px 2px #ffcc66;">
           Contact us
         </p>
         <div style="display: flex;

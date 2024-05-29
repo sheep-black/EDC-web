@@ -290,6 +290,7 @@ onMounted( () => {
   min-height: 80vh;
   background-size: cover;
   background-position: center;
+  height: 90vh;
 /* //height: 500px; 根据需要设置高度 */
 }
 

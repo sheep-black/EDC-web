@@ -146,9 +146,10 @@ const selectedComponent = computed(() => {
 
 .SearchDATA-main{
   /* 设置图片作为背景 */
-  background-image: url('../assets/back.png');
+  background-image: url('../assets/back-none.png');
   /* 背景设置为覆盖整个容器 */
   min-height: 80vh;
+  min-width: 1080px;
   background-size: cover;
   background-position: center;
   /* //height: 500px; 根据需要设置高度 */

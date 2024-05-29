@@ -54,7 +54,7 @@ onMounted(() => {
 
 <template>
   <div v-loading="loading" style="justify-content: center;display: flex;">
-    <iframe id="katcher" src="/ketcher/standalone/index.html" style="width: 70%; min-height: 500px; border: none;"></iframe>
+    <iframe id="katcher" src="/ketcher/standalone/index.html" style="width: 60%; min-height: 500px; border: none;"></iframe>
   </div>
   <el-divider>
     <el-icon><star-filled /></el-icon>

@@ -86,30 +86,34 @@
             </div>
             <el-row style="padding-left: 20vh">
               <el-col :span="8">
-                <el-space direction="vertical">
-                  <el-icon :style="{ fontSize: '70px' }"><Document /></el-icon>
-                  <p style="font-size: 1.2em;margin-top: -5%;font-weight: bold;">
-                    AOP Search
-                  </p>
-                </el-space>
+                <el-link :underline="false" @click="router.push('/SearchAOP')">
+                  <el-space direction="vertical">
+                    <el-icon :style="{ fontSize: '70px' }"><Document /></el-icon>
+                    <p style="font-size: 1.2em;margin-top: -5%;font-weight: bold;">
+                      AOP-Search
+                    </p>
+                  </el-space>
+                </el-link>
               </el-col>
               <el-col :span="8">
+                <el-link :underline="false" @click="router.push('/SearchData')">
                 <el-space direction="vertical">
                   <el-icon :style="{ fontSize: '70px' }"><EditPen /></el-icon>
                   <p style="font-size: 1.2em;margin-top: -5%;font-weight: bold;">
-                    Free Drawing
+                    Database-Search
                   </p>
                 </el-space>
-
+                </el-link>
               </el-col>
               <el-col :span="8">
+                <el-link :underline="false" @click="router.push('/Predict')">
                 <el-space direction="vertical">
                   <el-icon :style="{ fontSize: '70px' }"><DataLine /></el-icon>
                   <p style="font-size: 1.2em;margin-top: -5%;font-weight: bold;">
-                    Predict Activity
+                    EDC-Predict
                   </p>
                 </el-space>
-
+                </el-link>
               </el-col>
             </el-row>
             <el-link style="margin-left: 15vh;margin-top: 2%" type="primary" @click="router.push('/About')" :underline="false">
@@ -166,6 +170,10 @@ const activeIndex = ref('0')
 </script>
 
 <style scoped>
+:deep(.el-link){
+  --el-link-text-color: #000000;
+  --el-link-hover-text-color: #727272
+}
 
 .flex-grow {
   flex-grow: 1;

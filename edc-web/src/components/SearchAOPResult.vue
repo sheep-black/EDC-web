@@ -79,21 +79,22 @@
                 <el-collapse-item title="MIE" name="MIE">
                     <ul>
                       <li v-for="item in MIE" >
-                        <strong >{{item.eventID}}:</strong> {{item.eventTitle}}
+
+                        <strong >MIE:{{item.eventID.split('_')[1]}}——</strong> {{item.eventTitle}}
                       </li>
                     </ul>
                 </el-collapse-item>
                 <el-collapse-item title="KE" name="KE">
                   <ul>
                     <li v-for="item in KE" >
-                      <strong >{{item.eventID}}:</strong> {{item.eventTitle}}
+                      <strong >KE:{{item.eventID.split('_')[1]}}——</strong> {{item.eventTitle}}
                     </li>
                   </ul>
                 </el-collapse-item>
                 <el-collapse-item title="AO" name="AO">
                   <ul>
                     <li v-for="item in AO" >
-                      <strong >{{item.eventID}}:</strong> {{item.eventTitle}}
+                      <strong >AO:{{item.eventID.split('_')[1]}}——</strong> {{item.eventTitle}}
                     </li>
                   </ul>
                 </el-collapse-item>
@@ -266,7 +267,7 @@ const initCytoscape = (elements) => {
     if (element.data && element.data.type === 'root') {
       if (element.data.id.includes('wiki')) {
         // 如果id包含“wiki”，执行相应操作
-        const nodeName=element.data.id.split('_')[1]+'(wiki)'
+        const nodeName=element.data.id.split('_')[1]+'(AOP-wiki)'
 
         element.data.label = `MIE:${nodeName}`;
       }else{
@@ -276,7 +277,7 @@ const initCytoscape = (elements) => {
     } else if (element.data && element.data.type === 'end') {
       if (element.data.id.includes('wiki')) {
         // 如果id包含“wiki”，执行相应操作
-        const nodeName=element.data.id.split('_')[1]+'(wiki)'
+        const nodeName=element.data.id.split('_')[1]+'(AOP-wiki)'
 
         element.data.label = `AO:${nodeName}`;
       }else{
@@ -286,7 +287,7 @@ const initCytoscape = (elements) => {
     } else if(element.data && element.data.type === 'ke'){
       if (element.data.id.includes('wiki')) {
         // 如果id包含“wiki”，执行相应操作
-        const nodeName=element.data.id.split('_')[1]+'(wiki)'
+        const nodeName=element.data.id.split('_')[1]+'(AOP-wiki)'
 
         element.data.label = `KE:${nodeName}`;
       }else{
@@ -313,8 +314,8 @@ const initCytoscape = (elements) => {
             'color': '#000000',  // 黑色文本
             'font-size': '30px', // 增大字体大小
             'font-weight': 'bold', // 加粗字体
-            'width': '250px',
-            'height': '100px',
+            'width': '300px',
+            'height': '120px',
             'shape': 'round-rectangle', // 设置为圆角矩形
             'text-wrap': 'wrap',
             'text-max-width': '140px', // 限制文本最大宽度
@@ -335,8 +336,8 @@ const initCytoscape = (elements) => {
             'color': '#000000',  // 黑色文本
             'font-size': '30px', // 增大字体大小
             'font-weight': 'bold', // 加粗字体
-            'width': '250px',
-            'height': '120px',
+            'width': '320px',
+            'height': '150px',
             'text-wrap': 'wrap',
             'text-max-width': '120px', // 限制文本最大宽度
             'border-width': '2px',  // 设置边框宽度
@@ -375,8 +376,8 @@ const initCytoscape = (elements) => {
             'color': '#000000',
             'font-size': '30px',
             'font-weight': 'bold',
-            'width': '250px',
-            'height': '100px',
+            'width': '300px',
+            'height': '120px',
             'text-wrap': 'wrap',
             'text-max-width': '140px',
             'border-width': '2px',

@@ -62,14 +62,7 @@
       <el-main class="my_home-main">
         <el-row :gutter="20" style="width: 100%;display: flex;align-items: center; /* 垂直居中 */">
           <el-col :span="12">
-            <p style="font-size: 45px;
-                  font-weight: bold;
-                  justify-content: flex-start;
-                  display: flex;
-                  text-shadow: 2px 2px 2px black;
-                  padding-top:3vh;
-                  padding-left: 15vh; /* 左边页边距 */
-                  color: #ffffff;">
+            <p class="title-text">
               EDC Network  <br> & Database & Predictor
             </p>
             <div style="display: flex;
@@ -84,43 +77,50 @@
 
               </p>
             </div>
-            <el-row style="padding-left: 20vh">
+            <el-row style="padding-left: 20vh;">
               <el-col :span="8">
                 <el-link :underline="false" @click="router.push('/SearchAOP')">
-                  <el-space direction="vertical">
-                    <el-icon :style="{ fontSize: '70px' }"><Document /></el-icon>
-                    <p style="font-size: 1.2em;margin-top: -5%;font-weight: bold;">
-                      AOP-Search
-                    </p>
-                  </el-space>
+                  <transition name="fade">
+                    <el-space v-if="isVisible" direction="vertical">
+                      <el-icon :style="{ fontSize: '70px' }"><Document /></el-icon>
+                      <p style="font-size: 1.2em;margin-top: -5%;font-weight: bold;">
+                        AOP-Search
+                      </p>
+                    </el-space>
+                  </transition>
                 </el-link>
               </el-col>
               <el-col :span="8">
                 <el-link :underline="false" @click="router.push('/SearchData')">
-                <el-space direction="vertical">
-                  <el-icon :style="{ fontSize: '70px' }"><EditPen /></el-icon>
-                  <p style="font-size: 1.2em;margin-top: -5%;font-weight: bold;">
-                    Database-Search
-                  </p>
-                </el-space>
+                  <transition name="fade">
+                    <el-space v-if="isVisible" direction="vertical">
+                      <el-icon :style="{ fontSize: '70px' }"><EditPen /></el-icon>
+                      <p style="font-size: 1.2em;margin-top: -5%;font-weight: bold;">
+                        Database-Search
+                      </p>
+                    </el-space>
+                  </transition>
                 </el-link>
               </el-col>
               <el-col :span="8">
                 <el-link :underline="false" @click="router.push('/Predict')">
-                <el-space direction="vertical">
-                  <el-icon :style="{ fontSize: '70px' }"><DataLine /></el-icon>
-                  <p style="font-size: 1.2em;margin-top: -5%;font-weight: bold;">
-                    EDC-Predict
-                  </p>
-                </el-space>
+                  <transition name="fade">
+                    <el-space v-if="isVisible" direction="vertical">
+                      <el-icon :style="{ fontSize: '70px' }"><DataLine /></el-icon>
+                      <p style="font-size: 1.2em;margin-top: -5%;font-weight: bold;">
+                        EDC-Predict
+                      </p>
+                    </el-space>
+                  </transition>
                 </el-link>
               </el-col>
             </el-row>
             <el-link style="margin-left: 15vh;margin-top: 2%" type="primary" @click="router.push('/About')" :underline="false">
-              <p style="font-size: 25px;margin-top: -5%;font-weight: bold;color: #ffffff;text-shadow: 5px 5px 5px #054079;">
-                Learn More About PubChem >
-              </p>
-
+              <transition name="fade">
+                <p v-if="isVisible" style="font-size: 25px;margin-top: -5%;font-weight: bold;color: #ffffff;text-shadow: 5px 5px 5px #054079;">
+                  Learn More About PubChem >
+                </p>
+              </transition>
             </el-link>
           </el-col>
 
@@ -163,20 +163,50 @@
 import {nextTick, onMounted, ref} from 'vue'
 import router from '../router'
 import axios from "axios";
-
+const isVisible = ref(false);
 const activeIndex = ref('0')
+onMounted(() => {
+  isVisible.value = true;
 
+});
 
 </script>
 
 <style scoped>
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 :deep(.el-link){
   --el-link-text-color: #000000;
   --el-link-hover-text-color: #727272
 }
-
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 1s ease-out, transform 1s ease-out;
+}
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
+  transform: translateY(-20px);
+}
 .flex-grow {
   flex-grow: 1;
+}
+.title-text {
+  font-size: 45px;
+  font-weight: bold;
+  justify-content: flex-start;
+  display: flex;
+  text-shadow: 2px 2px 2px black;
+  padding-top:3vh;
+  padding-left: 15vh; /* 左边页边距 */
+  color: #ffffff;
+  animation: fadeIn 1s ease-out;
 }
 .intro-text {
   /* 中间介绍字体的样式*/
@@ -185,6 +215,7 @@ const activeIndex = ref('0')
   text-align: justify; /* 文本两端对齐 */
   line-height: 150%; /* 设置行高 */
   font-family: 'Helvetica', sans-serif;
+  animation: fadeIn 1s ease-out;
 }
 .my_home-main{
   /* 设置图片作为背景 */

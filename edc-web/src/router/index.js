@@ -8,6 +8,7 @@ import SearchAOP from '../components/SearchAOP.vue'
 import SearchDATA from '../components/SearchDATA.vue'
 import SearchDATAResult from "../components/SearchDATAResult.vue"
 import SearchAOPResult from "../components/SearchAOPResult.vue"
+import PredictResult from "../components/PredictResult.vue"
 import Predict from '../components/Predict.vue'
 
 
@@ -66,6 +67,14 @@ const routes = [
         component:SearchAOPResult,
         meta: {
             title: 'AOP搜索结果'
+        }
+    },
+    {
+        path:'/PredictResult/:smiles',
+        name:'PredictResult',
+        component:PredictResult,
+        meta: {
+            title: 'Predict结果'
         }
     },
     {

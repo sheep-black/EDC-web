@@ -170,6 +170,7 @@ const elements = ref([]);
 const MIE=ref([]);
 const KE=ref([]);
 const AO=ref([]);
+const activeIndex = ref('1-1');
 const activeNames=ref('MIE');
 const cySucess=ref(true)
 // 解析函数
@@ -441,7 +442,6 @@ onMounted(async () => {
     // initEvent(Data.value[0].aops)
     parseGraphString(Data.value[0].aops).then(elements => {
       elements.value = elements
-
       cySucess.value=false;
       initCytoscape(elements.value);
       //监听双击：

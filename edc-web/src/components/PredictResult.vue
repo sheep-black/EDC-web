@@ -1,5 +1,5 @@
 <template>
-  <div  class="common-layout">
+  <div  class="common-layout" >
     <el-container style="margin-top: -2px;">
       <el-header>
         <!--        头部菜单栏-->
@@ -11,7 +11,6 @@
             text-color="#fff"
             active-text-color="#ffcc66"
             :ellipsis="false"
-            @select="handleSelect"
         >
           <el-menu-item index="0" @click="router.push('/')">
             <!--      菜单左侧标志-->
@@ -29,7 +28,7 @@
               </p>
             </template>
             <el-menu-item index="1-1" style="justify-content: center;" @click="router.push('/SearchAOP')">
-              <p style="justify-content: center;">EDC-AOP</p>
+              <p style="justify-content: center;" >EDC-AOP</p>
             </el-menu-item>
             <el-menu-item index="1-2" style="justify-content: center;" @click="router.push('/SearchDATA')">
               <p style="justify-content: center;">EDC-DATA</p>
@@ -61,32 +60,12 @@
           </el-menu-item>
         </el-menu>
       </el-header>
-      <el-main class="Predict-main">
-        <p style="font-size: 45px;
-                  margin-left: 6px;
-                  font-weight: bold;
-                  justify-content: center;
-                  display: flex;
-                  color: #1e1a1a;
-                  text-shadow: 2px 2px 2px #ffcc66;">
-          EDC Predictor
-        </p><p style="font-size: 25px;
-                  margin-top: -10px;
-                  justify-content: center;
-                  display: flex;
-                  color: #000000;">
-            Quick screening EDC using qualitative screening model
-      </p>
-        <el-radio-group fill="#ffcc66" v-model="selected" text-color="#1e1a1a"
-                        style="font-weight: bold;justify-content: center;display: flex;">
-          <el-radio-button label="Inputting a SMILES" value="Smiles" size="large" />
-          <el-radio-button label="Drawing a molecule in the JSME" value="Drawing" size="large" />
-        </el-radio-group>
-        <el-divider style="width: 50%;margin: 20px auto;"></el-divider>
-        <component :is="selectedComponent" />
+
+      <el-main class="SearchResult-main">
+        {{ smiles }}
+
 
       </el-main>
-
     </el-container>
     <footer class="footer">
       <div class="footer-content">
@@ -117,36 +96,44 @@
 
 </template>
 
-<script lang="ts" setup>
+<script  setup>
 
-
-import { ref ,computed} from 'vue'
+import {nextTick, onMounted, ref} from 'vue'
 import router from '../router'
-import PredictSmiles from "./PredictSmiles.vue";
-import PredictDrawing from "./PredictDrawing.vue";
 
-const activeIndex = ref('2')
-const selected = ref('Smiles')
-const handleSelect = (key: string, keyPath: string[]) => {
-  console.log(key, keyPath)
-}
-const selectedComponent = computed(() => {
-  if (selected.value === 'Smiles') {
-    return PredictSmiles;
-  } else{
-    return PredictDrawing;
-  }
+import { useRoute } from 'vue-router';
+import axios from "axios";
+import cytoscape from "cytoscape";
+const Data = ref([]);
+const route = useRoute();
+const loading = ref(true); // 用于控制加载状态
+const smiles = route.params.smiles;
+const dataLoaded = ref(false);
+const cyContainer = ref(null);
+const cyInstance = ref(null); // Cytoscape 实例
+const elements = ref([]);
+const MIE=ref([]);
+const KE=ref([]);
+const AO=ref([]);
+const activeIndex = ref('2');
+const activeNames=ref('MIE');
+const cySucess=ref(true)
+// 解析函数
+
+onMounted(async () => {
+console.info(smiles)
 });
+
 </script>
 
 <style>
+
 .flex-grow {
   flex-grow: 1;
 }
-
-.Predict-main{
+.SearchResult-main{
   /* 设置图片作为背景 */
-  background-image: url('../assets/back.png');
+  background-image: url('../assets/back-none.png');
   /* 背景设置为覆盖整个容器 */
   min-width: 1080px;
   min-height: 80vh;
@@ -155,12 +142,28 @@ const selectedComponent = computed(() => {
   /* //height: 500px; 根据需要设置高度 */
 }
 
+/* 自定义折叠面板容器的背景色 */
+.custom-collapse {
+  background-color: #f0f0f0; /* 设置折叠面板容器的背景色 */
+}
+.custom-collapse .el-collapse-item__header {
+  padding: 5%; /* 调整标题文本的内边距，使其与边框之间有一定间距 */
+}
+/* 可以根据需要设置折叠面板标题和内容的样式 */
+.custom-collapse .el-collapse-item__header {
+  background-color: #939292; /* 设置折叠面板标题的背景色 */
+  color: #fff; /* 设置折叠面板标题的文本颜色 */
+  font-size: 16px;
+}
+.custom-collapse .el-collapse-item__content {
+  font-size: 14px; /* 设置折叠面板内部文字的大小 */
+}
 .footer {
   min-width: 1080px;
   margin-left: -8px;
   margin-right: -8px;
   margin-bottom: -8px;
-  background-color: #4d4d50;
+  background-color: #2b5e8d;
   padding: 15px 0;
   text-align: center;
 }
@@ -168,7 +171,7 @@ const selectedComponent = computed(() => {
 .footer-content {
   display: flex;
   justify-content: space-around;
-  min-width:60%;
+  max-width: 1200px;
   margin: 0 auto;
 }
 

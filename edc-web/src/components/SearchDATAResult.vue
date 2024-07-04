@@ -271,7 +271,7 @@ onMounted(async () => {
   background-image: url('../assets/back-none.png');
   /* 背景设置为覆盖整个容器 */
   min-width: 1080px;
-  height: 80vh;
+  min-height:80vh;
   background-size: cover;
   background-position: center;
   /* //height: 500px; 根据需要设置高度 */

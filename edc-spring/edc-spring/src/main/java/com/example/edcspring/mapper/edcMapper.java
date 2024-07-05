@@ -2,6 +2,7 @@ package com.example.edcspring.mapper;
 
 import com.example.edcspring.entity.AOPData;
 import com.example.edcspring.entity.EventData;
+import com.example.edcspring.entity.PredictAOP;
 import com.example.edcspring.entity.TestData;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -41,6 +42,7 @@ public interface edcMapper {
     List<TestData> combinedFilter(@Param("endpoint") List<String> endpoint,
                                   @Param("assay") List<String> assay,
                                   @Param("activity") String activity);
-
+    @Select("SELECT * FROM predict_aop")
+    List<PredictAOP> getPredictAOP();
 
 }

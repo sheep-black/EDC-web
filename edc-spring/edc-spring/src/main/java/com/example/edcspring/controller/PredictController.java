@@ -1,4 +1,5 @@
 package com.example.edcspring.controller;
+import com.example.edcspring.entity.PredictAOP;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.example.edcspring.entity.TestData;
 import com.example.edcspring.mapper.edcMapper;
@@ -13,8 +14,12 @@ import java.util.Map;
 
 @RestController
 public class PredictController {
-
-    @GetMapping("/Predict")
+    @Autowired
+    private edcMapper edcMapper;
+    @GetMapping("/getPredictAOP")
+    public List<PredictAOP> getPredictAOP() {
+        return edcMapper.getPredictAOP();
+    }
     public Map<String, String> processString(@RequestParam String input) {
         // 调用 Python 脚本
         String result = callPythonScript(input);

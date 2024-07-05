@@ -63,7 +63,9 @@
 
       <el-main class="SearchResult-main">
         {{ smiles }}
-
+        <div>
+          <div ref="cyContainer" style="width: 80%; height:60vh; border: 1px solid black;"></div>
+        </div>
 
       </el-main>
     </el-container>
@@ -118,12 +120,158 @@ const AO=ref([]);
 const activeIndex = ref('2');
 const activeNames=ref('MIE');
 const cySucess=ref(true)
-// 解析函数
+const terminalNodes = ref(new Set());
+// 根据 WOE 值获取边的宽度
+const getEdgeWidth = (WOE) => {
+  switch (WOE) {
+    case 'high':
+      return 6;
+    case 'moderate':
+      return 3;
+    case 'low':
+      return 1;
+    default:
+      return 2;
+  }
+};
+
+// 转换数据格式并设置元素
+const fetchData = () => {
+  const nodes = [];
+  const edges = [];
+  const nodeSet = new Set();
+  const outgoingEdges = new Map(); // 记录每个节点的出度
+
+  // 初始化节点和边
+  Data.value.forEach(row => {
+    if (!nodeSet.has(row.source)) {
+      nodes.push({ data: { id: row.source } });
+      nodeSet.add(row.source);
+      outgoingEdges.set(row.source, 0);
+    }
+    if (!nodeSet.has(row.target)) {
+      nodes.push({ data: { id: row.target } });
+      nodeSet.add(row.target);
+      outgoingEdges.set(row.target, 0);
+    }
+
+    const width = getEdgeWidth(row.woe);
+    edges.push({
+      data: {
+        id: `edge-${row.id}`,
+        source: row.source,
+        target: row.target,
+        width: width
+      }
+    });
+
+    // 增加出度
+    outgoingEdges.set(row.source, outgoingEdges.get(row.source) + 1);
+  });
+
+  // 找出所有“终点”节点
+  outgoingEdges.forEach((outDegree, node) => {
+    if (outDegree === 0) {
+      terminalNodes.value.add(node);
+    }
+  });
+
+  // 将终点节点的 type 属性设置为 "terminal"
+  terminalNodes.value.forEach(id => {
+    const node = nodes.find(n => n.data.id === id);
+    if (node) {
+      node.data.type = 'terminal';
+    }
+  });
+
+  elements.value = [...nodes, ...edges];
+};
+
+
 
 onMounted(async () => {
-console.info(smiles)
-});
+  try {
+    const response = await axios.get(`/getPredictAOP`);
+    Data.value = response.data;
+    fetchData();
 
+    const cy =cytoscape({
+      container: cyContainer.value, // 使用 ref 引用的容器
+      elements: elements.value,
+      style: [
+        {
+          selector: 'node',
+          style: {
+            'background-color': '#666',
+            'label': 'data(id)'
+          }
+        },
+        {
+          selector: 'node[type="terminal"]', // 选择 type 为 terminal 的节点
+          style: {
+            'background-color': 'red'
+          }
+        },
+        {
+          selector: 'edge',
+          style: {
+            'width': 'data(width)',
+            'line-color': '#ccc',
+            'target-arrow-shape': 'triangle', // 添加箭头
+            'target-arrow-color': '#ccc', // 箭头颜色
+            'curve-style': 'bezier' // 使用贝塞尔曲线
+          }
+        }
+      ],
+
+    });
+// 使用 concentric 布局将终点节点放置在外圈
+    cy.layout({
+      name: 'concentric',
+      concentric: function (node) {
+        return node.data('type') === 'terminal' ? 1 : 2;
+      },
+      levelWidth: function (nodes) {
+        return 1;
+      },
+      spacingFactor: 1.5, // 节点之间的间距因子
+      avoidOverlap: true, // 避免节点重叠
+      animate: true, // 动画效果
+      animationDuration: 1000 // 动画持续时间
+    }).run();
+
+    // 使用 force-directed 布局排列中间节点
+    cy.layout({
+      name: 'cose',
+      fit: true, // 是否适应窗口大小
+      padding: 30, // 布局的填充
+      animate: true, // 动画效果
+      animationDuration: 1000, // 动画持续时间
+      randomize: false, // 是否随机化初始位置
+      nodeRepulsion: function (node) {
+        return 2048;
+      },
+      idealEdgeLength: function (edge) {
+        return 32;
+      },
+      edgeElasticity: function (edge) {
+        return 32;
+      },
+      nestingFactor: 1.2,
+      gravity: 1,
+      numIter: 1000,
+      initialTemp: 200,
+      coolingFactor: 0.95,
+      minTemp: 1.0
+    }).run();
+    cySucess.value = true; // 更新加载状态
+
+  } catch (error) {
+    console.error('获取数据失败:', error);
+  } finally {
+    console.info("data", Data.value);
+  }
+});
 </script>
 
 <style>

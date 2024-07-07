@@ -330,7 +330,7 @@ const initCytoscape = (elements) => {
           selector: 'node[type="root"]',
           style: {
             'shape': 'diamond',  //
-            'background-color': '#f5d6ff',  // 黄色背景
+            'background-color': '#f5d6ff',
             'label': 'data(label)',
             'text-valign': 'center',
             'text-halign': 'center',

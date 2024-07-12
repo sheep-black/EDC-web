@@ -1,5 +1,4 @@
 <template>
-  <div  class="common-layout" >
     <el-container style="margin-top: -2px;">
       <el-header>
         <!--        头部菜单栏-->
@@ -60,12 +59,47 @@
           </el-menu-item>
         </el-menu>
       </el-header>
+      <el-main class="PredictResult-main" style="display: grid;align-items: center; /* 垂直居中 */">
+        <el-row :gutter="20"
+                style="display: flex;
+                       justify-content: center; /* 水平居中 */
+                       align-items: center; /* 垂直居中 */
+                       ;
+                        ">
+          <el-col :span="12" style="display: flex;justify-content: center;align-items: center;">
 
-      <el-main class="SearchResult-main">
-        {{ smiles }}
-        <div>
-          <div ref="cyContainer" style="width: 80%; height:60vh; border: 1px solid black;"></div>
-        </div>
+            <el-card style="width: 80%;height: 100%">
+              <template #header>
+                <div style="height: 15px">
+                  <span>Input Smiles: {{ smiles }}</span>
+                </div>
+              </template>
+              <div ref="cyContainer" style="width: 100%;height:450px;"></div>
+            </el-card>
+          </el-col>
+          <el-col :span="12" >
+            <el-card style="width: 80%;height: 100%">
+              <template #header>
+                <div class="card-header">
+                  <span>Information</span>
+                </div>
+              </template>
+              <div>
+                <p>
+                  Node_type: {{ clickNode ? clickNode.data().type : ' ' }}
+                </p>
+                <p>
+                  Node_id: {{ clickNode ? clickNode.data().id : ' ' }}
+                </p>
+
+              </div>
+
+              <template #footer>Footer content</template>
+            </el-card>
+          </el-col>
+        </el-row>
+
+
 
       </el-main>
     </el-container>
@@ -93,19 +127,17 @@
         </div>
       </div>
     </footer>
-
-  </div>
-
 </template>
 
 <script  setup>
 
-import {nextTick, onMounted, ref} from 'vue'
+import {onMounted, ref} from 'vue'
 import router from '../router'
 
-import { useRoute } from 'vue-router';
+import {useRoute} from 'vue-router';
 import axios from "axios";
 import cytoscape from "cytoscape";
+
 const Data = ref([]);
 const route = useRoute();
 const loading = ref(true); // 用于控制加载状态
@@ -122,6 +154,7 @@ const activeNames=ref('MIE');
 const cySucess=ref(true)
 const terminalNodes = ref(new Set());
 const startNodes = ref(new Set());
+const clickNode = ref(null);
 // 根据 WOE 值获取边的宽度
 const getEdgeWidth = (WOE) => {
   switch (WOE) {
@@ -302,8 +335,8 @@ onMounted(async () => {
     });
     // 添加节点点击事件监听器
     cy.on('tap', 'node', function(evt){
-      const node = evt.target;
-      console.log('Node clicked:', node.data());
+      clickNode.value = evt.target;
+      console.log('Node clicked:', clickNode.value.data());
     });
 // 布局终点节点
     const terminalNodes = cy.nodes('[type="AO"]');
@@ -406,14 +439,15 @@ onMounted(async () => {
 .flex-grow {
   flex-grow: 1;
 }
-.SearchResult-main{
-  /* 设置图片作为背景 */
+.PredictResult-main{
+
   background-image: url('../assets/back-none.png');
   /* 背景设置为覆盖整个容器 */
   min-width: 1080px;
   min-height: 80vh;
   background-size: cover;
   background-position: center;
+
   /* //height: 500px; 根据需要设置高度 */
 }
 

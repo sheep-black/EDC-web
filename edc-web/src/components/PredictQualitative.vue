@@ -188,10 +188,10 @@ onMounted(async () => {
       elements: elements.value,
       style: [
         {
-          selector: 'node[type="AO"]', // 选择 type 为 AO 的节点
+          selector: 'node[type="AO"][activity="active"]', // 选择 type 为 AO且活性 的节点
           style: {
             'shape': 'ellipse',
-            'background-color': '#73cfff',
+            'background-color': '#ff9595',
             'label': 'data(id)',
             'text-valign': 'center',
             'text-halign': 'center',
@@ -252,7 +252,7 @@ onMounted(async () => {
             'width': 'data(width)',
             'line-color': '#b6b6b6',
             'target-arrow-shape': 'triangle', // 添加箭头
-            'target-arrow-color': '#ccc', // 箭头颜色
+            'target-arrow-color': '#8d8d8d', // 箭头颜色
             'curve-style': 'bezier' // 使用贝塞尔曲线
           }
         }

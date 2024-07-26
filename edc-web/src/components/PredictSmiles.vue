@@ -9,16 +9,8 @@ import router from "@/router/index.js";
 const handleSearch = async () => {
   const keyword = encodeURIComponent(SearchText.value)
   console.info('搜索关键词:', keyword);
+  router.push('/PredictResult/' + keyword);
 
-  try {
-    const response = await axios.get(`/Predict?input=${keyword}`);
-    console.info('response:', response.data.result);
-  } catch (error) {
-    console.error('Error searching:', error);
-  } finally {
-    await router.push('/PredictResult/' + keyword);
-    showTable.value = true;
-  }
 };
 
 const handleRowClick=()=>{

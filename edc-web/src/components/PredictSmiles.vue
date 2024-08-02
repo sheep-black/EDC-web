@@ -8,8 +8,7 @@ const showDialog = ref(false);
 import router from "@/router/index.js";
 const handleSearch = async () => {
   const keyword = encodeURIComponent(SearchText.value)
-  const response = await axios.get(`/PredictDX?input=${keyword}`);
-  console.info("response",response);
+
   console.info('搜索关键词:', keyword);
   router.push('/PredictResult/' + keyword);
 

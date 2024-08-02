@@ -1,8 +1,8 @@
 <template>
    <el-row :gutter="20"
-                style="display: flex;
-                       justify-content: center; /* 水平居中 */
-                       align-items: center; /* 垂直居中 */">
+           style="display: flex;justify-content: center; /* 水平居中 */align-items: center; /* 垂直居中 */"
+           v-loading="loading"
+           element-loading-text="Waiting in Line...">
           <el-col :span="12" style="display: flex;justify-content: center;align-items: center;">
             <el-card style="width: 80%;height: 100%">
               <template #header>
@@ -49,7 +49,7 @@
               <template #footer>Footer content</template>
             </el-card>
           </el-col>
-        </el-row>
+   </el-row>
 </template>
 
 <script  setup>
@@ -102,7 +102,6 @@ const fetchData = () => {
 
   // 初始化节点和边
   Data.value.forEach(row => {
-
     if (!nodeSet.has(row.source)) {
       if(row.source !== "EDCs"){//跳过EDCs
         nodes.push({ data: { id: row.source } });
@@ -179,10 +178,12 @@ const fetchData = () => {
 
 onMounted(async () => {
   try {
+    const predictresponse = await axios.get(`/PredictDX?input=${smiles}`);
+    console.info("predictresponse",predictresponse);
     const response = await axios.get(`/getPredictAOP`);
     Data.value = response.data;
+    loading.value = false;
     fetchData();
-
     const cy = cytoscape({
       container: cyContainer.value, // 使用 ref 引用的容器
       elements: elements.value,
@@ -326,29 +327,6 @@ onMounted(async () => {
       minTemp: 1.0 // 最低温度
     }).run();
 
-
-
-//     // 使用 concentric 布局将终点、起点和中间节点放置在同心圆上
-//     cy.layout({
-//       name: 'concentric',
-//       concentric: function (node) {
-//         if (node.data('type') === 'MIE') {
-//           return 3; // 起点节点在最内圈
-//         } else if (node.data('type') === 'KE') {
-//           return 2; // 中间节点在中间圈
-//         } else if (node.data('type') === 'AO') {
-//           return 1; // 终点节点在最外圈
-//         }
-//       },
-//       levelWidth: function (nodes) {
-//         return 1;
-//       },
-//       minNodeSpacing: 50, // 增加节点之间的最小间距
-//       spacingFactor: 0.8, // 增加间距因子
-//       avoidOverlap: true, // 避免节点重叠
-//       animate: true, // 动画效果
-//       animationDuration: 1000 // 动画持续时间
-//     }).run();
     cySucess.value = true; // 更新加载状态
 
   } catch (error) {
@@ -361,84 +339,10 @@ onMounted(async () => {
 </script>
 
 <style>
-
-.flex-grow {
-  flex-grow: 1;
-}
-.PredictResult-main{
-
-  background-image: url('../assets/back-none.png');
-  /* 背景设置为覆盖整个容器 */
-  min-width: 1080px;
-  min-height: 80vh;
-  background-size: cover;
-  background-position: center;
-
-  /* //height: 500px; 根据需要设置高度 */
-}
-
-/* 自定义折叠面板容器的背景色 */
-.custom-collapse {
-  background-color: #f0f0f0; /* 设置折叠面板容器的背景色 */
-}
-.custom-collapse .el-collapse-item__header {
-  padding: 5%; /* 调整标题文本的内边距，使其与边框之间有一定间距 */
-}
-/* 可以根据需要设置折叠面板标题和内容的样式 */
-.custom-collapse .el-collapse-item__header {
-  background-color: #939292; /* 设置折叠面板标题的背景色 */
-  color: #fff; /* 设置折叠面板标题的文本颜色 */
-  font-size: 16px;
-}
-.custom-collapse .el-collapse-item__content {
-  font-size: 14px; /* 设置折叠面板内部文字的大小 */
-}
-.footer {
-  min-width: 1080px;
-  margin-left: -8px;
-  margin-right: -8px;
-  margin-bottom: -8px;
-  background-color: #2b5e8d;
-  padding: 15px 0;
-  text-align: center;
-}
-
-.footer-content {
-  display: flex;
-  justify-content: space-around;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.footer-section {
-  flex: 1;
-}
-
-.footer-section h3 {
-  font-size: 18px;
-  margin-bottom: 10px;
-}
-
-.footer-section p {
-  margin: 5px 0;
-}
-
-.footer-section ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-.footer-section ul li {
-  margin-bottom: 5px;
-}
-
-.footer-section ul li a {
-  color: #ffffff;
-  text-decoration: none;
-}
-
-.footer-section ul li a:hover {
-  text-decoration: underline;
+.el-loading-spinner .el-loading-text {
+  color: var(--el-color-primary);
+  font-size: 14px;
+  margin: 3px 0;
 }
 
 

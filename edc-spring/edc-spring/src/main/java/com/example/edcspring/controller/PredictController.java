@@ -5,9 +5,7 @@ import com.example.edcspring.entity.TestData;
 import com.example.edcspring.mapper.edcMapper;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +22,6 @@ public class PredictController {
     @GetMapping("/PredictDX")
     public Map<String, String> processString(@RequestParam String input) {
         // 调用 .exe 文件
-        System.out.println(input);
         String result = callExeFile(input);
         Map<String, String> response = new HashMap<>();
         response.put("result", result);
@@ -41,17 +38,30 @@ public class PredictController {
             pb.redirectOutput(new File("output.log")); // 将标准输出重定向到文件
             pb.redirectError(new File("error.log")); // 将错误输出重定向到文件
             Process process = pb.start();
-
             int exitCode = process.waitFor();
-
             if (exitCode != 0) {
                 return "Error: Process exited with code " + exitCode;
             }
-            return "Process completed successfully.";
+            // 读取生成的 JSON 文件
+            String jsonFilePath = "scripts/model/DX/qualitative_model_runs.json"; // 假设生成的文件名为 output.json
+            return readJsonFile(jsonFilePath);
         } catch (Exception e) {
             e.printStackTrace();
             return "Error processing string: " + e.getMessage();
         }
+    }
+    private String readJsonFile(String filePath) {
+        StringBuilder jsonContent = new StringBuilder();
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                jsonContent.append(line);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "Error reading JSON file: " + e.getMessage();
+        }
+        return jsonContent.toString(); // 返回 JSON 内容
     }
 
 

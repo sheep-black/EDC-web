@@ -179,8 +179,9 @@ const fetchData = () => {
 onMounted(async () => {
   try {
     const predictresponse = await axios.get(`/PredictDX?input=${smiles}`);
-    console.info("predictresponse",predictresponse);
+    console.info("predictresponse",predictresponse.data.result);
     const response = await axios.get(`/getPredictAOP`);
+    console.info("response.data",response.data);
     Data.value = response.data;
     loading.value = false;
     fetchData();

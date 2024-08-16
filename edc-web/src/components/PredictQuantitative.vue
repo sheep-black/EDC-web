@@ -1,55 +1,53 @@
 <template>
-   <el-row :gutter="20"
-                style="display: flex;
-                       justify-content: center; /* 水平居中 */
-                       align-items: center; /* 垂直居中 */">
-          <el-col :span="12" style="display: flex;justify-content: center;align-items: center;">
-            <el-card style="width: 80%;height: 100%">
-              <template #header>
-                <div style="height: 15px">
-                  <strong >11111111111111111Input Smiles: </strong> {{ smiles }}
-                </div>
-              </template>
-              <div ref="cyContainer" style="width: 100%;height:450px;"></div>
-              <template #footer>
-                <strong>
-                  Prediction Result:
-                </strong>
-              </template>
-            </el-card>
-          </el-col>
-          <el-col :span="12" >
-            <el-card style="width: 80%;height: 100%">
-              <template #header>
-                <div class="card-header">
-                  <span>Information</span>
-                </div>
-              </template>
-              <div>
-                <p>
-                  <strong>
-                    Node_type:
-                  </strong>
-                   {{ clickNode ? clickNode.data().type : ' ' }}
-                </p>
-                <p>
-                  <strong>
-                    Node_id:
-                  </strong>
-                   {{ clickNode ? clickNode.data().id : ' ' }}
-                </p>
-                <p>
-                  <strong>
-                    Activity:
-                  </strong>
-                  {{ clickNode ? clickNode.data().activity : ' ' }}
-                </p>
-              </div>
-
-              <template #footer>Footer content</template>
-            </el-card>
-          </el-col>
-        </el-row>
+  <el-row :gutter="20"
+          style="display: flex;justify-content: center; /* 水平居中 */align-items: center; /* 垂直居中 */"
+          v-loading="loading"
+          element-loading-text="Waiting in Line...">
+    <el-col :span="12" style="display: flex;justify-content: center;align-items: center;">
+      <el-card style="width: 80%;height: 100%">
+        <template #header>
+          <div style="height: 15px">
+            <strong >Input Smiles111111111111111: </strong> {{ smiles }}
+          </div>
+        </template>
+        <div ref="cyContainer" style="width: 100%;height:450px;"></div>
+        <template #footer>
+          <strong>
+            Prediction Result: {{ PreReslut }}
+          </strong>
+        </template>
+      </el-card>
+    </el-col>
+    <el-col :span="12" >
+      <el-card style="width: 80%;height: 100%">
+        <template #header>
+          <div class="card-header">
+            <span>Information</span>
+          </div>
+        </template>
+        <div>
+          <p>
+            <strong>
+              Node_type:
+            </strong>
+            {{ clickNode ? clickNode.data().type : ' ' }}
+          </p>
+          <p>
+            <strong>
+              Node_id:
+            </strong>
+            {{ clickNode ? clickNode.data().id : ' ' }}
+          </p>
+          <p>
+            <strong>
+              Activity:
+            </strong>
+            {{ clickNode ? clickNode.data().activity : ' ' }}
+          </p>
+        </div>
+      </el-card>
+    </el-col>
+  </el-row>
 </template>
 
 <script  setup>
@@ -61,23 +59,18 @@ import {useRoute} from 'vue-router';
 import axios from "axios";
 import cytoscape from "cytoscape";
 
-const Data = ref([]);
+const AOP_Data = ref([]);
 const route = useRoute();
 const loading = ref(true); // 用于控制加载状态
 const smiles = route.params.smiles;
-const dataLoaded = ref(false);
 const cyContainer = ref(null);
-const cyInstance = ref(null); // Cytoscape 实例
 const elements = ref([]);
-const MIE=ref([]);
-const KE=ref([]);
-const AO=ref([]);
-const activeIndex = ref('2');
-const activeNames=ref('MIE');
+const Node_Act=ref('0');
 const cySucess=ref(true)
 const terminalNodes = ref(new Set());
 const startNodes = ref(new Set());
 const clickNode = ref(null);
+const PreReslut=ref('');
 // 根据 WOE 值获取边的宽度
 const getEdgeWidth = (WOE) => {
   switch (WOE) {
@@ -88,7 +81,7 @@ const getEdgeWidth = (WOE) => {
     case 'low':
       return 1;
     default:
-      return 2;
+      return 1;
   }
 };
 
@@ -101,8 +94,7 @@ const fetchData = () => {
   const incomingEdges = new Map(); // 记录每个节点的入度
 
   // 初始化节点和边
-  Data.value.forEach(row => {
-
+  AOP_Data.value.forEach(row => {
     if (!nodeSet.has(row.source)) {
       if(row.source !== "EDCs"){//跳过EDCs
         nodes.push({ data: { id: row.source } });
@@ -118,11 +110,11 @@ const fetchData = () => {
       outgoingEdges.set(row.target, 0);
       incomingEdges.set(row.target, 0);
     }
-    const width = getEdgeWidth(row.woe);
+    const width = getEdgeWidth(row.WOE);
     if(row.source !== "EDCs"){
       edges.push({
         data: {
-          id: `edge-${row.id}`,
+          value: row.value,
           source: row.source,
           target: row.target,
           width: width
@@ -170,70 +162,123 @@ const fetchData = () => {
       node.data.type = 'KE';
     }
   });
-  // （假设）将所有的节点的活性设置为1
+  // 根据 Node_Act 设置节点的活性
   nodes.forEach(node => {
-      node.data.activity = 'active';
+    const activityStatus = Node_Act.value[node.data.id];
+    // console.info("activityStatus",activityStatus);
+    node.data.activity = activityStatus === 0 ? 'inactive' : 'active';
   });
+
   elements.value = [...nodes, ...edges];
+  console.info("ele",elements)
 };
 
 onMounted(async () => {
   try {
-    const response = await axios.get(`/getPredictAOP`);
-    Data.value = response.data;
+    const predictresponse = await axios.get(`/PredictDL?input=${smiles}`);
+    // 解析 result 字符串为对象
+    const resultObject = JSON.parse(predictresponse.data.result);
+    console.info("resultObject",resultObject);
+    // const response = await axios.get(`/getPredictAOP`);
+    // console.info("response.data",response.data);
+    AOP_Data.value = resultObject.AOP;
+    Node_Act.value = resultObject.endpoints;
+    if(resultObject.pred===1){
+      PreReslut.value='EDC(1)'
+    }else{
+      PreReslut.value='no-EDC(0)'
+    }
+    loading.value = false;
     fetchData();
-
     const cy = cytoscape({
       container: cyContainer.value, // 使用 ref 引用的容器
       elements: elements.value,
       style: [
         {
-          selector: 'node[type="AO"]', // 选择 type 为 AO 的节点
+          selector: 'node[type="AO"][activity="active"]', // 选择 type 为 AO且活性 的节点
           style: {
             'shape': 'ellipse',
-            'background-color': '#73cfff',
+            'background-color': '#ff8e8e',
             'label': 'data(id)',
             'text-valign': 'center',
             'text-halign': 'center',
-            'color': '#000000',
+            'color': '#2c2c2c',
             'font-size': '30px',
             'font-weight': 'bold',
             'width': '200px',
             'height': '100px',
             'text-wrap': 'wrap',
             'text-max-width': '140px',
-            'border-width': '2px',
-            'border-color': '#000000',
+            'border-width': '8px',
+            'border-color': '#2c2c2c',
           }
         },
         {
-          selector: 'node[type="MIE"]', // 选择 type 为 start 的节点
+          selector: 'node[type="AO"][activity="inactive"]', // 选择 type 为 AO且活性 的节点
           style: {
-            'shape': 'diamond',  //
-            'background-color': '#f5d6ff',
+            'shape': 'ellipse',
+            'background-color': '#73cfff',
             'label': 'data(id)',
             'text-valign': 'center',
             'text-halign': 'center',
-            'color': '#000000',  // 黑色文本
+            'color': '#2c2c2c',
+            'font-size': '30px',
+            'font-weight': 'bold',
+            'width': '200px',
+            'height': '100px',
+            'text-wrap': 'wrap',
+            'text-max-width': '140px',
+            'border-width': '8px',
+            'border-color': '#2c2c2c', // 根据活性设置边框颜色
+          }
+        },
+
+        {
+          selector: 'node[type="MIE"][activity="active"]', // 选择 type 为 start 的节点
+          style: {
+            'shape': 'diamond',  //
+            'background-color': '#ff8e8e',
+            'label': 'data(id)',
+            'text-valign': 'center',
+            'text-halign': 'center',
+            'color': '#2c2c2c',  // 黑色文本
             'font-size': '30px', // 增大字体大小
             'font-weight': 'bold', // 加粗字体
             'width': '320px',
             'height': '150px',
             'text-wrap': 'wrap',
             'text-max-width': '120px', // 限制文本最大宽度
-            'border-width': '2px',  // 设置边框宽度
-            'border-color': '#000000',  // 设置边框颜色
-            'z-index': 10 // 确保边在节点之上
+            'border-width': '8px',  // 设置边框宽度
+            'border-color': '#2c2c2c',
           }
         },
         {
-          selector: 'node[type="KE"]', // 选择 type 为 KE 的节点
+          selector: 'node[type="MIE"][activity="inactive"]', // 选择 type 为 start 的节点
           style: {
-            'background-color': '#7eabd2',
+            'shape': 'diamond',  //
+            'background-color': '#f5d6ff',
             'label': 'data(id)',
             'text-valign': 'center',
             'text-halign': 'center',
-            'color': '#000000',  // 黑色文本
+            'color': '#2c2c2c',  // 黑色文本
+            'font-size': '30px', // 增大字体大小
+            'font-weight': 'bold', // 加粗字体
+            'width': '320px',
+            'height': '150px',
+            'text-wrap': 'wrap',
+            'text-max-width': '120px', // 限制文本最大宽度
+            'border-width': '8px',  // 设置边框宽度
+            'border-color': '#2c2c2c',
+          }
+        },
+        {
+          selector: 'node[type="KE"][activity="active"]', // 选择 type 为 KE 的节点
+          style: {
+            'background-color': '#ff8e8e',
+            'label': 'data(id)',
+            'text-valign': 'center',
+            'text-halign': 'center',
+            'color': '#2c2c2c',  // 黑色文本
             'font-size': '30px', // 增大字体大小
             'font-weight': 'bold', // 加粗字体
             'width': '180px',
@@ -241,8 +286,28 @@ onMounted(async () => {
             'shape': 'round-rectangle', // 设置为圆角矩形
             'text-wrap': 'wrap',
             'text-max-width': '140px', // 限制文本最大宽度
-            'border-width': '2px',  // 设置边框宽度
-            'border-color': '#000000',  // 设置边框颜色
+            'border-width': '8px',  // 设置边框宽度
+            'border-color': '#2c2c2c',
+            'border-radius': '20px', // 设置圆角半径
+          }
+        },
+        {
+          selector: 'node[type="KE"][activity="inactive"]', // 选择 type 为 KE 的节点
+          style: {
+            'background-color': '#7eabd2',
+            'label': 'data(id)',
+            'text-valign': 'center',
+            'text-halign': 'center',
+            'color': '#2c2c2c',  // 黑色文本
+            'font-size': '30px', // 增大字体大小
+            'font-weight': 'bold', // 加粗字体
+            'width': '180px',
+            'height': '100px',
+            'shape': 'round-rectangle', // 设置为圆角矩形
+            'text-wrap': 'wrap',
+            'text-max-width': '140px', // 限制文本最大宽度
+            'border-width': '8px',  // 设置边框宽度
+            'border-color': '#2c2c2c',
             'border-radius': '20px', // 设置圆角半径
           }
         },
@@ -250,10 +315,18 @@ onMounted(async () => {
           selector: 'edge',
           style: {
             'width': 'data(width)',
-            'line-color': '#b6b6b6',
+            'line-color': '#464646',
             'target-arrow-shape': 'triangle', // 添加箭头
-            'target-arrow-color': '#ccc', // 箭头颜色
-            'curve-style': 'bezier' // 使用贝塞尔曲线
+            'target-arrow-color': '#424242', // 箭头颜色
+            'curve-style': 'bezier', // 使用贝塞尔曲线
+            'line-style': function(ele) {
+              const value = ele.data('value');
+              return value === 0 ? 'dotted' :
+                  value === 0.5 ? 'dashed' :
+                      'solid'; // 默认实线
+            },
+            'dash-pattern':'10 1',
+            'opacity': 'data(value)',
           }
         }
       ],
@@ -326,119 +399,22 @@ onMounted(async () => {
       minTemp: 1.0 // 最低温度
     }).run();
 
-
-
-//     // 使用 concentric 布局将终点、起点和中间节点放置在同心圆上
-//     cy.layout({
-//       name: 'concentric',
-//       concentric: function (node) {
-//         if (node.data('type') === 'MIE') {
-//           return 3; // 起点节点在最内圈
-//         } else if (node.data('type') === 'KE') {
-//           return 2; // 中间节点在中间圈
-//         } else if (node.data('type') === 'AO') {
-//           return 1; // 终点节点在最外圈
-//         }
-//       },
-//       levelWidth: function (nodes) {
-//         return 1;
-//       },
-//       minNodeSpacing: 50, // 增加节点之间的最小间距
-//       spacingFactor: 0.8, // 增加间距因子
-//       avoidOverlap: true, // 避免节点重叠
-//       animate: true, // 动画效果
-//       animationDuration: 1000 // 动画持续时间
-//     }).run();
     cySucess.value = true; // 更新加载状态
 
   } catch (error) {
     console.error('获取数据失败:', error);
   } finally {
-    console.info("data", Data.value);
+    console.info("data", AOP_Data.value);
   }
 });
 
 </script>
 
 <style>
-
-.flex-grow {
-  flex-grow: 1;
-}
-.PredictResult-main{
-
-  background-image: url('../assets/back-none.png');
-  /* 背景设置为覆盖整个容器 */
-  min-width: 1080px;
-  min-height: 80vh;
-  background-size: cover;
-  background-position: center;
-
-  /* //height: 500px; 根据需要设置高度 */
-}
-
-/* 自定义折叠面板容器的背景色 */
-.custom-collapse {
-  background-color: #f0f0f0; /* 设置折叠面板容器的背景色 */
-}
-.custom-collapse .el-collapse-item__header {
-  padding: 5%; /* 调整标题文本的内边距，使其与边框之间有一定间距 */
-}
-/* 可以根据需要设置折叠面板标题和内容的样式 */
-.custom-collapse .el-collapse-item__header {
-  background-color: #939292; /* 设置折叠面板标题的背景色 */
-  color: #fff; /* 设置折叠面板标题的文本颜色 */
-  font-size: 16px;
-}
-.custom-collapse .el-collapse-item__content {
-  font-size: 14px; /* 设置折叠面板内部文字的大小 */
-}
-.footer {
-  min-width: 1080px;
-  margin-left: -8px;
-  margin-right: -8px;
-  margin-bottom: -8px;
-  background-color: #2b5e8d;
-  padding: 15px 0;
-  text-align: center;
-}
-
-.footer-content {
-  display: flex;
-  justify-content: space-around;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.footer-section {
-  flex: 1;
-}
-
-.footer-section h3 {
-  font-size: 18px;
-  margin-bottom: 10px;
-}
-
-.footer-section p {
-  margin: 5px 0;
-}
-
-.footer-section ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-.footer-section ul li {
-  margin-bottom: 5px;
-}
-
-.footer-section ul li a {
-  color: #ffffff;
-  text-decoration: none;
-}
-
-.footer-section ul li a:hover {
-  text-decoration: underline;
+.el-loading-spinner .el-loading-text {
+  color: var(--el-color-primary);
+  font-size: 14px;
+  margin: 3px 0;
 }
 
 

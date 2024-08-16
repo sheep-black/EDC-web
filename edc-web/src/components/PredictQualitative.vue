@@ -12,9 +12,11 @@
               </template>
               <div ref="cyContainer" style="width: 100%;height:450px;"></div>
               <template #footer>
-                <strong>
-                  Prediction Result:
-                </strong>
+                <div style="display: flex;justify-content: center; /* 水平居中 */">
+                  <el-button @click="saveAsPNG">Save As PNG</el-button>
+                  <el-button @click="saveAsJSON">Save As JSON</el-button>
+                  <el-button @click="">Export CSV</el-button>
+                </div>
               </template>
             </el-card>
           </el-col>
@@ -44,9 +46,38 @@
                   </strong>
                   {{ clickNode ? clickNode.data().activity : ' ' }}
                 </p>
+                <p>
+                  <strong>
+                    Node_name:
+                  </strong>
+                  {{ clickNode ? clickNode.data().id  : ' ' }}
+                </p>
               </div>
-
-              <template #footer>Footer content</template>
+              <template #footer>
+                <strong>
+                  Predict Result :  {{ PreReslut }}
+                </strong>
+              </template>
+            </el-card>
+            <el-card style="width: 80%;height: 100%;margin-top: 2%">
+              <template #header>
+                <div class="card-header">
+                  <span>Introduction</span>
+                </div>
+              </template>
+<!--              <div>-->
+<!--                <p>-->
+<!--                  <strong>-->
+<!--                    Node_type:-->
+<!--                  </strong>-->
+<!--                  {{ clickNode ? clickNode.data().type : ' ' }}-->
+<!--                </p>-->
+<!--              </div>-->
+              <el-carousel height="150px" autoplay="false">
+                <el-carousel-item v-for="item in 4" :key="item" >
+                  <h3 style="text-align: center;" text="2xl">{{ item }}</h3>
+                </el-carousel-item>
+              </el-carousel>
             </el-card>
           </el-col>
    </el-row>
@@ -72,19 +103,41 @@ const cySucess=ref(true)
 const terminalNodes = ref(new Set());
 const startNodes = ref(new Set());
 const clickNode = ref(null);
-// 根据 WOE 值获取边的宽度
+const PreReslut=ref('');
+const cysvg=ref(null);
+const cy = ref(null); // 用于存储 Cytoscape 实例
 const getEdgeWidth = (WOE) => {
   switch (WOE) {
     case 'high':
-      return 12;
-    case 'moderate':
       return 6;
+    case 'moderate':
+      return 3;
     case 'low':
-      return 2;
+      return 1;
     default:
-      return 4;
+      return 1;
   }
 };
+
+const saveAsPNG = () => {
+  const pngData = cy.value.png({quality:1,full:true }); // 设置 scale 参数来提高分辨率
+  const link = document.createElement('a');
+  link.href = pngData; // 将 PNG 数据作为链接
+  link.download = 'graph.png'; // 设置文件名
+  document.body.appendChild(link);
+  link.click(); // 触发下载
+  document.body.removeChild(link); // 下载后移除链接
+};
+const saveAsJSON = () => {
+  const pngData = cy.value.json(); // 设置 scale 参数来提高分辨率
+  const link = document.createElement('a');
+  link.href = pngData; // 将 PNG 数据作为链接
+  link.download = 'export.json'; // 设置文件名
+  document.body.appendChild(link);
+  link.click(); // 触发下载
+  document.body.removeChild(link); // 下载后移除链接
+};
+
 
 // 转换数据格式并设置元素
 const fetchData = () => {
@@ -168,7 +221,6 @@ const fetchData = () => {
     const activityStatus = Node_Act.value[node.data.id];
     // console.info("activityStatus",activityStatus);
     node.data.activity = activityStatus === 0 ? 'inactive' : 'active';
-    node.data.actColor = activityStatus === 0 ? '#2c2c2c' : '#ff1616';
   });
 
   elements.value = [...nodes, ...edges];
@@ -180,26 +232,31 @@ onMounted(async () => {
     const predictresponse = await axios.get(`/PredictDX?input=${smiles}`);
     // 解析 result 字符串为对象
     const resultObject = JSON.parse(predictresponse.data.result);
-    console.info("resultObject",resultObject.AOP);
-    const response = await axios.get(`/getPredictAOP`);
-    console.info("response.data",response.data);
+    console.info("resultObject",resultObject);
+    // const response = await axios.get(`/getPredictAOP`);
+    // console.info("response.data",response.data);
     AOP_Data.value = resultObject.AOP;
     Node_Act.value = resultObject.endpoints;
+    if(resultObject.pred===1){
+      PreReslut.value='EDC'
+    }else{
+      PreReslut.value='no-EDC'
+    }
     loading.value = false;
     fetchData();
-    const cy = cytoscape({
+    cy.value = cytoscape({
       container: cyContainer.value, // 使用 ref 引用的容器
       elements: elements.value,
       style: [
         {
-          selector: 'node[type="AO"]', // 选择 type 为 AO且活性 的节点
+          selector: 'node[type="AO"][activity="active"]', // 选择 type 为 AO且活性 的节点
           style: {
             'shape': 'ellipse',
-            'background-color': '#73cfff',
+            'background-color': '#ff8e8e',
             'label': 'data(id)',
             'text-valign': 'center',
             'text-halign': 'center',
-            'color': 'data(actColor)',
+            'color': '#2c2c2c',
             'font-size': '30px',
             'font-weight': 'bold',
             'width': '200px',
@@ -207,18 +264,38 @@ onMounted(async () => {
             'text-wrap': 'wrap',
             'text-max-width': '140px',
             'border-width': '8px',
-            'border-color': 'data(actColor)', // 根据活性设置边框颜色
+            'border-color': '#2c2c2c',
           }
         },
         {
-          selector: 'node[type="MIE"]', // 选择 type 为 start 的节点
+          selector: 'node[type="AO"][activity="inactive"]', // 选择 type 为 AO且活性 的节点
           style: {
-            'shape': 'diamond',  //
-            'background-color': '#f5d6ff',
+            'shape': 'ellipse',
+            'background-color': '#73cfff',
             'label': 'data(id)',
             'text-valign': 'center',
             'text-halign': 'center',
-            'color': 'data(actColor)',  // 黑色文本
+            'color': '#2c2c2c',
+            'font-size': '30px',
+            'font-weight': 'bold',
+            'width': '200px',
+            'height': '100px',
+            'text-wrap': 'wrap',
+            'text-max-width': '140px',
+            'border-width': '8px',
+            'border-color': '#2c2c2c', // 根据活性设置边框颜色
+          }
+        },
+
+        {
+          selector: 'node[type="MIE"][activity="active"]', // 选择 type 为 start 的节点
+          style: {
+            'shape': 'diamond',  //
+            'background-color': '#ff8e8e',
+            'label': 'data(id)',
+            'text-valign': 'center',
+            'text-halign': 'center',
+            'color': '#2c2c2c',  // 黑色文本
             'font-size': '30px', // 增大字体大小
             'font-weight': 'bold', // 加粗字体
             'width': '320px',
@@ -226,18 +303,36 @@ onMounted(async () => {
             'text-wrap': 'wrap',
             'text-max-width': '120px', // 限制文本最大宽度
             'border-width': '8px',  // 设置边框宽度
-            'border-color': 'data(actColor)', // 根据活性设置边框颜色
-            'z-index': 10 // 确保边在节点之上
+            'border-color': '#2c2c2c',
           }
         },
         {
-          selector: 'node[type="KE"]', // 选择 type 为 KE 的节点
+          selector: 'node[type="MIE"][activity="inactive"]', // 选择 type 为 start 的节点
           style: {
-            'background-color': '#7eabd2',
+            'shape': 'diamond',  //
+            'background-color': '#f5d6ff',
             'label': 'data(id)',
             'text-valign': 'center',
             'text-halign': 'center',
-            'color': 'data(actColor)',  // 黑色文本
+            'color': '#2c2c2c',  // 黑色文本
+            'font-size': '30px', // 增大字体大小
+            'font-weight': 'bold', // 加粗字体
+            'width': '320px',
+            'height': '150px',
+            'text-wrap': 'wrap',
+            'text-max-width': '120px', // 限制文本最大宽度
+            'border-width': '8px',  // 设置边框宽度
+            'border-color': '#2c2c2c',
+          }
+        },
+        {
+          selector: 'node[type="KE"][activity="active"]', // 选择 type 为 KE 的节点
+          style: {
+            'background-color': '#ff8e8e',
+            'label': 'data(id)',
+            'text-valign': 'center',
+            'text-halign': 'center',
+            'color': '#2c2c2c',  // 黑色文本
             'font-size': '30px', // 增大字体大小
             'font-weight': 'bold', // 加粗字体
             'width': '180px',
@@ -246,7 +341,27 @@ onMounted(async () => {
             'text-wrap': 'wrap',
             'text-max-width': '140px', // 限制文本最大宽度
             'border-width': '8px',  // 设置边框宽度
-            'border-color': 'data(actColor)', // 根据活性设置边框颜色
+            'border-color': '#2c2c2c',
+            'border-radius': '20px', // 设置圆角半径
+          }
+        },
+        {
+          selector: 'node[type="KE"][activity="inactive"]', // 选择 type 为 KE 的节点
+          style: {
+            'background-color': '#7eabd2',
+            'label': 'data(id)',
+            'text-valign': 'center',
+            'text-halign': 'center',
+            'color': '#2c2c2c',  // 黑色文本
+            'font-size': '30px', // 增大字体大小
+            'font-weight': 'bold', // 加粗字体
+            'width': '180px',
+            'height': '100px',
+            'shape': 'round-rectangle', // 设置为圆角矩形
+            'text-wrap': 'wrap',
+            'text-max-width': '140px', // 限制文本最大宽度
+            'border-width': '8px',  // 设置边框宽度
+            'border-color': '#2c2c2c',
             'border-radius': '20px', // 设置圆角半径
           }
         },
@@ -254,23 +369,31 @@ onMounted(async () => {
           selector: 'edge',
           style: {
             'width': 'data(width)',
-            'line-color': '#b6b6b6',
+            'line-color': '#464646',
             'target-arrow-shape': 'triangle', // 添加箭头
-            'target-arrow-color': '#262626', // 箭头颜色
+            'target-arrow-color': '#424242', // 箭头颜色
             'curve-style': 'bezier', // 使用贝塞尔曲线
-            'opacity': 'data(value)' // 设置边的透明度为 50%
+            'line-style': function(ele) {
+              const value = ele.data('value');
+              return value === 0 ? 'dotted' :
+                  value === 0.5 ? 'dashed' :
+                      'solid'; // 默认实线
+            },
+            'dash-pattern':'10 1',
+            'opacity': 'data(value)',
           }
         }
       ],
       wheelSensitivity: 0.2 // 调整滚轮缩放的灵敏度
     });
+    console.info("cy",cy)
     // 添加节点点击事件监听器
-    cy.on('tap', 'node', function(evt){
+    cy.value.on('tap', 'node', function(evt){
       clickNode.value = evt.target;
-      console.log('Node clicked:', clickNode.value.data());
+      // console.log('Node clicked:', clickNode.value.data());
     });
 // 布局终点节点
-    const terminalNodes = cy.nodes('[type="AO"]');
+    const terminalNodes = cy.value.nodes('[type="AO"]');
     let centerX=0;
     let centerY=0;
     terminalNodes.layout({
@@ -286,12 +409,11 @@ onMounted(async () => {
         const boundingBox = terminalNodes.boundingBox();
         centerX = boundingBox.x1 + (boundingBox.w / 2);
         centerY = boundingBox.y1 + (boundingBox.h / 2);
-        console.log('圆心坐标:', { centerX, centerY });
       }
     }).run();
 
 // 布局中间节点和起始节点
-    const nonTerminalNodes = cy.nodes('[type != "AO"]');
+    const nonTerminalNodes = cy.value.nodes('[type != "AO"]');
     const radius = 1200; // 圆的半径
     nonTerminalNodes.layout({
       name: 'cose',
@@ -330,13 +452,12 @@ onMounted(async () => {
       coolingFactor: 0.95, // 冷却因子
       minTemp: 1.0 // 最低温度
     }).run();
-
     cySucess.value = true; // 更新加载状态
-
   } catch (error) {
     console.error('获取数据失败:', error);
   } finally {
-    console.info("data", AOP_Data.value);
+    // console.info("data", AOP_Data.value);
+
   }
 });
 
@@ -348,6 +469,12 @@ onMounted(async () => {
   font-size: 14px;
   margin: 3px 0;
 }
+.el-carousel__item:nth-child(2n) {
+  background-color: #c1d8f6;
+}
 
+.el-carousel__item:nth-child(2n + 1) {
+  background-color: #f3f3f3;
+}
 
 </style>

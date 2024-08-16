@@ -20,15 +20,22 @@ public class PredictController {
         return edcMapper.getPredictAOP();
     }
     @GetMapping("/PredictDX")
-    public Map<String, String> processString(@RequestParam String input) {
+    public Map<String, String> processStringDX(@RequestParam String input) {
         // 调用 .exe 文件
-        String result = callExeFile(input);
+        String result = callExeFileDX(input);
         Map<String, String> response = new HashMap<>();
         response.put("result", result);
         return response;
     }
-
-    private String callExeFile(String input) {
+    @GetMapping("/PredictDL")
+    public Map<String, String> processStringDL(@RequestParam String input) {
+        // 调用 .exe 文件
+        String result = callExeFileDL(input);
+        Map<String, String> response = new HashMap<>();
+        response.put("result", result);
+        return response;
+    }
+    private String callExeFileDX(String input) {
         try {
             String exePath = "scripts/model/DX/DX.exe";
             // 设置工作目录
@@ -44,6 +51,28 @@ public class PredictController {
             }
             // 读取生成的 JSON 文件
             String jsonFilePath = "scripts/model/DX/qualitative_model_runs.json"; // 假设生成的文件名为 output.json
+            return readJsonFile(jsonFilePath);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Error processing string: " + e.getMessage();
+        }
+    }
+    private String callExeFileDL(String input) {
+        try {
+            String exePath = "scripts/model/DL/DL.exe";
+            // 设置工作目录
+            File workingDirectory = new File("scripts/model/DL/");
+            ProcessBuilder pb = new ProcessBuilder(exePath, input);
+            pb.directory(workingDirectory); // 设置工作目录
+            pb.redirectOutput(new File("output.log")); // 将标准输出重定向到文件
+            pb.redirectError(new File("error.log")); // 将错误输出重定向到文件
+            Process process = pb.start();
+            int exitCode = process.waitFor();
+            if (exitCode != 0) {
+                return "Error: Process exited with code " + exitCode;
+            }
+            // 读取生成的 JSON 文件
+            String jsonFilePath = "scripts/model/DL/qualitative_model_runs.json"; // 假设生成的文件名为 output.json
             return readJsonFile(jsonFilePath);
         } catch (Exception e) {
             e.printStackTrace();

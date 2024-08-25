@@ -65,19 +65,39 @@
                   <span>Introduction</span>
                 </div>
               </template>
-<!--              <div>-->
-<!--                <p>-->
-<!--                  <strong>-->
-<!--                    Node_type:-->
-<!--                  </strong>-->
-<!--                  {{ clickNode ? clickNode.data().type : ' ' }}-->
-<!--                </p>-->
-<!--              </div>-->
-              <el-carousel height="150px" autoplay="false">
-                <el-carousel-item v-for="item in 4" :key="item" >
-                  <h3 style="text-align: center;" text="2xl">{{ item }}</h3>
-                </el-carousel-item>
-              </el-carousel>
+              <div>
+                <p>
+                  <strong>
+                    MIE:
+                  </strong>
+                  what is MIE
+                </p>
+                <p>
+                  <strong>
+                    AO:
+                  </strong>
+                  what is AO
+                </p>
+                <p>
+                  <strong>
+                    KE:
+                  </strong>
+                  what is KE
+                </p>
+                <p>
+                  <strong>
+                    Activity:
+                  </strong>
+                  what is Activity
+                </p>
+
+
+              </div>
+<!--              <el-carousel height="150px" autoplay="false">-->
+<!--                <el-carousel-item v-for="item in 4" :key="item" >-->
+<!--                  <h3 style="text-align: center;" text="2xl">{{ item }}</h3>-->
+<!--                </el-carousel-item>-->
+<!--              </el-carousel>-->
             </el-card>
           </el-col>
    </el-row>

@@ -6,8 +6,21 @@
           <el-col :span="12" style="display: flex;justify-content: center;align-items: center;">
             <el-card style="width: 80%;height: 100%">
               <template #header>
-                <div style="height: 15px">
-                  <strong >Input Smiles: </strong> {{ smiles }}
+                <div style="position: relative; height: 15px;">
+                  <strong>Input Smiles: </strong> {{ smiles }}
+                  <el-popover
+                      placement="right-start"
+                      title="Tips"
+                      :width="350"
+                      trigger="hover"
+                      content="Click on the node to view detailed information"
+                  >
+                    <template #reference>
+                      <el-icon style="font-size: 20px; position: absolute; right: 0; top: 0; cursor: pointer;">
+                        <Warning />
+                      </el-icon>
+                    </template>
+                  </el-popover>
                 </div>
               </template>
               <div ref="cyContainer" style="width: 100%;height:450px;"></div>
@@ -24,7 +37,20 @@
             <el-card style="width: 80%;height: 100%">
               <template #header>
                 <div class="card-header">
-                  <span>Information</span>
+                  <span>
+                    Information
+                    <el-popover
+                        placement="right-start"
+                        title="About Node"
+                        :width="300"
+                        trigger="hover"
+                        content="Detailed information of predicted nodes">
+                      <template #reference>
+                        <el-icon style="font-size: 18px;position: relative;top: 2px;"><InfoFilled /></el-icon>
+                      </template>
+                    </el-popover>
+                  </span>
+
                 </div>
               </template>
               <div>
@@ -111,6 +137,7 @@ import router from '../router'
 import {useRoute} from 'vue-router';
 import axios from "axios";
 import cytoscape from "cytoscape";
+import {ElMessage} from "element-plus";
 
 const AOP_Data = ref([]);
 const route = useRoute();
@@ -253,10 +280,10 @@ onMounted(async () => {
     // 解析 result 字符串为对象
     const resultObject = JSON.parse(predictresponse.data.result);
     console.info("resultObject",resultObject);
-    // const response = await axios.get(`/getPredictAOP`);
-    // console.info("response.data",response.data);
     AOP_Data.value = resultObject.AOP;
     Node_Act.value = resultObject.endpoints;
+    console.info("Node_Act",Node_Act.value );
+
     if(resultObject.pred===1){
       PreReslut.value='EDC'
     }else{
@@ -475,6 +502,12 @@ onMounted(async () => {
     cySucess.value = true; // 更新加载状态
   } catch (error) {
     console.error('获取数据失败:', error);
+    ElMessage({
+      showClose: true,
+      message: 'Oops! Prediction error, please try again later.',
+      type: 'error',
+      duration:0,
+    })
   } finally {
     // console.info("data", AOP_Data.value);
 

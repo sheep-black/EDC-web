@@ -6,15 +6,30 @@
     <el-col :span="12" style="display: flex;justify-content: center;align-items: center;">
       <el-card style="width: 80%;height: 100%">
         <template #header>
-          <div style="height: 15px">
-            <strong >Input Smiles111111111111111: </strong> {{ smiles }}
+          <div style="position: relative; height: 15px;">
+            <strong>Input Smiles: </strong> {{ smiles }}
+            <el-popover
+                placement="right-start"
+                title="Tips"
+                :width="350"
+                trigger="hover"
+                content="Click on the node to view detailed information"
+            >
+              <template #reference>
+                <el-icon style="font-size: 20px; position: absolute; right: 0; top: 0; cursor: pointer;">
+                  <Warning />
+                </el-icon>
+              </template>
+            </el-popover>
           </div>
         </template>
         <div ref="cyContainer" style="width: 100%;height:450px;"></div>
         <template #footer>
-          <strong>
-            Prediction Result: {{ PreReslut }}
-          </strong>
+          <div style="display: flex;justify-content: center; /* 水平居中 */">
+            <el-button @click="saveAsPNG">Save As PNG</el-button>
+            <el-button @click="saveAsJSON">Save As JSON</el-button>
+            <el-button @click="">Export CSV</el-button>
+          </div>
         </template>
       </el-card>
     </el-col>
@@ -22,7 +37,20 @@
       <el-card style="width: 80%;height: 100%">
         <template #header>
           <div class="card-header">
-            <span>Information</span>
+                  <span>
+                    Information
+                    <el-popover
+                        placement="right-start"
+                        title="About Node"
+                        :width="300"
+                        trigger="hover"
+                        content="Detailed information of predicted nodes">
+                      <template #reference>
+                        <el-icon style="font-size: 18px;position: relative;top: 2px;"><InfoFilled /></el-icon>
+                      </template>
+                    </el-popover>
+                  </span>
+
           </div>
         </template>
         <div>
@@ -44,7 +72,58 @@
             </strong>
             {{ clickNode ? clickNode.data().activity : ' ' }}
           </p>
+          <p>
+            <strong>
+              Node_name:
+            </strong>
+            {{ clickNode ? clickNode.data().id  : ' ' }}
+          </p>
         </div>
+        <template #footer>
+          <strong>
+            Predict Result :  {{ PreReslut }}
+          </strong>
+        </template>
+      </el-card>
+      <el-card style="width: 80%;height: 100%;margin-top: 2%">
+        <template #header>
+          <div class="card-header">
+            <span>Introduction</span>
+          </div>
+        </template>
+        <div>
+          <p>
+            <strong>
+              MIE:
+            </strong>
+            what is MIE
+          </p>
+          <p>
+            <strong>
+              AO:
+            </strong>
+            what is AO
+          </p>
+          <p>
+            <strong>
+              KE:
+            </strong>
+            what is KE
+          </p>
+          <p>
+            <strong>
+              Activity:
+            </strong>
+            what is Activity
+          </p>
+
+
+        </div>
+        <!--              <el-carousel height="150px" autoplay="false">-->
+        <!--                <el-carousel-item v-for="item in 4" :key="item" >-->
+        <!--                  <h3 style="text-align: center;" text="2xl">{{ item }}</h3>-->
+        <!--                </el-carousel-item>-->
+        <!--              </el-carousel>-->
       </el-card>
     </el-col>
   </el-row>
@@ -71,7 +150,8 @@ const terminalNodes = ref(new Set());
 const startNodes = ref(new Set());
 const clickNode = ref(null);
 const PreReslut=ref('');
-// 根据 WOE 值获取边的宽度
+const cysvg=ref(null);
+const cy = ref(null); // 用于存储 Cytoscape 实例
 const getEdgeWidth = (WOE) => {
   switch (WOE) {
     case 'high':
@@ -84,6 +164,26 @@ const getEdgeWidth = (WOE) => {
       return 1;
   }
 };
+
+const saveAsPNG = () => {
+  const pngData = cy.value.png({quality:1,full:true }); // 设置 scale 参数来提高分辨率
+  const link = document.createElement('a');
+  link.href = pngData; // 将 PNG 数据作为链接
+  link.download = 'graph.png'; // 设置文件名
+  document.body.appendChild(link);
+  link.click(); // 触发下载
+  document.body.removeChild(link); // 下载后移除链接
+};
+const saveAsJSON = () => {
+  const pngData = cy.value.json(); // 设置 scale 参数来提高分辨率
+  const link = document.createElement('a');
+  link.href = pngData; // 将 PNG 数据作为链接
+  link.download = 'export.json'; // 设置文件名
+  document.body.appendChild(link);
+  link.click(); // 触发下载
+  document.body.removeChild(link); // 下载后移除链接
+};
+
 
 // 转换数据格式并设置元素
 const fetchData = () => {
@@ -175,22 +275,22 @@ const fetchData = () => {
 
 onMounted(async () => {
   try {
-    const predictresponse = await axios.get(`/PredictDL?input=${smiles}`);
+    const predictresponse = await axios.get(`/PredictDX?input=${smiles}`);
     // 解析 result 字符串为对象
     const resultObject = JSON.parse(predictresponse.data.result);
     console.info("resultObject",resultObject);
-    // const response = await axios.get(`/getPredictAOP`);
-    // console.info("response.data",response.data);
     AOP_Data.value = resultObject.AOP;
     Node_Act.value = resultObject.endpoints;
+    console.info("Node_Act",Node_Act.value );
+
     if(resultObject.pred===1){
-      PreReslut.value='EDC(1)'
+      PreReslut.value='EDC'
     }else{
-      PreReslut.value='no-EDC(0)'
+      PreReslut.value='no-EDC'
     }
     loading.value = false;
     fetchData();
-    const cy = cytoscape({
+    cy.value = cytoscape({
       container: cyContainer.value, // 使用 ref 引用的容器
       elements: elements.value,
       style: [
@@ -332,13 +432,14 @@ onMounted(async () => {
       ],
       wheelSensitivity: 0.2 // 调整滚轮缩放的灵敏度
     });
+    console.info("cy",cy)
     // 添加节点点击事件监听器
-    cy.on('tap', 'node', function(evt){
+    cy.value.on('tap', 'node', function(evt){
       clickNode.value = evt.target;
-      console.log('Node clicked:', clickNode.value.data());
+      // console.log('Node clicked:', clickNode.value.data());
     });
 // 布局终点节点
-    const terminalNodes = cy.nodes('[type="AO"]');
+    const terminalNodes = cy.value.nodes('[type="AO"]');
     let centerX=0;
     let centerY=0;
     terminalNodes.layout({
@@ -354,12 +455,11 @@ onMounted(async () => {
         const boundingBox = terminalNodes.boundingBox();
         centerX = boundingBox.x1 + (boundingBox.w / 2);
         centerY = boundingBox.y1 + (boundingBox.h / 2);
-        console.log('圆心坐标:', { centerX, centerY });
       }
     }).run();
 
 // 布局中间节点和起始节点
-    const nonTerminalNodes = cy.nodes('[type != "AO"]');
+    const nonTerminalNodes = cy.value.nodes('[type != "AO"]');
     const radius = 1200; // 圆的半径
     nonTerminalNodes.layout({
       name: 'cose',
@@ -398,13 +498,12 @@ onMounted(async () => {
       coolingFactor: 0.95, // 冷却因子
       minTemp: 1.0 // 最低温度
     }).run();
-
     cySucess.value = true; // 更新加载状态
-
   } catch (error) {
     console.error('获取数据失败:', error);
   } finally {
-    console.info("data", AOP_Data.value);
+    // console.info("data", AOP_Data.value);
+
   }
 });
 
@@ -416,6 +515,12 @@ onMounted(async () => {
   font-size: 14px;
   margin: 3px 0;
 }
+.el-carousel__item:nth-child(2n) {
+  background-color: #c1d8f6;
+}
 
+.el-carousel__item:nth-child(2n + 1) {
+  background-color: #f3f3f3;
+}
 
 </style>

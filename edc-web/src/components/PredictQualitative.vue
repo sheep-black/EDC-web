@@ -17,7 +17,7 @@
                   >
                     <template #reference>
                       <el-icon style="font-size: 20px; position: absolute; right: 0; top: 0; cursor: pointer;">
-                        <Warning />
+                        <InfoFilled />
                       </el-icon>
                     </template>
                   </el-popover>
@@ -36,9 +36,11 @@
           <el-col :span="12" >
             <el-card style="width: 80%;height: 100%">
               <template #header>
-                <div class="card-header">
+                <div style="position: relative;">
                   <span>
-                    Information
+                    <strong>
+                      Information
+                    </strong>
                     <el-popover
                         placement="right-start"
                         title="About Node"
@@ -46,7 +48,9 @@
                         trigger="hover"
                         content="Detailed information of predicted nodes">
                       <template #reference>
-                        <el-icon style="font-size: 18px;position: relative;top: 2px;"><InfoFilled /></el-icon>
+                        <el-icon style="font-size: 20px; position: absolute; right: 0; top: 0; cursor: pointer;">
+                          <InfoFilled />
+                        </el-icon>
                       </template>
                     </el-popover>
                   </span>
@@ -78,6 +82,24 @@
                   </strong>
                   {{ clickNode ? clickNode.data().id  : ' ' }}
                 </p>
+                <p>
+                  <strong>
+                    Node_name2:
+                  </strong>
+                  {{ clickNode ? clickNode.data().id  : ' ' }}
+                </p>
+                <p>
+                  <strong>
+                    Node_name3:
+                  </strong>
+                  {{ clickNode ? clickNode.data().id  : ' ' }}
+                </p>
+                <p>
+                  <strong>
+                    Image:
+                  </strong>
+                  {{ clickNode ? clickNode.data().id  : ' ' }}
+                </p>
               </div>
               <template #footer>
                 <strong>
@@ -85,48 +107,51 @@
                 </strong>
               </template>
             </el-card>
-            <el-card style="width: 80%;height: 100%;margin-top: 2%">
-              <template #header>
-                <div class="card-header">
-                  <span>Introduction</span>
-                </div>
-              </template>
-              <div>
-                <p>
-                  <strong>
-                    MIE:
-                  </strong>
-                  what is MIE
-                </p>
-                <p>
-                  <strong>
-                    AO:
-                  </strong>
-                  what is AO
-                </p>
-                <p>
-                  <strong>
-                    KE:
-                  </strong>
-                  what is KE
-                </p>
-                <p>
-                  <strong>
-                    Activity:
-                  </strong>
-                  what is Activity
-                </p>
-
-
-              </div>
-<!--              <el-carousel height="150px" autoplay="false">-->
-<!--                <el-carousel-item v-for="item in 4" :key="item" >-->
-<!--                  <h3 style="text-align: center;" text="2xl">{{ item }}</h3>-->
-<!--                </el-carousel-item>-->
-<!--              </el-carousel>-->
-            </el-card>
           </el-col>
    </el-row>
+  <el-tooltip class="item" effect="dark" content="Click to view detailed introduction document" placement="left">
+    <el-button
+        type="info"
+        :icon="Document"
+        circle
+        size="large"
+        style="position: fixed; right: 15px; bottom: 20%;box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);font-size: 20px;"
+        @click="openDrawer"
+    />
+  </el-tooltip>
+  <el-drawer
+      v-model="drawer"
+      title="Introduction"
+      size="400px"
+  >
+    <div>
+      <p>
+        <strong>
+          MIE:
+        </strong>
+        what is MIE
+      </p>
+      <p>
+        <strong>
+          AO:
+        </strong>
+        what is AO
+      </p>
+      <p>
+        <strong>
+          KE:
+        </strong>
+        what is KE
+      </p>
+      <p>
+        <strong>
+          Activity:
+        </strong>
+        what is Activity
+      </p>
+    </div>
+    <span>More introduction to add</span>
+  </el-drawer>
 </template>
 
 <script  setup>
@@ -138,6 +163,7 @@ import {useRoute} from 'vue-router';
 import axios from "axios";
 import cytoscape from "cytoscape";
 import {ElMessage} from "element-plus";
+import {Document} from "@element-plus/icons-vue";
 
 const AOP_Data = ref([]);
 const route = useRoute();
@@ -153,6 +179,7 @@ const clickNode = ref(null);
 const PreReslut=ref('');
 const cysvg=ref(null);
 const cy = ref(null); // 用于存储 Cytoscape 实例
+const drawer=ref(false)
 const getEdgeWidth = (WOE) => {
   switch (WOE) {
     case 'high':
@@ -165,9 +192,12 @@ const getEdgeWidth = (WOE) => {
       return 1;
   }
 };
+const openDrawer = () => {
+  drawer.value=true
+};
 
 const saveAsPNG = () => {
-  const pngData = cy.value.png({quality:1,full:true }); // 设置 scale 参数来提高分辨率
+  const pngData = cy.value.png({quality:1,full:true,bg:'white' }); // 设置 scale 参数来提高分辨率
   const link = document.createElement('a');
   link.href = pngData; // 将 PNG 数据作为链接
   link.download = 'graph.png'; // 设置文件名

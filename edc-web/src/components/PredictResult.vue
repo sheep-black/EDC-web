@@ -71,6 +71,7 @@
                   text-shadow: 2px 2px 2px #ffcc66;"
         >
           EDC-Predict  Result
+
         </p>
         <el-radio-group fill="#ffcc66" v-model="selected" text-color="#1e1a1a"
                         style="font-weight: bold;justify-content: center;display: flex;">

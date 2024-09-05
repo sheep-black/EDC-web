@@ -63,12 +63,20 @@
       <el-container class="about-main">
         <el-aside>
           <el-menu
-              default-active="EDC AOP Network"
+              default-active="Basic Information"
               class="el-menu-vertical-demo"
               @select="SelectAbout"
               style="height: 100%;width: 100%"
               active-text-color="#1A6B9AFF"
           >
+            <el-menu-item index="Basic Information" @click="showContent('BasicInfo')" style="display: flex;">
+              <template #title>
+                <el-icon><info-filled /></el-icon>
+                <p style="font-size: 18px;font-weight: bold;">
+                  Basic Information
+                </p>
+              </template>
+            </el-menu-item>
             <el-menu-item index="EDC AOP Network" @click="showContent('Network')" style="display: flex;">
               <template #title>
                 <el-icon><share /></el-icon>
@@ -135,6 +143,8 @@ import { ref, Ref, onMounted } from 'vue';
 import Content1 from './Network.vue';
 import Content2 from './Database.vue';
 import Content3 from './AboutPredict.vue';
+import Content4 from './BasicInfo.vue';
+import {InfoFilled} from "@element-plus/icons-vue";
 const activeIndex = ref('3')
 const selectedContent = ref('');
 const selectedContentComponent = ref('');
@@ -150,11 +160,13 @@ const showContent = (key :string) =>{
     selectedContentComponent.value = <string>Content2;
   } else if (key === 'Predict') {
     selectedContentComponent.value = <string>Content3;
+  } else if(key==='BasicInfo'){
+    selectedContentComponent.value = <string>Content4;
   }
 }
 // 钩子函数 默认加载第一个界面
 onMounted(() => {
-  showContent('Network');
+  showContent('BasicInfo');
 });
 </script>
 

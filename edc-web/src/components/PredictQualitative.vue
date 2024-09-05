@@ -27,8 +27,8 @@
               <template #footer>
                 <div style="display: flex;justify-content: center; /* 水平居中 */">
                   <el-button @click="saveAsPNG">Save As PNG</el-button>
-                  <el-button @click="saveAsJSON">Save As JSON</el-button>
-                  <el-button @click="">Export CSV</el-button>
+                  <el-button @click="resultExport('result.json')">Save As JSON</el-button>
+                  <el-button @click="resultExport('result.xlsx')">Export Xlsx</el-button>
                 </div>
               </template>
             </el-card>
@@ -127,30 +127,53 @@
     <div>
       <p>
         <strong>
-          MIE:
+          Pink Diamond Shaped:
         </strong>
-        what is MIE
+        <p>
+          Node type is MIE
+        </p>
       </p>
       <p>
         <strong>
-          AO:
+          Light Blue Circular Shaped:
         </strong>
-        what is AO
+        <p>
+          Node type is AO
+        </p>
       </p>
       <p>
         <strong>
-          KE:
+          Deep Blue Rectangle Shaped:
         </strong>
-        what is KE
+        <p>
+          Node type is KE
+        </p>
       </p>
       <p>
         <strong>
-          Activity:
+          Red Highlight:
         </strong>
-        what is Activity
+        <p>
+         The node is active
+        </p>
+      </p>
+      <p>
+        <strong>
+          Black Solid Line:
+        </strong>
+        <p>
+          Biological plausibility is High
+        </p>
+      </p>
+      <p>
+        <strong>
+          Gray Dashed Line:
+        </strong>
+        <p>
+          Biological plausibility is Moderate
+        </p>
       </p>
     </div>
-    <span>More introduction to add</span>
   </el-drawer>
 </template>
 
@@ -205,16 +228,30 @@ const saveAsPNG = () => {
   link.click(); // 触发下载
   document.body.removeChild(link); // 下载后移除链接
 };
-const saveAsJSON = () => {
-  const pngData = cy.value.json(); // 设置 scale 参数来提高分辨率
-  const link = document.createElement('a');
-  link.href = pngData; // 将 PNG 数据作为链接
-  link.download = 'export.json'; // 设置文件名
-  document.body.appendChild(link);
-  link.click(); // 触发下载
-  document.body.removeChild(link); // 下载后移除链接
-};
+const resultExport = async (fileName) => {
+  const PreType = 'DX'; // 设置当前预测类型
+  const url = `/downloadPredict?PreType=${PreType}&smiles=${smiles}&fileName=${fileName}`;
+  console.info("predictUrl",url)
+  try {
+    // 使用 axios 发送 GET 请求
+    const response = await axios.get(url, { responseType: 'blob' });
+    // 创建一个 Blob URL
+    const downloadUrl = window.URL.createObjectURL(new Blob([response.data]));
+    // 创建一个链接元素并触发下载
+    const link = document.createElement('a');
+    link.href = downloadUrl;
+    link.setAttribute('download', fileName); // 设置下载文件名
+    document.body.appendChild(link);
+    link.click(); // 触发下载
+    link.remove(); // 移除链接元素
+    // 释放 Blob URL
+    window.URL.revokeObjectURL(downloadUrl);
+  } catch (error) {
+    console.error('Error downloading file:', error);
+    // 这里可以添加错误处理逻辑，比如提示用户
+  }
 
+};
 
 // 转换数据格式并设置元素
 const fetchData = () => {

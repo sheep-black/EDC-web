@@ -80,7 +80,6 @@
         <el-radio-group fill="#ffcc66" v-model="selected" text-color="#1e1a1a"
                         style="font-weight: bold;justify-content: center;display: flex;">
           <el-radio-button label="Inputting a SMILES" value="Smiles" size="large" />
-          <el-radio-button label="Batch import Smiles" value="Batch" size="large" />
           <el-radio-button label="Drawing a molecule in the JSME" value="Drawing" size="large" />
         </el-radio-group>
         <el-divider style="width: 50%;margin: 20px auto;"></el-divider>
@@ -136,8 +135,6 @@ const selectedComponent = computed(() => {
     return PredictSmiles;
   } else if(selected.value === 'Drawing'){
     return PredictDrawing;
-  }else{
-    return PredictBatch;
   }
 });
 </script>

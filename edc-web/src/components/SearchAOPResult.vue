@@ -62,16 +62,47 @@
       </el-header>
 
       <el-main class="SearchResult-main"  v-if="dataLoaded" >
-        <el-row :gutter="20" style="margin-left: 5%">
-          <el-col :span="8">
-            <p style="font-size: 25px;
+        <p style="font-size: 25px;
+                  padding-right: 900px;
+                  font-weight: bold;
+                  justify-content: center;
+                  display: flex;
+                  color: #1e1a1a;
+                  text-shadow: 2px 2px 2px #ffcc66;">
+          Search result
+          <el-link
+              type="warning"
+              :icon="ArrowLeftBold"
+              style="justify-content: center;display: flex;right: -800px; font-size: 20px"
+              @click="router.push('/SearchAOP')">
+            Back to Search
+          </el-link>
+        </p>
+        <el-divider style="margin-top: -5px;min-width: 1080px" />
+        <el-row :gutter="10" style="margin-left: 5%">
+          <el-col :span="10" style="display: flex;align-items: center;justify-content: right;padding-right: 100px"  >
+            <el-card style="width: 500px;">
+              <template #header>
+                <div class="card-header">
+                <span style="display: flex;justify-content: center">
+                  <strong style="margin-right: 5px;">pmid: </strong> {{ Data[0].pmid ? Data[0].pmid : 'null' }}
+                </span>
+                </div>
+              </template>
+              <div v-loading="cySucess">
+                <div ref="cyContainer" style="width: 100%; height:400px; border: 1px solid black;"></div>
+              </div>
+
+            </el-card>
+          </el-col>
+          <el-col :span="14">
+            <p style="font-size: 30px;
                   margin-left: 50px;
                   font-weight: bold;
                   margin-top: -5px;
                   justify-content: left;
                   display: flex;
-                  color: #1e1a1a;
-                  text-shadow: 2px 2px 2px #ffcc66;">
+                  color: #1e1a1a;">
               AOP_ID: #{{ Data[0].aop_ID }}
             </p>
             <div class="AOP_collapse">
@@ -101,22 +132,7 @@
               </el-collapse>
             </div>
           </el-col>
-          <el-col :span="16">
-            <el-card style="width: 90%;">
-              <template #header>
-                <div class="card-header">
-                <span style="display: flex;justify-content: center">
-                  <strong style="margin-right: 5px;">pmid: </strong> {{ Data[0].pmid ? Data[0].pmid : 'null' }}
-                </span>
-                </div>
-              </template>
 
-              <div v-loading="cySucess">
-                <div ref="cyContainer" style="width: 100%; height:60vh; border: 1px solid black;"></div>
-              </div>
-
-            </el-card>
-          </el-col>
 
         </el-row>
 
@@ -159,6 +175,7 @@ import router from '../router'
 import { useRoute } from 'vue-router';
 import axios from "axios";
 import cytoscape from "cytoscape";
+import {ArrowLeftBold} from "@element-plus/icons-vue";
 const Data = ref([]);
 const route = useRoute();
 const loading = ref(true); // 用于控制加载状态

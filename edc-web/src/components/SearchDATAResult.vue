@@ -62,16 +62,85 @@
       </el-header>
       <el-main class="SearchDataResult-main" v-if="dataLoaded">
         <p style="font-size: 25px;
-                  padding-right: 1000px;
+                  padding-right: 900px;
                   font-weight: bold;
                   justify-content: center;
                   display: flex;
                   color: #1e1a1a;
                   text-shadow: 2px 2px 2px #ffcc66;">
           Search result
+          <el-link
+              type="warning"
+              :icon="ArrowLeftBold"
+              style="justify-content: center;display: flex;right: -900px; font-size: 20px"
+              @click="router.push('/SearchDATA')">
+            Back to Search
+          </el-link>
         </p>
         <el-divider style="margin-top: -5px;min-width: 1080px" />
         <el-row :gutter="10" style="margin-left: 10%">
+          <el-col :span="14">
+            <p style="font-size: 30px;
+                  margin-left: 50px;
+                  font-weight: bold;
+                  margin-top: -5px;
+                  justify-content: left;
+                  display: flex;
+                  color: #1e1a1a;">
+              ID:#{{ Data[0].id }}
+            </p>
+            <div class="collapse">
+              <el-collapse v-model="activeNames" class="custom-collapse" accordion>
+                <el-collapse-item title="Smiles" name="Smiles" title-class="custom-title">
+                  <div class="my_intro" style="">
+                    {{ Data[0].smiles }}
+                  </div>
+                </el-collapse-item>
+                <el-collapse-item title="Cas and Name" name="Cas">
+                  <div class="my_intro" style="">
+                    <el-space direction="vertical" style="align-items: baseline">
+                      <el-row >
+                        <strong >Cas:</strong> {{ Data[0].cas }}
+                      </el-row>
+                      <el-row >
+                        <strong>Name:</strong> {{ Data[0].name ? Data[0].name : 'null' }}
+                      </el-row>
+                    </el-space>
+                  </div>
+                </el-collapse-item>
+                <el-collapse-item title="Endpoint, Assay and Source" name="endpoint">
+                  <div class="my_intro" style="">
+                    <el-space direction="vertical" style="align-items: baseline">
+                      <el-row>
+                        <strong>Endpoint:</strong> {{ Data[0].endpoint }}
+                      </el-row>
+                      <el-row>
+                        <strong >Assay:</strong> {{ Data[0].assay }}
+                      </el-row>
+                      <el-row>
+                        <strong>Source:</strong> {{ Data[0].source }}
+                      </el-row>
+                    </el-space>
+                  </div>
+                </el-collapse-item>
+                <el-collapse-item title="Other parameters" name="activity">
+                  <div class="my_intro" style="">
+                    <el-space direction="vertical" style="align-items: baseline">
+                      <el-row>
+                        <strong>Activity:</strong> {{ Data[0].activity }}
+                      </el-row>
+                      <el-row>
+                        <strong>NOAEL:</strong> {{ Data[0].noael ? Data[0].noael : 'null' }}
+                      </el-row>
+                      <el-row>
+                        <strong>Unit:</strong> {{ Data[0].unit ? Data[0].unit : 'null' }}
+                      </el-row>
+                    </el-space>
+                  </div>
+                </el-collapse-item>
+              </el-collapse>
+            </div>
+          </el-col>
           <el-col :span="10" style="display: flex;align-items: center;justify-content: right;padding-right: 100px">
             <el-card style="width: 500px;">
             <template #header>
@@ -81,9 +150,6 @@
                 </span>
               </div>
             </template>
-<!--              <div style="display: flex;justify-content: center">-->
-<!--                <el-image style="width: 350px;" :src=intro_image  />-->
-<!--              </div>-->
               <div id="structure" ref="structure" v-html="svgContent"
                    style="display: flex;justify-content: center;height: 100%"></div>
             <template #footer >
@@ -93,68 +159,7 @@
             </template>
           </el-card>
           </el-col>
-          <el-col :span="14">
-            <p style="font-size: 30px;
-                  margin-left: 50px;
-                  font-weight: bold;
-                  margin-top: -5px;
-                  justify-content: left;
-                  display: flex;
-                  color: #1e1a1a;">
-            ID:#{{ Data[0].id }}
-          </p>
-              <div class="collapse">
-                <el-collapse v-model="activeNames" class="custom-collapse" accordion>
-                  <el-collapse-item title="Smiles" name="Smiles" title-class="custom-title">
-                    <div class="my_intro" style="">
-                        {{ Data[0].smiles }}
-                    </div>
-                  </el-collapse-item>
-                  <el-collapse-item title="Cas and Name" name="Cas">
-                    <div class="my_intro" style="">
-                      <el-space direction="vertical" style="align-items: baseline">
-                        <el-row >
-                          <strong >Cas:</strong> {{ Data[0].cas }}
-                        </el-row>
-                        <el-row >
-                          <strong>Name:</strong> {{ Data[0].name ? Data[0].name : 'null' }}
-                        </el-row>
-                      </el-space>
-                    </div>
-                  </el-collapse-item>
-                  <el-collapse-item title="Endpoint, Assay and Source" name="endpoint">
-                    <div class="my_intro" style="">
-                      <el-space direction="vertical" style="align-items: baseline">
-                        <el-row>
-                          <strong>Endpoint:</strong> {{ Data[0].endpoint }}
-                        </el-row>
-                        <el-row>
-                          <strong >Assay:</strong> {{ Data[0].assay }}
-                        </el-row>
-                        <el-row>
-                          <strong>Source:</strong> {{ Data[0].source }}
-                        </el-row>
-                      </el-space>
-                    </div>
-                  </el-collapse-item>
-                  <el-collapse-item title="Other parameters" name="activity">
-                    <div class="my_intro" style="">
-                      <el-space direction="vertical" style="align-items: baseline">
-                        <el-row>
-                          <strong>Activity:</strong> {{ Data[0].activity }}
-                        </el-row>
-                        <el-row>
-                          <strong>NOAEL:</strong> {{ Data[0].noael ? Data[0].noael : 'null' }}
-                        </el-row>
-                        <el-row>
-                          <strong>Unit:</strong> {{ Data[0].unit ? Data[0].unit : 'null' }}
-                        </el-row>
-                      </el-space>
-                    </div>
-                  </el-collapse-item>
-                </el-collapse>
-              </div>
-          </el-col>
+
         </el-row>
 
       </el-main>
@@ -195,6 +200,7 @@ import router from '../router'
 
 import { useRoute } from 'vue-router';
 import axios from "axios";
+import {ArrowLeftBold} from "@element-plus/icons-vue";
 const Data = ref([]);
 const route = useRoute();
 const loading = ref(true); // 用于控制加载状态
@@ -282,6 +288,7 @@ onMounted(async () => {
  }
 /* 自定义折叠面板容器的背景色 */
 .custom-collapse {
+  width: 700px;
   background-color: #f0f0f0; /* 设置折叠面板容器的背景色 */
 }
 

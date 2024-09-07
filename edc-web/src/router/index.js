@@ -10,6 +10,7 @@ import SearchDATAResult from "../components/SearchDATAResult.vue"
 import SearchAOPResult from "../components/SearchAOPResult.vue"
 import PredictResult from "../components/PredictResult.vue"
 import Predict from '../components/Predict.vue'
+import SearchPredict from "../components/SearchPredict.vue";
 
 
 const routes = [
@@ -51,6 +52,14 @@ const routes = [
         component:SearchDATA,
         meta: {
             title: 'DATA搜索'
+        }
+    },
+    {
+        path:'/SearchPredict',
+        name:'SearchPredict',
+        component:SearchPredict,
+        meta: {
+            title: 'Predict搜索'
         }
     },
     {

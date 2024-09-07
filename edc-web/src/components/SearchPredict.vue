@@ -72,13 +72,13 @@
                   color: #1e1a1a;
                   text-shadow: 2px 2px 2px #ffcc66;"
                   >
-          EDC-AOP  Search
+          Predict-Result  Search
         </p><p style="font-size: 25px;
                   margin-top: -10px;
                   justify-content: center;
                   display: flex;
                   color: #000000;">
-        Begin your AOP data search from over about 130,000 records
+        Begin your Smiles Predict Result search from over about 230,000 records
       </p>
 
         <div style="justify-content: center;display: flex;">
@@ -175,7 +175,7 @@ import {Search} from "@element-plus/icons-vue";
 import router from "@/router/index.js";
 
 const tableData = reactive([]);
-const activeIndex = ref('1-1')
+const activeIndex = ref('1-3')
 const selected = ref('TextSearch')
 const pageSize = ref(20);
 const SearchText = ref('');

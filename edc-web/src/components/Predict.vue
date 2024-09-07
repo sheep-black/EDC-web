@@ -34,6 +34,9 @@
             <el-menu-item index="1-2" style="justify-content: center;" @click="router.push('/SearchDATA')">
               <p style="justify-content: center;">EDC-DATA</p>
             </el-menu-item>
+            <el-menu-item index="1-3" style="justify-content: center;" @click="router.push('/SearchPredict')">
+              <p style="justify-content: center;">Predict-Result</p>
+            </el-menu-item>
           </el-sub-menu>
           <el-menu-item index="2" @click="router.push('/Predict')">
             <template #title>

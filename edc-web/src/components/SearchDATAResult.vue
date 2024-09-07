@@ -33,6 +33,9 @@
             <el-menu-item index="1-2" style="justify-content: center;" @click="router.push('/SearchDATA')">
               <p style="justify-content: center;">EDC-DATA</p>
             </el-menu-item>
+            <el-menu-item index="1-3" style="justify-content: center;" @click="router.push('/SearchPredict')">
+              <p style="justify-content: center;">Predict-Result</p>
+            </el-menu-item>
           </el-sub-menu>
           <el-menu-item index="2" @click="router.push('/Predict')">
             <template #title>
@@ -62,7 +65,7 @@
       </el-header>
       <el-main class="SearchDataResult-main" v-if="dataLoaded">
         <p style="font-size: 25px;
-                  padding-right: 900px;
+                  padding-right: 850px;
                   font-weight: bold;
                   justify-content: center;
                   display: flex;
@@ -72,14 +75,32 @@
           <el-link
               type="warning"
               :icon="ArrowLeftBold"
-              style="justify-content: center;display: flex;right: -900px; font-size: 20px"
+              style="justify-content: center;display: flex;right: -700px; font-size: 20px"
               @click="router.push('/SearchDATA')">
             Back to Search
           </el-link>
         </p>
         <el-divider style="margin-top: -5px;min-width: 1080px" />
         <el-row :gutter="10" style="margin-left: 10%">
-          <el-col :span="14">
+          <el-col :span="10" style="display: flex;align-items: center;justify-content: right;padding-right: 100px">
+            <el-card style="width: 500px;">
+              <template #header>
+                <div class="card-header">
+                <span style="display: flex;justify-content: center">
+                  <strong style="margin-right: 5px;">Name: </strong> {{ Data[0].name ? Data[0].name : 'null' }}
+                </span>
+                </div>
+              </template>
+              <div id="structure" ref="structure" v-html="svgContent"
+                   style="display: flex;justify-content: center;height: 100%"></div>
+              <template #footer >
+              <span style="display: flex;justify-content: center">
+                <strong style="margin-right: 5px;">Cas: </strong> {{ Data[0].cas ? Data[0].cas : 'null' }}
+              </span>
+              </template>
+            </el-card>
+          </el-col>
+          <el-col :span="14" >
             <p style="font-size: 30px;
                   margin-left: 50px;
                   font-weight: bold;
@@ -89,8 +110,8 @@
                   color: #1e1a1a;">
               ID:#{{ Data[0].id }}
             </p>
-            <div class="collapse">
-              <el-collapse v-model="activeNames" class="custom-collapse" accordion>
+            <div class="collapse-DATA">
+              <el-collapse v-model="activeNames" class="custom-collapse" accordion style="width: 500px">
                 <el-collapse-item title="Smiles" name="Smiles" title-class="custom-title">
                   <div class="my_intro" style="">
                     {{ Data[0].smiles }}
@@ -141,25 +162,6 @@
               </el-collapse>
             </div>
           </el-col>
-          <el-col :span="10" style="display: flex;align-items: center;justify-content: right;padding-right: 100px">
-            <el-card style="width: 500px;">
-            <template #header>
-              <div class="card-header">
-                <span style="display: flex;justify-content: center">
-                  <strong style="margin-right: 5px;">Name: </strong> {{ Data[0].name ? Data[0].name : 'null' }}
-                </span>
-              </div>
-            </template>
-              <div id="structure" ref="structure" v-html="svgContent"
-                   style="display: flex;justify-content: center;height: 100%"></div>
-            <template #footer >
-              <span style="display: flex;justify-content: center">
-                <strong style="margin-right: 5px;">Cas: </strong> {{ Data[0].cas ? Data[0].cas : 'null' }}
-              </span>
-            </template>
-          </el-card>
-          </el-col>
-
         </el-row>
 
       </el-main>
@@ -282,7 +284,7 @@ onMounted(async () => {
   background-position: center;
   /* //height: 500px; 根据需要设置高度 */
 }
-.collapse{
+.collapse-DATA{
   width: 80%;
   margin-left: 20px;
  }

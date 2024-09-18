@@ -121,7 +121,7 @@
             <el-link style="margin-left: 15vh;margin-top: 2%" type="primary" @click="router.push('/About')" :underline="false">
               <transition name="fade">
                 <p v-if="isVisible" style="font-size: 25px;margin-top: -5%;font-weight: bold;color: #ffffff;text-shadow: 5px 5px 5px #054079;">
-                  Learn More About PubChem >
+                  Learn More About EDC-Web >
                 </p>
               </transition>
             </el-link>

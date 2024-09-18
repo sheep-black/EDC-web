@@ -110,7 +110,7 @@
             <el-button type="text" @click="handleRowClick(scope.row)">{{ scope.row.id}}</el-button>
           </template>
         </el-table-column>
-        <el-table-column prop="cas" label="Cas" width="120"></el-table-column>
+        <el-table-column prop="cas" label="CAS" width="120"></el-table-column>
         <el-table-column prop="activity" label="Activity" width="100"></el-table-column>
         <el-table-column prop="noael" label="NOAEL" width="100"></el-table-column>
         <el-table-column prop="unit" label="UNIT" width="150"></el-table-column>

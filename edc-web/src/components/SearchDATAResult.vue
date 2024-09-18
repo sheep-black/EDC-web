@@ -95,7 +95,7 @@
                    style="display: flex;justify-content: center;height: 100%"></div>
               <template #footer >
               <span style="display: flex;justify-content: center">
-                <strong style="margin-right: 5px;">Cas: </strong> {{ Data[0].cas ? Data[0].cas : 'null' }}
+                <strong style="margin-right: 5px;">CAS: </strong> {{ Data[0].cas ? Data[0].cas : 'null' }}
               </span>
               </template>
             </el-card>
@@ -117,11 +117,11 @@
                     {{ Data[0].smiles }}
                   </div>
                 </el-collapse-item>
-                <el-collapse-item title="Cas and Name" name="Cas">
+                <el-collapse-item title="CAS and Name" name="CAS">
                   <div class="my_intro" style="">
                     <el-space direction="vertical" style="align-items: baseline">
                       <el-row >
-                        <strong >Cas:</strong> {{ Data[0].cas }}
+                        <strong >CAS:</strong> {{ Data[0].cas }}
                       </el-row>
                       <el-row >
                         <strong>Name:</strong> {{ Data[0].name ? Data[0].name : 'null' }}

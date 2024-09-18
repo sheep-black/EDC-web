@@ -4,7 +4,7 @@ import {reactive, ref, watch} from 'vue';
 import axios from "axios";
 import router from "@/router/index.js";
 
-const selectedOptions = ref('Cas');
+const selectedOptions = ref('CAS');
 const SearchText = ref('');
 const showTable = ref(false);
 const pageSize = ref(20);
@@ -74,7 +74,7 @@ watch([tableData,currentPage, pageSize], () => {
     <el-space wrap>
       <p style="font-size: 14px;font-weight: bold;justify-content: center;display: flex;margin-right: 20px" >Search By</p>
       <el-radio-group v-model="selectedOptions" class="ml-4">
-        <el-radio label="Cas"></el-radio>
+        <el-radio label="CAS"></el-radio>
         <el-radio label="Smiles"></el-radio>
         <el-radio label="Name"></el-radio>
         <el-radio label="Assay"></el-radio>
@@ -102,7 +102,7 @@ watch([tableData,currentPage, pageSize], () => {
           <el-button type="text" @click="handleRowClick(scope.row)">{{ scope.row.id}}</el-button>
         </template>
       </el-table-column>
-      <el-table-column prop="cas" label="Cas" width="120"></el-table-column>
+      <el-table-column prop="cas" label="CAS" width="120"></el-table-column>
       <el-table-column prop="activity" label="Activity" width="100"></el-table-column>
       <el-table-column prop="noael" label="NOAEL" width="100"></el-table-column>
       <el-table-column prop="unit" label="UNIT" width="150"></el-table-column>

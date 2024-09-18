@@ -78,7 +78,7 @@
                   justify-content: center;
                   display: flex;
                   color: #000000;">
-            Quick screening EDC using qualitative screening model
+            Quick screening EDC using qualitative & quantitative screening model
       </p>
         <el-radio-group fill="#ffcc66" v-model="selected" text-color="#1e1a1a"
                         style="font-weight: bold;justify-content: center;display: flex;">

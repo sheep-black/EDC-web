@@ -76,30 +76,30 @@
                   </strong>
                   {{ clickNode ? clickNode.data().activity : ' ' }}
                 </p>
-                <p>
-                  <strong>
-                    Node_name:
-                  </strong>
-                  {{ clickNode ? clickNode.data().id  : ' ' }}
-                </p>
-                <p>
-                  <strong>
-                    Node_name2:
-                  </strong>
-                  {{ clickNode ? clickNode.data().id  : ' ' }}
-                </p>
-                <p>
-                  <strong>
-                    Node_name3:
-                  </strong>
-                  {{ clickNode ? clickNode.data().id  : ' ' }}
-                </p>
-                <p>
-                  <strong>
-                    Image:
-                  </strong>
-                  {{ clickNode ? clickNode.data().id  : ' ' }}
-                </p>
+<!--                <p>-->
+<!--                  <strong>-->
+<!--                    Node_name:-->
+<!--                  </strong>-->
+<!--                  {{ clickNode ? clickNode.data().id  : ' ' }}-->
+<!--                </p>-->
+<!--                <p>-->
+<!--                  <strong>-->
+<!--                    Node_name2:-->
+<!--                  </strong>-->
+<!--                  {{ clickNode ? clickNode.data().id  : ' ' }}-->
+<!--                </p>-->
+<!--                <p>-->
+<!--                  <strong>-->
+<!--                    Node_name3:-->
+<!--                  </strong>-->
+<!--                  {{ clickNode ? clickNode.data().id  : ' ' }}-->
+<!--                </p>-->
+<!--                <p>-->
+<!--                  <strong>-->
+<!--                    Image:-->
+<!--                  </strong>-->
+<!--                  {{ clickNode ? clickNode.data().id  : ' ' }}-->
+<!--                </p>-->
               </div>
               <template #footer>
                 <strong>

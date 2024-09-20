@@ -60,7 +60,7 @@
               <div>
                 <p>
                   <strong>
-                    Node_type:
+                    Type:
                   </strong>
                    {{ clickNode ? clickNode.data().type : ' ' }}
                 </p>
@@ -76,30 +76,24 @@
                   </strong>
                   {{ clickNode ? clickNode.data().activity : ' ' }}
                 </p>
-<!--                <p>-->
-<!--                  <strong>-->
-<!--                    Node_name:-->
-<!--                  </strong>-->
-<!--                  {{ clickNode ? clickNode.data().id  : ' ' }}-->
-<!--                </p>-->
-<!--                <p>-->
-<!--                  <strong>-->
-<!--                    Node_name2:-->
-<!--                  </strong>-->
-<!--                  {{ clickNode ? clickNode.data().id  : ' ' }}-->
-<!--                </p>-->
-<!--                <p>-->
-<!--                  <strong>-->
-<!--                    Node_name3:-->
-<!--                  </strong>-->
-<!--                  {{ clickNode ? clickNode.data().id  : ' ' }}-->
-<!--                </p>-->
-<!--                <p>-->
-<!--                  <strong>-->
-<!--                    Image:-->
-<!--                  </strong>-->
-<!--                  {{ clickNode ? clickNode.data().id  : ' ' }}-->
-<!--                </p>-->
+                <p>
+                  <strong>
+                    MOA:
+                  </strong>
+                  {{ clickNode ? clickNode.data().moa  : ' ' }}
+                </p>
+                <p>
+                  <strong>
+                    Node-Type:
+                  </strong>
+                  {{ clickNode ? clickNode.data().nodetype  : ' ' }}
+                </p>
+                <p>
+                  <strong>
+                    Name:
+                  </strong>
+                  {{ clickNode ? clickNode.data().name  : ' ' }}
+                </p>
               </div>
               <template #footer>
                 <strong>
@@ -194,7 +188,7 @@ const loading = ref(true); // 用于控制加载状态
 const smiles = route.params.smiles;
 const cyContainer = ref(null);
 const elements = ref([]);
-const Node_Act=ref('0');
+const Node_Info=ref('0');
 const cySucess=ref(true)
 const terminalNodes = ref(new Set());
 const startNodes = ref(new Set());
@@ -290,51 +284,54 @@ const fetchData = () => {
       });
     }
 
-    // 增加出度和入度
-    outgoingEdges.set(row.source, outgoingEdges.get(row.source) + 1);
-    incomingEdges.set(row.target, incomingEdges.get(row.target) + 1);
+    // // 增加出度和入度
+    // outgoingEdges.set(row.source, outgoingEdges.get(row.source) + 1);
+    // incomingEdges.set(row.target, incomingEdges.get(row.target) + 1);
   });
-
-  // 找出所有“终点”节点
-  outgoingEdges.forEach((outDegree, node) => {
-    if (outDegree === 0) {
-      terminalNodes.value.add(node);
-    }
-  });
-
-  // 找出所有“起始点”节点
-  incomingEdges.forEach((inDegree, node) => {
-    if (inDegree === 0) {
-      startNodes.value.add(node);
-    }
-  });
-
-  // 将终点节点的 type 属性设置为 "terminal"
-  terminalNodes.value.forEach(id => {
-    const node = nodes.find(n => n.data.id === id);
-    if (node) {
-      node.data.type = 'AO';
-    }
-  });
-
-  // 将起始点节点的 type 属性设置为 "start"
-  startNodes.value.forEach(id => {
-    const node = nodes.find(n => n.data.id === id);
-    if (node) {
-      node.data.type = 'MIE';
-    }
-  });
-  // 将既不是终点也不是起点的节点的 type 属性设置为 "KE"
-  nodes.forEach(node => {
-    if (!terminalNodes.value.has(node.data.id) && !startNodes.value.has(node.data.id)) {
-      node.data.type = 'KE';
-    }
-  });
+  //
+  // // 找出所有“终点”节点
+  // outgoingEdges.forEach((outDegree, node) => {
+  //   if (outDegree === 0) {
+  //     terminalNodes.value.add(node);
+  //   }
+  // });
+  //
+  // // 找出所有“起始点”节点
+  // incomingEdges.forEach((inDegree, node) => {
+  //   if (inDegree === 0) {
+  //     startNodes.value.add(node);
+  //   }
+  // });
+  //
+  // // 将终点节点的 type 属性设置为 "terminal"
+  // terminalNodes.value.forEach(id => {
+  //   const node = nodes.find(n => n.data.id === id);
+  //   if (node) {
+  //     node.data.type = 'AO';
+  //   }
+  // });
+  //
+  // // 将起始点节点的 type 属性设置为 "start"
+  // startNodes.value.forEach(id => {
+  //   const node = nodes.find(n => n.data.id === id);
+  //   if (node) {
+  //     node.data.type = 'MIE';
+  //   }
+  // });
+  // // 将既不是终点也不是起点的节点的 type 属性设置为 "KE"
+  // nodes.forEach(node => {
+  //   if (!terminalNodes.value.has(node.data.id) && !startNodes.value.has(node.data.id)) {
+  //     node.data.type = 'KE';
+  //   }
+  // });
   // 根据 Node_Act 设置节点的活性
   nodes.forEach(node => {
-    const activityStatus = Node_Act.value[node.data.id];
-    // console.info("activityStatus",activityStatus);
+    const activityStatus = Node_Info.value[node.data.id].Activity;
     node.data.activity = activityStatus === 0 ? 'inactive' : 'active';
+    node.data.moa = Node_Info.value[node.data.id].MOA;
+    node.data.name = Node_Info.value[node.data.id].Name;
+    node.data.nodetype = Node_Info.value[node.data.id]['Node-type'];
+    node.data.type = Node_Info.value[node.data.id].Type;
   });
 
   elements.value = [...nodes, ...edges];
@@ -347,9 +344,8 @@ onMounted(async () => {
     // 解析 result 字符串为对象
     const resultObject = JSON.parse(predictresponse.data.result);
     console.info("resultObject",resultObject);
-    AOP_Data.value = resultObject.AOP;
-    Node_Act.value = resultObject.endpoints;
-    console.info("Node_Act",Node_Act.value );
+    AOP_Data.value = resultObject.localAOP;
+    Node_Info.value = resultObject.info;
 
     if(resultObject.pred===1){
       PreReslut.value='EDC'
@@ -500,14 +496,14 @@ onMounted(async () => {
       ],
       wheelSensitivity: 0.2 // 调整滚轮缩放的灵敏度
     });
-    console.info("cy",cy)
+    // console.info("cy",cy)
     // 添加节点点击事件监听器
     cy.value.on('tap', 'node', function(evt){
       clickNode.value = evt.target;
-      // console.log('Node clicked:', clickNode.value.data());
+      console.log('Node clicked:', clickNode.value.data());
     });
 // 布局终点节点
-    const terminalNodes = cy.value.nodes('[type="AO"]');
+    const terminalNodes = cy.value.nodes('[type="KE"]');
     let centerX=0;
     let centerY=0;
     terminalNodes.layout({
@@ -527,7 +523,7 @@ onMounted(async () => {
     }).run();
 
 // 布局中间节点和起始节点
-    const nonTerminalNodes = cy.value.nodes('[type != "AO"]');
+    const nonTerminalNodes = cy.value.nodes('[type != "KE"]');
     const radius = 1200; // 圆的半径
     nonTerminalNodes.layout({
       name: 'cose',

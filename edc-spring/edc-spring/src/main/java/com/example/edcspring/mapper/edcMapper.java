@@ -2,12 +2,9 @@ package com.example.edcspring.mapper;
 
 import com.example.edcspring.entity.AOPData;
 import com.example.edcspring.entity.EventData;
-import com.example.edcspring.entity.PredictAOP;
+import com.example.edcspring.entity.PredictResult;
 import com.example.edcspring.entity.TestData;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.SelectProvider;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
@@ -42,7 +39,14 @@ public interface edcMapper {
     List<TestData> combinedFilter(@Param("endpoint") List<String> endpoint,
                                   @Param("assay") List<String> assay,
                                   @Param("activity") String activity);
-    @Select("SELECT * FROM predict_aop")
-    List<PredictAOP> getPredictAOP();
+    @Select("SELECT * FROM predict_result")
+    List<PredictResult> getPredictResult();
+
+    @Select("SELECT * FROM predict_result WHERE smile = #{smile}")
+    PredictResult findBySmile(String smile);
+
+    @Insert("INSERT INTO predict_result (smile) VALUES (#{smile})")
+    @Options(useGeneratedKeys = true, keyProperty = "id") // 获取自增 ID
+    void insertPredictResult(PredictResult predictResult);
 
 }

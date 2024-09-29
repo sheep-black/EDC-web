@@ -27,8 +27,8 @@
               <template #footer>
                 <div style="display: flex;justify-content: center; /* 水平居中 */">
                   <el-button @click="saveAsPNG">Save As PNG</el-button>
-                  <el-button @click="resultExport('result.json')">Save As JSON</el-button>
-                  <el-button @click="resultExport('result.xlsx')">Export Xlsx</el-button>
+                  <el-button @click="resultExport('runs.json')">Save As JSON</el-button>
+                  <el-button @click="resultExport('runs.xlsx')">Export Xlsx</el-button>
                 </div>
               </template>
             </el-card>
@@ -60,6 +60,12 @@
               <div>
                 <p>
                   <strong>
+                    Name:
+                  </strong>
+                  {{ clickNode ? clickNode.data().name  : ' ' }}
+                </p>
+                <p>
+                  <strong>
                     Type:
                   </strong>
                    {{ clickNode ? clickNode.data().type : ' ' }}
@@ -88,15 +94,16 @@
                   </strong>
                   {{ clickNode ? clickNode.data().nodetype  : ' ' }}
                 </p>
-                <p>
-                  <strong>
-                    Name:
-                  </strong>
-                  {{ clickNode ? clickNode.data().name  : ' ' }}
-                </p>
+                <el-divider>
+                  <p>AD Image</p>
+                </el-divider>
+                <div style="display: grid;place-items: center; /* 水平和垂直居中 */">
+                  <el-image :src="eventImageSrc" :fit="'fill'" class="event-image" style="width: 300px; height: 300px;" >
+                  </el-image>
+                </div>
               </div>
               <template #footer>
-                <strong>
+                <strong style="display: grid;place-items: center; /* 水平和垂直居中 */">
                   Predict Result :  {{ PreReslut }}
                 </strong>
               </template>
@@ -181,7 +188,7 @@ import axios from "axios";
 import cytoscape from "cytoscape";
 import {ElMessage} from "element-plus";
 import {Document} from "@element-plus/icons-vue";
-
+const eventImageSrc=ref("")
 const AOP_Data = ref([]);
 const route = useRoute();
 const loading = ref(true); // 用于控制加载状态
@@ -190,11 +197,8 @@ const cyContainer = ref(null);
 const elements = ref([]);
 const Node_Info=ref('0');
 const cySucess=ref(true)
-const terminalNodes = ref(new Set());
-const startNodes = ref(new Set());
 const clickNode = ref(null);
 const PreReslut=ref('');
-const cysvg=ref(null);
 const cy = ref(null); // 用于存储 Cytoscape 实例
 const drawer=ref(false)
 const getEdgeWidth = (WOE) => {
@@ -246,7 +250,17 @@ const resultExport = async (fileName) => {
   }
 
 };
-
+const getEventImage=async (id) => {
+  const PreType = 'DX'; // 设置当前预测类型
+  const getImageUrl = `/getEventImage?PreType=${PreType}&smiles=${smiles}&id=${id}`;
+  const response = await axios.get(getImageUrl, {
+    responseType: 'blob', // 指定响应类型为 blob
+  });
+  console.info("response",response)
+  // 创建一个 URL 对象来引用 blob 数据
+  const url = URL.createObjectURL(response.data);
+  eventImageSrc.value = url; // 设置图片源
+};
 // 转换数据格式并设置元素
 const fetchData = () => {
   const nodes = [];
@@ -284,46 +298,8 @@ const fetchData = () => {
       });
     }
 
-    // // 增加出度和入度
-    // outgoingEdges.set(row.source, outgoingEdges.get(row.source) + 1);
-    // incomingEdges.set(row.target, incomingEdges.get(row.target) + 1);
   });
-  //
-  // // 找出所有“终点”节点
-  // outgoingEdges.forEach((outDegree, node) => {
-  //   if (outDegree === 0) {
-  //     terminalNodes.value.add(node);
-  //   }
-  // });
-  //
-  // // 找出所有“起始点”节点
-  // incomingEdges.forEach((inDegree, node) => {
-  //   if (inDegree === 0) {
-  //     startNodes.value.add(node);
-  //   }
-  // });
-  //
-  // // 将终点节点的 type 属性设置为 "terminal"
-  // terminalNodes.value.forEach(id => {
-  //   const node = nodes.find(n => n.data.id === id);
-  //   if (node) {
-  //     node.data.type = 'AO';
-  //   }
-  // });
-  //
-  // // 将起始点节点的 type 属性设置为 "start"
-  // startNodes.value.forEach(id => {
-  //   const node = nodes.find(n => n.data.id === id);
-  //   if (node) {
-  //     node.data.type = 'MIE';
-  //   }
-  // });
-  // // 将既不是终点也不是起点的节点的 type 属性设置为 "KE"
-  // nodes.forEach(node => {
-  //   if (!terminalNodes.value.has(node.data.id) && !startNodes.value.has(node.data.id)) {
-  //     node.data.type = 'KE';
-  //   }
-  // });
+
   // 根据 Node_Act 设置节点的活性
   nodes.forEach(node => {
     const activityStatus = Node_Info.value[node.data.id].Activity;
@@ -501,6 +477,7 @@ onMounted(async () => {
     cy.value.on('tap', 'node', function(evt){
       clickNode.value = evt.target;
       console.log('Node clicked:', clickNode.value.data());
+      getEventImage(clickNode.value.data().id)
     });
 // 布局终点节点
     const terminalNodes = cy.value.nodes('[type="KE"]');
@@ -591,6 +568,11 @@ onMounted(async () => {
 
 .el-carousel__item:nth-child(2n + 1) {
   background-color: #f3f3f3;
+}
+.event-image{
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 设置阴影 */
+  border-radius: 8px; /* 可选：设置圆角 */
+  object-fit: fill; /* 适应容器 */
 }
 
 </style>

@@ -7,7 +7,7 @@
       <el-card style="width: 80%;height: 100%">
         <template #header>
           <div style="position: relative; height: 15px;">
-            <strong>Input Smiles1111111111111111: </strong> {{ smiles }}
+            <strong>Input Smiles: </strong> {{ smiles }}
             <el-popover
                 placement="right-start"
                 title="Tips"
@@ -27,8 +27,8 @@
         <template #footer>
           <div style="display: flex;justify-content: center; /* 水平居中 */">
             <el-button @click="saveAsPNG">Save As PNG</el-button>
-            <el-button @click="resultExport('result.json')">Save As JSON</el-button>
-            <el-button @click="resultExport('result.xlsx')">Export Xlsx</el-button>
+            <el-button @click="resultExport('runs.json')">Save As JSON</el-button>
+            <el-button @click="resultExport('runs.xlsx')">Export Xlsx</el-button>
           </div>
         </template>
       </el-card>
@@ -60,7 +60,13 @@
         <div>
           <p>
             <strong>
-              Node_type:
+              Name:
+            </strong>
+            {{ clickNode ? clickNode.data().name  : ' ' }}
+          </p>
+          <p>
+            <strong>
+              Type:
             </strong>
             {{ clickNode ? clickNode.data().type : ' ' }}
           </p>
@@ -78,47 +84,32 @@
           </p>
           <p>
             <strong>
-              Node_name:
+              MOA:
             </strong>
-            {{ clickNode ? clickNode.data().id  : ' ' }}
+            {{ clickNode ? clickNode.data().moa  : ' ' }}
           </p>
           <p>
             <strong>
-              Node_name2:
+              Node-Type:
             </strong>
-            {{ clickNode ? clickNode.data().id  : ' ' }}
+            {{ clickNode ? clickNode.data().nodetype  : ' ' }}
           </p>
-          <p>
-            <strong>
-              Node_name3:
-            </strong>
-            {{ clickNode ? clickNode.data().id  : ' ' }}
-          </p>
-          <p>
-            <strong>
-              Image:
-            </strong>
-            {{ clickNode ? clickNode.data().id  : ' ' }}
-          </p>
+          <el-divider>
+            <p>AD Image</p>
+          </el-divider>
+          <div style="display: grid;place-items: center; /* 水平和垂直居中 */">
+            <el-image :src="eventImageSrc" :fit="'fill'" class="event-image" style="width: 300px; height: 300px;" >
+            </el-image>
+          </div>
         </div>
         <template #footer>
-          <strong>
+          <strong style="display: grid;place-items: center; /* 水平和垂直居中 */">
             Predict Result :  {{ PreReslut }}
           </strong>
         </template>
       </el-card>
     </el-col>
-    <el-divider content-position="left"></el-divider>
-    <el-table :data="tableData" stripe style="width: 80%;">
-      <el-table-column prop="qAOP_Id" label="qAOP_Id" width="180" />
-      <el-table-column prop="MIE" label="MIE" width="180" />
-      <el-table-column prop="KE_1" label="KE_1" width="180" />
-      <el-table-column prop="KE_2" label="KE_2" width="180" />
-      <el-table-column prop="KE_3" label="KE_3" width="180" />
-      <el-table-column prop="KE_4" label="KE_4" width="180" />
-    </el-table>
   </el-row>
-
   <el-tooltip class="item" effect="dark" content="Click to view detailed introduction document" placement="left">
     <el-button
         type="info"
@@ -185,7 +176,6 @@
       </p>
     </div>
   </el-drawer>
-
 </template>
 
 <script  setup>
@@ -198,22 +188,20 @@ import axios from "axios";
 import cytoscape from "cytoscape";
 import {ElMessage} from "element-plus";
 import {Document} from "@element-plus/icons-vue";
-
+const eventImageSrc=ref("")
 const AOP_Data = ref([]);
 const route = useRoute();
 const loading = ref(true); // 用于控制加载状态
 const smiles = route.params.smiles;
 const cyContainer = ref(null);
 const elements = ref([]);
-const Node_Act=ref('0');
+const Node_Info=ref('0');
 const cySucess=ref(true)
-const terminalNodes = ref(new Set());
-const startNodes = ref(new Set());
 const clickNode = ref(null);
 const PreReslut=ref('');
-const cysvg=ref(null);
 const cy = ref(null); // 用于存储 Cytoscape 实例
 const drawer=ref(false)
+const sEvent=ref('');
 const getEdgeWidth = (WOE) => {
   switch (WOE) {
     case 'high':
@@ -240,7 +228,7 @@ const saveAsPNG = () => {
   document.body.removeChild(link); // 下载后移除链接
 };
 const resultExport = async (fileName) => {
-  const PreType = 'DX'; // 设置当前预测类型
+  const PreType = 'DL'; // 设置当前预测类型
   const url = `/downloadPredict?PreType=${PreType}&smiles=${smiles}&fileName=${fileName}`;
   console.info("predictUrl",url)
   try {
@@ -263,8 +251,19 @@ const resultExport = async (fileName) => {
   }
 
 };
-
+const getEventImage=async (id) => {
+  const PreType = 'DL'; // 设置当前预测类型
+  const getImageUrl = `/getEventImage?PreType=${PreType}&smiles=${smiles}&id=${id}`;
+  const response = await axios.get(getImageUrl, {
+    responseType: 'blob', // 指定响应类型为 blob
+  });
+  console.info("response",response)
+  // 创建一个 URL 对象来引用 blob 数据
+  const url = URL.createObjectURL(response.data);
+  eventImageSrc.value = url; // 设置图片源
+};
 // 转换数据格式并设置元素
+
 const fetchData = () => {
   const nodes = [];
   const edges = [];
@@ -272,100 +271,81 @@ const fetchData = () => {
   const outgoingEdges = new Map(); // 记录每个节点的出度
   const incomingEdges = new Map(); // 记录每个节点的入度
 
-  // 初始化节点和边
+  // 初始化节点
   AOP_Data.value.forEach(row => {
     if (!nodeSet.has(row.source)) {
-      if(row.source !== "EDCs"){//跳过EDCs
-        nodes.push({ data: { id: row.source } });
+      if (row.source !== "EDCs") { // 跳过 EDCs
+        nodes.push({data: {id: row.source}});
         nodeSet.add(row.source);
         outgoingEdges.set(row.source, 0);
         incomingEdges.set(row.source, 0);
       }
-
     }
     if (!nodeSet.has(row.target)) {
-      nodes.push({ data: { id: row.target } });
+      nodes.push({data: {id: row.target}});
       nodeSet.add(row.target);
       outgoingEdges.set(row.target, 0);
       incomingEdges.set(row.target, 0);
     }
-    const width = getEdgeWidth(row.WOE);
-    if(row.source !== "EDCs"){
+  });
+
+  // 根据 Node_Act 设置节点的活性
+  nodes.forEach(node => {
+    if (Node_Info.value[node.data.id] == null) {
+      node.data.type = 'gray';
+      console.info("该节点为灰", node);
+    } else {
+      node.data.activity = Node_Info.value[node.data.id].Activity;
+      node.data.moa = Node_Info.value[node.data.id].MOA;
+      node.data.name = Node_Info.value[node.data.id].Name;
+      node.data.nodetype = Node_Info.value[node.data.id]['Node-type'];
+      node.data.type = Node_Info.value[node.data.id].Type;
+    }
+
+  });
+
+
+  // 过滤掉 type 为 "gray" 的节点
+  const filteredNodes = nodes.filter(node => node.data.type !== 'gray');
+
+  // 重新遍历数据以添加边
+  AOP_Data.value.forEach(row => {
+    const sourceNode = filteredNodes.find(node => node.data.id === row.source);
+    const targetNode = filteredNodes.find(node => node.data.id === row.target);
+
+    // 检查源节点和目标节点是否存在于过滤后的节点中
+    if (sourceNode && targetNode) {
+      const width = getEdgeWidth(row.WOE);
       edges.push({
         data: {
-          value: row.value,
           source: row.source,
           target: row.target,
           width: width
         }
       });
     }
-
-    // 增加出度和入度
-    outgoingEdges.set(row.source, outgoingEdges.get(row.source) + 1);
-    incomingEdges.set(row.target, incomingEdges.get(row.target) + 1);
   });
 
-  // 找出所有“终点”节点
-  outgoingEdges.forEach((outDegree, node) => {
-    if (outDegree === 0) {
-      terminalNodes.value.add(node);
-    }
-  });
-
-  // 找出所有“起始点”节点
-  incomingEdges.forEach((inDegree, node) => {
-    if (inDegree === 0) {
-      startNodes.value.add(node);
-    }
-  });
-
-  // 将终点节点的 type 属性设置为 "terminal"
-  terminalNodes.value.forEach(id => {
-    const node = nodes.find(n => n.data.id === id);
-    if (node) {
-      node.data.type = 'AO';
-    }
-  });
-
-  // 将起始点节点的 type 属性设置为 "start"
-  startNodes.value.forEach(id => {
-    const node = nodes.find(n => n.data.id === id);
-    if (node) {
-      node.data.type = 'MIE';
-    }
-  });
-  // 将既不是终点也不是起点的节点的 type 属性设置为 "KE"
-  nodes.forEach(node => {
-    if (!terminalNodes.value.has(node.data.id) && !startNodes.value.has(node.data.id)) {
-      node.data.type = 'KE';
-    }
-  });
-  // 根据 Node_Act 设置节点的活性
-  nodes.forEach(node => {
-    const activityStatus = Node_Act.value[node.data.id];
-    // console.info("activityStatus",activityStatus);
-    node.data.activity = activityStatus === 0 ? 'inactive' : 'active';
-  });
-
-  elements.value = [...nodes, ...edges];
-  console.info("ele",elements)
+  elements.value = [...filteredNodes, ...edges];
+  console.info("ele", elements);
 };
+
+
 
 onMounted(async () => {
   try {
-    const predictresponse = await axios.get(`/PredictDX?input=${smiles}`);
+    const predictresponse = await axios.get(`/PredictDL?input=${smiles}`);
     // 解析 result 字符串为对象
     const resultObject = JSON.parse(predictresponse.data.result);
-    console.info("resultObject",resultObject);
-    AOP_Data.value = resultObject.AOP;
-    Node_Act.value = resultObject.endpoints;
-    console.info("Node_Act",Node_Act.value );
-
-    if(resultObject.pred===1){
-      PreReslut.value='EDC'
-    }else{
-      PreReslut.value='no-EDC'
+    console.info("resultObject", resultObject);
+    AOP_Data.value = resultObject.localAOP;
+    Node_Info.value = resultObject.info;
+    sEvent.value=resultObject.sEvent;
+    console.info("sEvent", sEvent);
+    if (resultObject.pred === 1) {
+      PreReslut.value = 'EDC'
+    } else {
+      PreReslut.value = 'no-EDC'
     }
     loading.value = false;
     fetchData();
@@ -374,7 +354,7 @@ onMounted(async () => {
       elements: elements.value,
       style: [
         {
-          selector: 'node[type="AO"][activity="active"]', // 选择 type 为 AO且活性 的节点
+          selector: 'node[type="AO"]', // 选择 type 为 AO且活性 的节点
           style: {
             'shape': 'ellipse',
             'background-color': '#ff8e8e',
@@ -393,67 +373,9 @@ onMounted(async () => {
           }
         },
         {
-          selector: 'node[type="AO"][activity="inactive"]', // 选择 type 为 AO且活性 的节点
+          selector: 'node[type="KE"]', // 选择 type 为 KE 的节点
           style: {
-            'shape': 'ellipse',
-            'background-color': '#73cfff',
-            'label': 'data(id)',
-            'text-valign': 'center',
-            'text-halign': 'center',
-            'color': '#2c2c2c',
-            'font-size': '30px',
-            'font-weight': 'bold',
-            'width': '200px',
-            'height': '100px',
-            'text-wrap': 'wrap',
-            'text-max-width': '140px',
-            'border-width': '8px',
-            'border-color': '#2c2c2c', // 根据活性设置边框颜色
-          }
-        },
-
-        {
-          selector: 'node[type="MIE"][activity="active"]', // 选择 type 为 start 的节点
-          style: {
-            'shape': 'diamond',  //
-            'background-color': '#ff8e8e',
-            'label': 'data(id)',
-            'text-valign': 'center',
-            'text-halign': 'center',
-            'color': '#2c2c2c',  // 黑色文本
-            'font-size': '30px', // 增大字体大小
-            'font-weight': 'bold', // 加粗字体
-            'width': '320px',
-            'height': '150px',
-            'text-wrap': 'wrap',
-            'text-max-width': '120px', // 限制文本最大宽度
-            'border-width': '8px',  // 设置边框宽度
-            'border-color': '#2c2c2c',
-          }
-        },
-        {
-          selector: 'node[type="MIE"][activity="inactive"]', // 选择 type 为 start 的节点
-          style: {
-            'shape': 'diamond',  //
-            'background-color': '#f5d6ff',
-            'label': 'data(id)',
-            'text-valign': 'center',
-            'text-halign': 'center',
-            'color': '#2c2c2c',  // 黑色文本
-            'font-size': '30px', // 增大字体大小
-            'font-weight': 'bold', // 加粗字体
-            'width': '320px',
-            'height': '150px',
-            'text-wrap': 'wrap',
-            'text-max-width': '120px', // 限制文本最大宽度
-            'border-width': '8px',  // 设置边框宽度
-            'border-color': '#2c2c2c',
-          }
-        },
-        {
-          selector: 'node[type="KE"][activity="active"]', // 选择 type 为 KE 的节点
-          style: {
-            'background-color': '#ff8e8e',
+            'background-color': '#2ad8ff',
             'label': 'data(id)',
             'text-valign': 'center',
             'text-halign': 'center',
@@ -471,18 +393,18 @@ onMounted(async () => {
           }
         },
         {
-          selector: 'node[type="KE"][activity="inactive"]', // 选择 type 为 KE 的节点
+          selector: `node[id="${sEvent.value}"]`, // 选择高亮节点
           style: {
-            'background-color': '#7eabd2',
+            'background-color': '#cde508',
             'label': 'data(id)',
             'text-valign': 'center',
             'text-halign': 'center',
             'color': '#2c2c2c',  // 黑色文本
             'font-size': '30px', // 增大字体大小
             'font-weight': 'bold', // 加粗字体
-            'width': '180px',
-            'height': '100px',
-            'shape': 'round-rectangle', // 设置为圆角矩形
+            'width': '210px',
+            'height': '170px',
+            'shape': 'star', // 设置为star
             'text-wrap': 'wrap',
             'text-max-width': '140px', // 限制文本最大宽度
             'border-width': '8px',  // 设置边框宽度
@@ -498,29 +420,42 @@ onMounted(async () => {
             'target-arrow-shape': 'triangle', // 添加箭头
             'target-arrow-color': '#424242', // 箭头颜色
             'curve-style': 'bezier', // 使用贝塞尔曲线
-            'line-style': function(ele) {
-              const value = ele.data('value');
-              return value === 0 ? 'dotted' :
-                  value === 0.5 ? 'dashed' :
+            'line-style': function (ele) {
+              const value = ele.data('width');
+              return value === 1 ? 'dotted' :
+                  value === 3 ? 'dashed' :
                       'solid'; // 默认实线
             },
-            'dash-pattern':'10 1',
-            'opacity': 'data(value)',
+            'dash-pattern': '10 1',
+            'opacity': function (ele) {
+              const width = ele.data('width');
+              if (width === 1) {
+                return 0.1;   // 透明度为 0
+              } else if (width === 3) {
+                return 0.3; // 透明度为 50%
+              } else if (width === 6) {
+                return 0.5;   // 透明度为 100%
+              } else {
+                return 0.5;   // 默认透明度
+              }
+            },
           }
         }
+
       ],
       wheelSensitivity: 0.2 // 调整滚轮缩放的灵敏度
     });
-    console.info("cy",cy)
+    // console.info("cy",cy)
     // 添加节点点击事件监听器
-    cy.value.on('tap', 'node', function(evt){
+    cy.value.on('tap', 'node', function (evt) {
       clickNode.value = evt.target;
-      // console.log('Node clicked:', clickNode.value.data());
+      console.log('Node clicked:', clickNode.value.data());
+      getEventImage(clickNode.value.data().id)
     });
 // 布局终点节点
-    const terminalNodes = cy.value.nodes('[type="AO"]');
-    let centerX=0;
-    let centerY=0;
+    const terminalNodes = cy.value.nodes('[type="KE"]');
+    let centerX = 0;
+    let centerY = 0;
     terminalNodes.layout({
       name: 'circle',
       radius: 300, // 圆圈半径
@@ -538,13 +473,13 @@ onMounted(async () => {
     }).run();
 
 // 布局中间节点和起始节点
-    const nonTerminalNodes = cy.value.nodes('[type != "AO"]');
-    const radius = 1200; // 圆的半径
+    const nonTerminalNodes = cy.value.nodes('[type != "KE"]');
+    const radius = 800; // 圆的半径
     nonTerminalNodes.layout({
       name: 'cose',
       fit: true, // 是否调整视口以适应图形
       padding: 30, // 调整视口时的填充量
-      boundingBox: { x1: centerX - radius, y1: centerY - radius, w: 2 * radius, h: 2 * radius }, // 限制布局边界
+      boundingBox: {x1: centerX - radius, y1: centerY - radius, w: 2 * radius, h: 2 * radius}, // 限制布局边界
       avoidOverlap: true, // 防止节点重叠
       nodeDimensionsIncludeLabels: false, // 计算节点边界框时不包含标签
       animate: true, // 是否启用动画
@@ -584,7 +519,7 @@ onMounted(async () => {
       showClose: true,
       message: 'Oops! Prediction error, please try again later.',
       type: 'error',
-      duration:0,
+      duration: 0,
     })
   } finally {
     // console.info("data", AOP_Data.value);
@@ -600,12 +535,19 @@ onMounted(async () => {
   font-size: 14px;
   margin: 3px 0;
 }
+
 .el-carousel__item:nth-child(2n) {
   background-color: #c1d8f6;
 }
 
 .el-carousel__item:nth-child(2n + 1) {
   background-color: #f3f3f3;
+}
+
+.event-image {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 设置阴影 */
+  border-radius: 8px; /* 可选：设置圆角 */
+  object-fit: fill; /* 适应容器 */
 }
 
 </style>

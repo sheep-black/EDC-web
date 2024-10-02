@@ -28,6 +28,7 @@ public class PredictController {
     @GetMapping("/PredictDX")
     public Map<String, String> processStringDX(@RequestParam String input) {
         // 调用 .exe 文件
+        System.out.println(input);
         String result = callExeFileDX(input);
         Map<String, String> response = new HashMap<>();
         response.put("result", result);
@@ -36,6 +37,7 @@ public class PredictController {
     @GetMapping("/PredictDL")
     public Map<String, String> processStringDL(@RequestParam String input) {
         // 调用 .exe 文件
+        System.out.println(input);
         String result = callExeFileDL(input);
         Map<String, String> response = new HashMap<>();
         response.put("result", result);

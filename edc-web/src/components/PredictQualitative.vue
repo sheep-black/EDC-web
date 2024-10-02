@@ -1,42 +1,55 @@
 <template>
-   <el-row :gutter="20"
-           style="display: flex;justify-content: center; /* 水平居中 */align-items: center; /* 垂直居中 */"
-           v-loading="loading"
-           element-loading-text="Waiting in Line...">
-          <el-col :span="12" style="display: flex;justify-content: center;align-items: center;">
-            <el-card style="width: 80%;height: 100%">
-              <template #header>
-                <div style="position: relative; height: 15px;">
-                  <strong>Input Smiles: </strong> {{ smiles }}
-                  <el-popover
-                      placement="right-start"
-                      title="Tips"
-                      :width="350"
-                      trigger="hover"
-                      content="Click on the node to view detailed information"
-                  >
-                    <template #reference>
-                      <el-icon style="font-size: 20px; position: absolute; right: 0; top: 0; cursor: pointer;">
-                        <InfoFilled />
-                      </el-icon>
-                    </template>
-                  </el-popover>
-                </div>
-              </template>
-              <div ref="cyContainer" style="width: 100%;height:450px;"></div>
-              <template #footer>
-                <div style="display: flex;justify-content: center; /* 水平居中 */">
-                  <el-button @click="saveAsPNG">Save As PNG</el-button>
-                  <el-button @click="resultExport('runs.json')">Save As JSON</el-button>
-                  <el-button @click="resultExport('runs.xlsx')">Export Xlsx</el-button>
-                </div>
-              </template>
-            </el-card>
-          </el-col>
-          <el-col :span="12" >
-            <el-card style="width: 80%;height: 100%">
-              <template #header>
-                <div style="position: relative;">
+  <!-- 加载提示文本 -->
+  <div v-if="loading" style="display: flex;justify-content: center;align-items: center;">
+    <el-space direction="vertical">
+      <el-progress
+          type="dashboard"
+          :percentage="percentage"
+          :color="currentColor"
+      />
+      <div style="font-size: 18px;">
+        <el-icon style="vertical-align: middle;" class="is-loading"><Loading /></el-icon>
+        <span style="vertical-align: middle;"> Current Progress：{{ progressText }} </span>
+      </div>
+    </el-space>
+  </div>
+  <div v-else>
+    <el-row :gutter="20"
+            style="display: flex;justify-content: center; /* 水平居中 */align-items: center; /* 垂直居中 */">
+      <el-col :span="12" style="display: flex;justify-content: center;align-items: center;">
+        <el-card style="width: 80%;height: 100%">
+          <template #header>
+            <div style="position: relative; height: 15px;">
+              <strong>Input Smiles: </strong> {{ smiles }}
+              <el-popover
+                  placement="right-start"
+                  title="Tips"
+                  :width="350"
+                  trigger="hover"
+                  content="Click on the node to view detailed information"
+              >
+                <template #reference>
+                  <el-icon style="font-size: 20px; position: absolute; right: 0; top: 0; cursor: pointer;">
+                    <InfoFilled />
+                  </el-icon>
+                </template>
+              </el-popover>
+            </div>
+          </template>
+          <div ref="cyContainer" style="width: 100%;height:450px;"></div>
+          <template #footer>
+            <div style="display: flex;justify-content: center; /* 水平居中 */">
+              <el-button @click="saveAsPNG">Save As PNG</el-button>
+              <el-button @click="resultExport('runs.json')">Save As JSON</el-button>
+              <el-button @click="resultExport('runs.xlsx')">Export Xlsx</el-button>
+            </div>
+          </template>
+        </el-card>
+      </el-col>
+      <el-col :span="12" >
+        <el-card style="width: 80%;height: 100%">
+          <template #header>
+            <div style="position: relative;">
                   <span>
                     <strong>
                       Information
@@ -55,132 +68,134 @@
                     </el-popover>
                   </span>
 
-                </div>
-              </template>
-              <div>
-                <p>
-                  <strong>
-                    Name:
-                  </strong>
-                  {{ clickNode ? clickNode.data().name  : ' ' }}
-                </p>
-                <p>
-                  <strong>
-                    Type:
-                  </strong>
-                   {{ clickNode ? clickNode.data().type : ' ' }}
-                </p>
-                <p>
-                  <strong>
-                    Node_id:
-                  </strong>
-                   {{ clickNode ? clickNode.data().id : ' ' }}
-                </p>
-                <p>
-                  <strong>
-                    Activity:
-                  </strong>
-                  {{ clickNode ? clickNode.data().activity : ' ' }}
-                </p>
-                <p>
-                  <strong>
-                    MOA:
-                  </strong>
-                  {{ clickNode ? clickNode.data().moa  : ' ' }}
-                </p>
-                <p>
-                  <strong>
-                    Node-Type:
-                  </strong>
-                  {{ clickNode ? clickNode.data().nodetype  : ' ' }}
-                </p>
-                <el-divider>
-                  <p>AD Image</p>
-                </el-divider>
-                <div style="display: grid;place-items: center; /* 水平和垂直居中 */">
-                  <el-image :src="eventImageSrc" :fit="'fill'" class="event-image" style="width: 300px; height: 300px;" >
-                  </el-image>
-                </div>
-              </div>
-              <template #footer>
-                <strong style="display: grid;place-items: center; /* 水平和垂直居中 */">
-                  Predict Result :  {{ PreReslut }}
-                </strong>
-              </template>
-            </el-card>
-          </el-col>
-   </el-row>
-  <el-tooltip class="item" effect="dark" content="Click to view detailed introduction document" placement="left">
-    <el-button
-        type="info"
-        :icon="Document"
-        circle
-        size="large"
-        style="position: fixed; right: 15px; bottom: 20%;box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);font-size: 20px;"
-        @click="openDrawer"
-    />
-  </el-tooltip>
-  <el-drawer
-      v-model="drawer"
-      title="Introduction"
-      size="400px"
-  >
-    <div>
-      <p>
-        <strong>
-          Pink Diamond Shaped:
-        </strong>
+            </div>
+          </template>
+          <div>
+            <p>
+              <strong>
+                Name:
+              </strong>
+              {{ clickNode ? clickNode.data().name  : ' ' }}
+            </p>
+            <p>
+              <strong>
+                Type:
+              </strong>
+              {{ clickNode ? clickNode.data().type : ' ' }}
+            </p>
+            <p>
+              <strong>
+                Node_id:
+              </strong>
+              {{ clickNode ? clickNode.data().id : ' ' }}
+            </p>
+            <p>
+              <strong>
+                Activity:
+              </strong>
+              {{ clickNode ? clickNode.data().activity : ' ' }}
+            </p>
+            <p>
+              <strong>
+                MOA:
+              </strong>
+              {{ clickNode ? clickNode.data().moa  : ' ' }}
+            </p>
+            <p>
+              <strong>
+                Node-Type:
+              </strong>
+              {{ clickNode ? clickNode.data().nodetype  : ' ' }}
+            </p>
+            <el-divider>
+              <p>AD Image</p>
+            </el-divider>
+            <div style="display: grid;place-items: center; /* 水平和垂直居中 */">
+              <el-image :src="eventImageSrc" :fit="'fill'" class="event-image" style="width: 300px; height: 300px;" >
+              </el-image>
+            </div>
+          </div>
+          <template #footer>
+            <strong style="display: grid;place-items: center; /* 水平和垂直居中 */">
+              Predict Result :  {{ PreReslut }}
+            </strong>
+          </template>
+        </el-card>
+      </el-col>
+    </el-row>
+    <el-tooltip class="item" effect="dark" content="Click to view detailed introduction document" placement="left">
+      <el-button
+          type="info"
+          :icon="Document"
+          circle
+          size="large"
+          style="position: fixed; right: 15px; bottom: 20%;box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);font-size: 20px;"
+          @click="openDrawer"
+      />
+    </el-tooltip>
+    <el-drawer
+        v-model="drawer"
+        title="Introduction"
+        size="400px"
+    >
+      <div>
         <p>
-          Node type is MIE
+          <strong>
+            Pink Diamond Shaped:
+          </strong>
+          <p>
+            Node type is MIE
+          </p>
         </p>
-      </p>
-      <p>
-        <strong>
-          Light Blue Circular Shaped:
-        </strong>
         <p>
-          Node type is AO
+          <strong>
+            Light Blue Circular Shaped:
+          </strong>
+          <p>
+            Node type is AO
+          </p>
         </p>
-      </p>
-      <p>
-        <strong>
-          Deep Blue Rectangle Shaped:
-        </strong>
         <p>
-          Node type is KE
+          <strong>
+            Deep Blue Rectangle Shaped:
+          </strong>
+          <p>
+            Node type is KE
+          </p>
         </p>
-      </p>
-      <p>
-        <strong>
-          Red Highlight:
-        </strong>
         <p>
-         The node is active
+          <strong>
+            Red Highlight:
+          </strong>
+          <p>
+            The node is active
+          </p>
         </p>
-      </p>
-      <p>
-        <strong>
-          Black Solid Line:
-        </strong>
         <p>
-          Biological plausibility is High
+          <strong>
+            Black Solid Line:
+          </strong>
+          <p>
+            Biological plausibility is High
+          </p>
         </p>
-      </p>
-      <p>
-        <strong>
-          Gray Dashed Line:
-        </strong>
         <p>
-          Biological plausibility is Moderate
+          <strong>
+            Gray Dashed Line:
+          </strong>
+          <p>
+            Biological plausibility is Moderate
+          </p>
         </p>
-      </p>
-    </div>
-  </el-drawer>
+      </div>
+    </el-drawer>
+  </div>
+
 </template>
 
 <script  setup>
 
-import {onMounted, ref} from 'vue'
+import {computed, nextTick, onMounted, ref} from 'vue'
 import router from '../router'
 
 import {useRoute} from 'vue-router';
@@ -193,6 +208,7 @@ const AOP_Data = ref([]);
 const route = useRoute();
 const loading = ref(true); // 用于控制加载状态
 const smiles = route.params.smiles;
+const encodedSmiles = encodeURIComponent(smiles);
 const cyContainer = ref(null);
 const elements = ref([]);
 const Node_Info=ref('0');
@@ -200,7 +216,31 @@ const cySucess=ref(true)
 const clickNode = ref(null);
 const PreReslut=ref('');
 const cy = ref(null); // 用于存储 Cytoscape 实例
-const drawer=ref(false)
+const drawer=ref(false);
+const percentage = ref(10); // 初始进度百分比
+const progressText = ref('Processing Smiles...'); // 初始进度文本
+// 定义颜色和文本
+const colors = {
+  10: '#FF4D4F', // 10% 的颜色
+  50: '#FFBF00', // 50% 的颜色
+  90: '#4CAF50'  // 90% 的颜色
+};
+
+// 计算当前颜色
+const currentColor = computed(() => colors[percentage.value]);
+
+// 更新进度文本
+const updateProgressText = () => {
+  if (percentage.value === 10) {
+    progressText.value = 'Processing Smiles...';
+  } else if (percentage.value === 50) {
+    progressText.value = 'Generating AD Image...';
+  } else if (percentage.value === 90) {
+    progressText.value = 'Model Prediction In Progress...';
+  }
+};
+
+
 const getEdgeWidth = (WOE) => {
   switch (WOE) {
     case 'high':
@@ -228,7 +268,7 @@ const saveAsPNG = () => {
 };
 const resultExport = async (fileName) => {
   const PreType = 'DX'; // 设置当前预测类型
-  const url = `/downloadPredict?PreType=${PreType}&smiles=${smiles}&fileName=${fileName}`;
+  const url = `/downloadPredict?PreType=${PreType}&smiles=${encodedSmiles}&fileName=${fileName}`;
   console.info("predictUrl",url)
   try {
     // 使用 axios 发送 GET 请求
@@ -252,7 +292,7 @@ const resultExport = async (fileName) => {
 };
 const getEventImage=async (id) => {
   const PreType = 'DX'; // 设置当前预测类型
-  const getImageUrl = `/getEventImage?PreType=${PreType}&smiles=${smiles}&id=${id}`;
+  const getImageUrl = `/getEventImage?PreType=${PreType}&smiles=${encodedSmiles}&id=${id}`;
   const response = await axios.get(getImageUrl, {
     responseType: 'blob', // 指定响应类型为 blob
   });
@@ -316,7 +356,18 @@ const fetchData = () => {
 
 onMounted(async () => {
   try {
-    const predictresponse = await axios.get(`/PredictDX?input=${smiles}`);
+    const progressValues = [10, 50, 90]; // 定义进度值
+    let index = 0;
+    const interval = setInterval(() => {
+      if (index < progressValues.length) {
+        percentage.value = progressValues[index];
+        updateProgressText();
+        index++;
+      } else {
+        clearInterval(interval); // 达到90%后停止
+      }
+    }, 10000); // 每秒更新一次
+    const predictresponse = await axios.get(`/PredictDX?input=${encodedSmiles}`);
     // 解析 result 字符串为对象
     const resultObject = JSON.parse(predictresponse.data.result);
     console.info("resultObject",resultObject);
@@ -330,6 +381,11 @@ onMounted(async () => {
     }
     loading.value = false;
     fetchData();
+    loading.value = false;
+
+    // 使用 nextTick 确保 DOM 更新完成
+    await nextTick();
+
     cy.value = cytoscape({
       container: cyContainer.value, // 使用 ref 引用的容器
       elements: elements.value,

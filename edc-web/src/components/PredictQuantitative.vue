@@ -1,42 +1,55 @@
 <template>
-  <el-row :gutter="20"
-          style="display: flex;justify-content: center; /* 水平居中 */align-items: center; /* 垂直居中 */"
-          v-loading="loading"
-          element-loading-text="Waiting in Line...">
-    <el-col :span="12" style="display: flex;justify-content: center;align-items: center;">
-      <el-card style="width: 80%;height: 100%">
-        <template #header>
-          <div style="position: relative; height: 15px;">
-            <strong>Input Smiles: </strong> {{ smiles }}
-            <el-popover
-                placement="right-start"
-                title="Tips"
-                :width="350"
-                trigger="hover"
-                content="Click on the node to view detailed information"
-            >
-              <template #reference>
-                <el-icon style="font-size: 20px; position: absolute; right: 0; top: 0; cursor: pointer;">
-                  <InfoFilled />
-                </el-icon>
-              </template>
-            </el-popover>
-          </div>
-        </template>
-        <div ref="cyContainer" style="width: 100%;height:450px;"></div>
-        <template #footer>
-          <div style="display: flex;justify-content: center; /* 水平居中 */">
-            <el-button @click="saveAsPNG">Save As PNG</el-button>
-            <el-button @click="resultExport('runs.json')">Save As JSON</el-button>
-            <el-button @click="resultExport('runs.xlsx')">Export Xlsx</el-button>
-          </div>
-        </template>
-      </el-card>
-    </el-col>
-    <el-col :span="12" >
-      <el-card style="width: 80%;height: 100%">
-        <template #header>
-          <div style="position: relative;">
+  <!-- 加载提示文本 -->
+  <div v-if="loading" style="display: flex;justify-content: center;align-items: center;">
+    <el-space direction="vertical">
+      <el-progress
+          type="dashboard"
+          :percentage="percentage"
+          :color="currentColor"
+      />
+      <div style="font-size: 18px;">
+        <el-icon style="vertical-align: middle;" class="is-loading"><Loading /></el-icon>
+        <span style="vertical-align: middle;"> Current Progress：{{ progressText }} </span>
+      </div>
+    </el-space>
+  </div>
+  <div v-else>
+    <el-row :gutter="20"
+            style="display: flex;justify-content: center; /* 水平居中 */align-items: center; /* 垂直居中 */">
+      <el-col :span="12" style="display: flex;justify-content: center;align-items: center;">
+        <el-card style="width: 80%;height: 100%">
+          <template #header>
+            <div style="position: relative; height: 15px;">
+              <strong>Input Smiles: </strong> {{ smiles }}
+              <el-popover
+                  placement="right-start"
+                  title="Tips"
+                  :width="350"
+                  trigger="hover"
+                  content="Click on the node to view detailed information"
+              >
+                <template #reference>
+                  <el-icon style="font-size: 20px; position: absolute; right: 0; top: 0; cursor: pointer;">
+                    <InfoFilled />
+                  </el-icon>
+                </template>
+              </el-popover>
+            </div>
+          </template>
+          <div ref="cyContainer" style="width: 100%;height:450px;"></div>
+          <template #footer>
+            <div style="display: flex;justify-content: center; /* 水平居中 */">
+              <el-button @click="saveAsPNG">Save As PNG</el-button>
+              <el-button @click="resultExport('runs.json')">Save As JSON</el-button>
+              <el-button @click="resultExport('runs.xlsx')">Export Xlsx</el-button>
+            </div>
+          </template>
+        </el-card>
+      </el-col>
+      <el-col :span="12" >
+        <el-card style="width: 80%;height: 100%">
+          <template #header>
+            <div style="position: relative;">
                   <span>
                     <strong>
                       Information
@@ -55,153 +68,226 @@
                     </el-popover>
                   </span>
 
+            </div>
+          </template>
+          <div>
+            <p>
+              <strong>
+                Name:
+              </strong>
+              {{ clickNode ? clickNode.data().name  : ' ' }}
+            </p>
+            <p>
+              <strong>
+                Type:
+              </strong>
+              {{ clickNode ? clickNode.data().type : ' ' }}
+            </p>
+            <p>
+              <strong>
+                Node_id:
+              </strong>
+              {{ clickNode ? clickNode.data().id : ' ' }}
+            </p>
+            <p>
+              <strong>
+                Activity:
+              </strong>
+              {{ clickNode ? clickNode.data().activity : ' ' }}
+            </p>
+            <p>
+              <strong>
+                MOA:
+              </strong>
+              {{ clickNode ? clickNode.data().moa  : ' ' }}
+            </p>
+            <p>
+              <strong>
+                Node-Type:
+              </strong>
+              {{ clickNode ? clickNode.data().nodetype  : ' ' }}
+            </p>
+            <el-divider>
+              <p>AD Image</p>
+            </el-divider>
+            <div style="display: grid;place-items: center; /* 水平和垂直居中 */">
+              <el-image :src="eventImageSrc" :fit="'fill'" class="event-image" style="width: 300px; height: 300px;" >
+              </el-image>
+            </div>
           </div>
-        </template>
-        <div>
-          <p>
-            <strong>
-              Name:
+          <template #footer>
+            <strong style="display: grid;place-items: center; /* 水平和垂直居中 */">
+              sEvent :  {{ sEvent}}
             </strong>
-            {{ clickNode ? clickNode.data().name  : ' ' }}
-          </p>
-          <p>
-            <strong>
-              Type:
-            </strong>
-            {{ clickNode ? clickNode.data().type : ' ' }}
-          </p>
-          <p>
-            <strong>
-              Node_id:
-            </strong>
-            {{ clickNode ? clickNode.data().id : ' ' }}
-          </p>
-          <p>
-            <strong>
-              Activity:
-            </strong>
-            {{ clickNode ? clickNode.data().activity : ' ' }}
-          </p>
-          <p>
-            <strong>
-              MOA:
-            </strong>
-            {{ clickNode ? clickNode.data().moa  : ' ' }}
-          </p>
-          <p>
-            <strong>
-              Node-Type:
-            </strong>
-            {{ clickNode ? clickNode.data().nodetype  : ' ' }}
-          </p>
-          <el-divider>
-            <p>AD Image</p>
-          </el-divider>
-          <div style="display: grid;place-items: center; /* 水平和垂直居中 */">
-            <el-image :src="eventImageSrc" :fit="'fill'" class="event-image" style="width: 300px; height: 300px;" >
-            </el-image>
-          </div>
-        </div>
-        <template #footer>
-          <strong style="display: grid;place-items: center; /* 水平和垂直居中 */">
-            Predict Result :  {{ PreReslut }}
-          </strong>
-        </template>
-      </el-card>
-    </el-col>
-  </el-row>
-  <el-tooltip class="item" effect="dark" content="Click to view detailed introduction document" placement="left">
-    <el-button
-        type="info"
-        :icon="Document"
-        circle
-        size="large"
-        style="position: fixed; right: 15px; bottom: 20%;box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);font-size: 20px;"
-        @click="openDrawer"
-    />
-  </el-tooltip>
-  <el-drawer
-      v-model="drawer"
-      title="Introduction"
-      size="400px"
-  >
-    <div>
-      <p>
-        <strong>
-          Pink Diamond Shaped:
-        </strong>
-        <p>
-          Node type is MIE
-        </p>
-      </p>
-      <p>
-        <strong>
-          Light Blue Circular Shaped:
-        </strong>
-        <p>
-          Node type is AO
-        </p>
-      </p>
-      <p>
-        <strong>
-          Deep Blue Rectangle Shaped:
-        </strong>
-        <p>
-          Node type is KE
-        </p>
-      </p>
-      <p>
-        <strong>
-          Red Highlight:
-        </strong>
-        <p>
-          The node is active
-        </p>
-      </p>
-      <p>
-        <strong>
-          Black Solid Line:
-        </strong>
-        <p>
-          Biological plausibility is High
-        </p>
-      </p>
-      <p>
-        <strong>
-          Gray Dashed Line:
-        </strong>
-        <p>
-          Biological plausibility is Moderate
-        </p>
-      </p>
+          </template>
+        </el-card>
+      </el-col>
+    </el-row>
+    <el-divider />
+    <p style="font-size: 25px;
+                  padding-left: 13%;
+                  font-weight: bold;
+                  justify-content: left;
+                  display: flex;
+                  color: #1e1a1a;
+                  text-shadow: 2px 2px 2px #ffcc66;">
+      qAOP Information
+    </p>
+
+    <div style="justify-content: center;display: flex;">
+      <el-table :data="paginatedData" stripe border style="width:80%" :header-cell-style="{ background: '#dedede', color: '#000' }">
+        <el-table-column prop="AOP_id" label="AOP ID" width="100"></el-table-column>
+        <el-table-column prop="events" label="Events" width="450"></el-table-column>
+        <el-table-column prop="AOP_value" label="AOP Value" ></el-table-column>
+        <el-table-column prop="qValue" label="Q Value" ></el-table-column>
+        <el-table-column label="Sensitive">
+          <template v-slot:header>
+            <div style="display: flex; align-items: center;">
+              <span style="margin-right: 10px;">Sensitive</span>
+              <el-select v-model="sensitiveFilter" placeholder="Select" size="small" style="width: 90px;">
+                <el-option label="All" :value="null"></el-option>
+                <el-option label="True" :value="true"></el-option>
+                <el-option label="False" :value="false"></el-option>
+              </el-select>
+            </div>
+          </template>
+          <template v-slot="scope">
+          <span :style="{ color: scope.row.sensitive ? 'green' : 'red' }">
+            {{ scope.row.sensitive }}
+          </span>
+          </template>
+        </el-table-column>
+      </el-table>
+
     </div>
-  </el-drawer>
+    <el-pagination
+        @current-change="handleCurrentChange"
+        :current-page="currentPage"
+        :page-size="pageSize"
+        :total="filteredTableData.length"
+        layout="prev, pager, next, jumper"
+        style="justify-content: center;display: flex;margin-top: 20px;"
+    />
+    <el-tooltip class="item" effect="dark" content="Click to view detailed introduction document" placement="left">
+      <el-button
+          type="info"
+          :icon="Document"
+          circle
+          size="large"
+          style="position: fixed; right: 15px; bottom: 20%;box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);font-size: 20px;"
+          @click="openDrawer"
+      />
+    </el-tooltip>
+    <el-drawer
+        v-model="drawer"
+        title="Introduction"
+        size="400px"
+    >
+      <div>
+        <p>
+          <strong>
+            Pink Diamond Shaped:
+          </strong>
+          <p>
+            Node type is MIE
+          </p>
+        </p>
+        <p>
+          <strong>
+            Light Blue Circular Shaped:
+          </strong>
+          <p>
+            Node type is AO
+          </p>
+        </p>
+        <p>
+          <strong>
+            Deep Blue Rectangle Shaped:
+          </strong>
+          <p>
+            Node type is KE
+          </p>
+        </p>
+        <p>
+          <strong>
+            Red Highlight:
+          </strong>
+          <p>
+            The node is active
+          </p>
+        </p>
+        <p>
+          <strong>
+            Black Solid Line:
+          </strong>
+          <p>
+            Biological plausibility is High
+          </p>
+        </p>
+        <p>
+          <strong>
+            Gray Dashed Line:
+          </strong>
+          <p>
+            Biological plausibility is Moderate
+          </p>
+        </p>
+      </div>
+    </el-drawer>
+  </div>
+
 </template>
 
 <script  setup>
 
-import {onMounted, ref} from 'vue'
+import {computed, nextTick, onMounted, ref} from 'vue'
 import router from '../router'
 
 import {useRoute} from 'vue-router';
 import axios from "axios";
 import cytoscape from "cytoscape";
 import {ElMessage} from "element-plus";
-import {Document} from "@element-plus/icons-vue";
+import {ArrowLeftBold, Document} from "@element-plus/icons-vue";
 const eventImageSrc=ref("")
 const AOP_Data = ref([]);
 const route = useRoute();
 const loading = ref(true); // 用于控制加载状态
 const smiles = route.params.smiles;
+const encodedSmiles = encodeURIComponent(smiles);
 const cyContainer = ref(null);
 const elements = ref([]);
 const Node_Info=ref('0');
 const cySucess=ref(true)
 const clickNode = ref(null);
-const PreReslut=ref('');
+const qAOP=ref({});
+const tableData=ref([]);
 const cy = ref(null); // 用于存储 Cytoscape 实例
 const drawer=ref(false)
 const sEvent=ref('');
+const percentage = ref(10); // 初始进度百分比
+const progressText = ref('Processing Smiles...'); // 初始进度文本
+
+// 定义颜色和文本
+const colors = {
+  10: '#FF4D4F', // 10% 的颜色
+  50: '#FFBF00', // 50% 的颜色
+  90: '#4CAF50'  // 90% 的颜色
+};
+
+// 计算当前颜色
+const currentColor = computed(() => colors[percentage.value]);
+
+// 更新进度文本
+const updateProgressText = () => {
+  if (percentage.value === 10) {
+    progressText.value = 'Processing Smiles...';
+  } else if (percentage.value === 50) {
+    progressText.value = 'Generating AD Image...';
+  } else if (percentage.value === 90) {
+    progressText.value = 'Model Prediction In Progress...';
+  }
+};
+
 const getEdgeWidth = (WOE) => {
   switch (WOE) {
     case 'high':
@@ -214,6 +300,10 @@ const getEdgeWidth = (WOE) => {
       return 1;
   }
 };
+
+const currentPage = ref(1);
+const sensitiveFilter = ref(null); // 用于存储筛选条件
+const pageSize = ref(10);
 const openDrawer = () => {
   drawer.value=true
 };
@@ -229,7 +319,7 @@ const saveAsPNG = () => {
 };
 const resultExport = async (fileName) => {
   const PreType = 'DL'; // 设置当前预测类型
-  const url = `/downloadPredict?PreType=${PreType}&smiles=${smiles}&fileName=${fileName}`;
+  const url = `/downloadPredict?PreType=${PreType}&smiles=${encodedSmiles}&fileName=${fileName}`;
   console.info("predictUrl",url)
   try {
     // 使用 axios 发送 GET 请求
@@ -253,7 +343,7 @@ const resultExport = async (fileName) => {
 };
 const getEventImage=async (id) => {
   const PreType = 'DL'; // 设置当前预测类型
-  const getImageUrl = `/getEventImage?PreType=${PreType}&smiles=${smiles}&id=${id}`;
+  const getImageUrl = `/getEventImage?PreType=${PreType}&smiles=${encodedSmiles}&id=${id}`;
   const response = await axios.get(getImageUrl, {
     responseType: 'blob', // 指定响应类型为 blob
   });
@@ -262,7 +352,39 @@ const getEventImage=async (id) => {
   const url = URL.createObjectURL(response.data);
   eventImageSrc.value = url; // 设置图片源
 };
+// 计算筛选后的数据
+const filteredTableData = computed(() => {
+  if (sensitiveFilter.value === null) {
+    return tableData.value; // 不筛选，返回所有数据
+  } else {
+    return tableData.value.filter(item => item.sensitive === sensitiveFilter.value);
+  }
+});
+
+// 计算分页数据
+const paginatedData = computed(() => {
+  const start = (currentPage.value - 1) * pageSize.value;
+  const end = start + pageSize.value;
+  return filteredTableData.value.slice(start, end);
+});
+
+// 处理当前页变化
+const handleCurrentChange = (page) => {
+  currentPage.value = page;
+};
 // 转换数据格式并设置元素
+const processqAOPData = () => {
+  tableData.value = Object.keys(qAOP.value).map(key => {
+    const aopItem = qAOP.value[key];
+    return {
+      AOP_id: key,
+      AOP_value: aopItem.values.join(', '), // 将值数组转换为字符串
+      events: aopItem.events ? aopItem.events.join('->') : 'N/A', // 使用 '->' 作为分隔符
+      qValue: aopItem.qValue || 'N/A', // 如果没有 qValue，显示 'N/A'
+      sensitive: aopItem.sensitive
+    };
+  });
+};
 
 const fetchData = () => {
   const nodes = [];
@@ -293,7 +415,6 @@ const fetchData = () => {
   nodes.forEach(node => {
     if (Node_Info.value[node.data.id] == null) {
       node.data.type = 'gray';
-      console.info("该节点为灰", node);
     } else {
       node.data.activity = Node_Info.value[node.data.id].Activity;
       node.data.moa = Node_Info.value[node.data.id].MOA;
@@ -334,21 +455,34 @@ const fetchData = () => {
 
 onMounted(async () => {
   try {
-    const predictresponse = await axios.get(`/PredictDL?input=${smiles}`);
+    const progressValues = [10, 50, 90]; // 定义进度值
+    let index = 0;
+    const interval = setInterval(() => {
+      if (index < progressValues.length) {
+        percentage.value = progressValues[index];
+        updateProgressText();
+        index++;
+      } else {
+        clearInterval(interval); // 达到90%后停止
+      }
+    }, 10000); // 每秒更新一次
+    const predictresponse = await axios.get(`/PredictDL?input=${encodedSmiles}`);
     // 解析 result 字符串为对象
     const resultObject = JSON.parse(predictresponse.data.result);
     console.info("resultObject", resultObject);
     AOP_Data.value = resultObject.localAOP;
     Node_Info.value = resultObject.info;
     sEvent.value=resultObject.sEvent;
-    console.info("sEvent", sEvent);
-    if (resultObject.pred === 1) {
-      PreReslut.value = 'EDC'
-    } else {
-      PreReslut.value = 'no-EDC'
-    }
-    loading.value = false;
+    qAOP.value=resultObject.AOP;
+    console.info("qAOP",qAOP.value);
+    processqAOPData();
+    console.info("tableData",tableData)
     fetchData();
+    loading.value = false;
+
+    // 使用 nextTick 确保 DOM 更新完成
+    await nextTick();
+
     cy.value = cytoscape({
       container: cyContainer.value, // 使用 ref 引用的容器
       elements: elements.value,
@@ -445,8 +579,7 @@ onMounted(async () => {
       ],
       wheelSensitivity: 0.2 // 调整滚轮缩放的灵敏度
     });
-    // console.info("cy",cy)
-    // 添加节点点击事件监听器
+
     cy.value.on('tap', 'node', function (evt) {
       clickNode.value = evt.target;
       console.log('Node clicked:', clickNode.value.data());
@@ -521,6 +654,7 @@ onMounted(async () => {
       type: 'error',
       duration: 0,
     })
+
   } finally {
     // console.info("data", AOP_Data.value);
 

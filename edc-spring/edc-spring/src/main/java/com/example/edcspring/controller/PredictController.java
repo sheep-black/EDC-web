@@ -28,7 +28,7 @@ public class PredictController {
     @GetMapping("/PredictDX")
     public Map<String, String> processStringDX(@RequestParam String input) {
         // 调用 .exe 文件
-        System.out.println(input);
+
         String result = callExeFileDX(input);
         Map<String, String> response = new HashMap<>();
         response.put("result", result);
@@ -37,7 +37,7 @@ public class PredictController {
     @GetMapping("/PredictDL")
     public Map<String, String> processStringDL(@RequestParam String input) {
         // 调用 .exe 文件
-        System.out.println(input);
+
         String result = callExeFileDL(input);
         Map<String, String> response = new HashMap<>();
         response.put("result", result);
@@ -55,12 +55,10 @@ public class PredictController {
             if (existingRecord != null) {
                 String jsonFilePath = "scripts/edc_backend_models_v2/edc_backend_models_v2/result/" + existingRecord.getId() + "/DX";
                 File resultFolder = new File(jsonFilePath); // 创建 File 对象以检查文件夹
-
                 if (resultFolder.exists() && resultFolder.isDirectory()) {
                     return readJsonFromFolder(jsonFilePath); // 按照文件夹读取结果
                 } else {
                     //数据库有记录 但是没有DX文件夹
-                    System.out.println("没有该文件夹: " + jsonFilePath);
                     String outFilePath = "../result/"+existingRecord.getId()+"/DX";
                     // 调用 exe 文件
                     ProcessBuilder pb = new ProcessBuilder(exePath, "-i", input, "-o", outFilePath);
@@ -119,7 +117,6 @@ public class PredictController {
                     return readJsonFromFolder(jsonFilePath); // 按照文件夹读取结果
                 } else {
                     //数据库有记录 但是没有DL文件夹
-                    System.out.println("没有该文件夹: " + jsonFilePath);
                     String outFilePath = "../result/"+existingRecord.getId()+"/DL";
                     // 调用 exe 文件
                     ProcessBuilder pb = new ProcessBuilder(exePath, "-i", input, "-o", outFilePath);

@@ -6,10 +6,14 @@
           type="dashboard"
           :percentage="percentage"
           :color="currentColor"
+          :duration="10"
+          width="300"
+          striped
+          striped-flow
       />
       <div style="font-size: 18px;">
         <el-icon style="vertical-align: middle;" class="is-loading"><Loading /></el-icon>
-        <span style="vertical-align: middle;"> Current Progress：{{ progressText }} </span>
+        <span style="vertical-align: middle;"> Current Progress：{{ progressText }}, <strong>please don't leave this page</strong> </span>
       </div>
     </el-space>
   </div>
@@ -222,7 +226,9 @@ const progressText = ref('Processing Smiles...'); // 初始进度文本
 // 定义颜色和文本
 const colors = {
   10: '#FF4D4F', // 10% 的颜色
+  30: '#ff6e4d', // 30% 的颜色
   50: '#FFBF00', // 50% 的颜色
+  70: '#37ff00', // 70% 的颜色
   90: '#4CAF50'  // 90% 的颜色
 };
 
@@ -356,7 +362,7 @@ const fetchData = () => {
 
 onMounted(async () => {
   try {
-    const progressValues = [10, 50, 90]; // 定义进度值
+    const progressValues = [10,30, 50,70, 90]; // 定义进度值
     let index = 0;
     const interval = setInterval(() => {
       if (index < progressValues.length) {
@@ -598,12 +604,12 @@ onMounted(async () => {
     cySucess.value = true; // 更新加载状态
   } catch (error) {
     console.error('获取数据失败:', error);
-    ElMessage({
-      showClose: true,
-      message: 'Oops! Prediction error, please try again later.',
-      type: 'error',
-      duration:0,
-    })
+    // ElMessage({
+    //   showClose: true,
+    //   message: 'Oops! Prediction error, please try again later.',
+    //   type: 'error',
+    //   duration:0,
+    // })
   } finally {
     // console.info("data", AOP_Data.value);
 

@@ -6,10 +6,14 @@
           type="dashboard"
           :percentage="percentage"
           :color="currentColor"
+          :duration="10"
+          width="300"
+          striped
+          striped-flow
       />
       <div style="font-size: 18px;">
         <el-icon style="vertical-align: middle;" class="is-loading"><Loading /></el-icon>
-        <span style="vertical-align: middle;"> Current Progress：{{ progressText }} </span>
+        <span style="vertical-align: middle;"> Current Progress：{{ progressText }}, <strong>please don't leave this page</strong> </span>
       </div>
     </el-space>
   </div>
@@ -93,7 +97,7 @@
               <strong>
                 Activity:
               </strong>
-              {{ clickNode ? clickNode.data().activity : ' ' }}
+              {{ clickNode ? clickNode.data().activity : ' ' }} (mg/kg bw/day)
             </p>
             <p>
               <strong>
@@ -108,7 +112,7 @@
               {{ clickNode ? clickNode.data().nodetype  : ' ' }}
             </p>
             <el-divider>
-              <p>AD Image</p>
+              <p>Application domain (image)</p>
             </el-divider>
             <div style="display: grid;place-items: center; /* 水平和垂直居中 */">
               <el-image :src="eventImageSrc" :fit="'fill'" class="event-image" style="width: 300px; height: 300px;" >
@@ -117,7 +121,7 @@
           </div>
           <template #footer>
             <strong style="display: grid;place-items: center; /* 水平和垂直居中 */">
-              sEvent :  {{ sEvent}}
+              Sensitive AO :  {{ sEvent}}
             </strong>
           </template>
         </el-card>
@@ -135,11 +139,30 @@
     </p>
 
     <div style="justify-content: center;display: flex;">
-      <el-table :data="paginatedData" stripe border style="width:80%" :header-cell-style="{ background: '#dedede', color: '#000' }">
+      <el-table
+          :data="paginatedData"
+          stripe
+          border
+          style="width:80%"
+          :header-cell-style="{ background: '#dedede', color: '#000' }"
+          :row-class-name="rowClassName">
         <el-table-column prop="AOP_id" label="AOP ID" width="100"></el-table-column>
         <el-table-column prop="events" label="Events" width="450"></el-table-column>
-        <el-table-column prop="AOP_value" label="AOP Value" ></el-table-column>
-        <el-table-column prop="qValue" label="Q Value" ></el-table-column>
+        <el-table-column prop="AOP_value" label="NOAELs for events"></el-table-column>
+        <el-table-column label="Q Value">
+          <template v-slot:header>
+            <div style="display: flex; align-items: center; cursor: pointer;" @click="toggleSort">
+              <span style="margin-right: 10px;">NOAEL (AO)</span>
+              <span>
+            <span v-if="sortOrder === 'asc'">↑</span>
+            <span v-else>↓</span>
+          </span>
+            </div>
+          </template>
+          <template v-slot="scope">
+            {{ scope.row.qValue }}
+          </template>
+        </el-table-column>
         <el-table-column label="Sensitive">
           <template v-slot:header>
             <div style="display: flex; align-items: center;">
@@ -152,9 +175,9 @@
             </div>
           </template>
           <template v-slot="scope">
-          <span :style="{ color: scope.row.sensitive ? 'green' : 'red' }">
-            {{ scope.row.sensitive }}
-          </span>
+        <span :style="{ color: scope.row.sensitive ? 'green' : 'red' }">
+          {{ scope.row.sensitive }}
+        </span>
           </template>
         </el-table-column>
       </el-table>
@@ -264,13 +287,16 @@ const tableData=ref([]);
 const cy = ref(null); // 用于存储 Cytoscape 实例
 const drawer=ref(false)
 const sEvent=ref('');
+const sAOP=ref('');
 const percentage = ref(10); // 初始进度百分比
 const progressText = ref('Processing Smiles...'); // 初始进度文本
-
+const sortOrder = ref('asc'); // 默认排序方式
 // 定义颜色和文本
 const colors = {
   10: '#FF4D4F', // 10% 的颜色
+  30: '#ff6e4d', // 30% 的颜色
   50: '#FFBF00', // 50% 的颜色
+  70: '#37ff00', // 70% 的颜色
   90: '#4CAF50'  // 90% 的颜色
 };
 
@@ -302,7 +328,7 @@ const getEdgeWidth = (WOE) => {
 };
 
 const currentPage = ref(1);
-const sensitiveFilter = ref(null); // 用于存储筛选条件
+const sensitiveFilter = ref(true); // 用于存储筛选条件
 const pageSize = ref(10);
 const openDrawer = () => {
   drawer.value=true
@@ -352,26 +378,11 @@ const getEventImage=async (id) => {
   const url = URL.createObjectURL(response.data);
   eventImageSrc.value = url; // 设置图片源
 };
-// 计算筛选后的数据
-const filteredTableData = computed(() => {
-  if (sensitiveFilter.value === null) {
-    return tableData.value; // 不筛选，返回所有数据
-  } else {
-    return tableData.value.filter(item => item.sensitive === sensitiveFilter.value);
-  }
-});
-
-// 计算分页数据
-const paginatedData = computed(() => {
-  const start = (currentPage.value - 1) * pageSize.value;
-  const end = start + pageSize.value;
-  return filteredTableData.value.slice(start, end);
-});
-
 // 处理当前页变化
 const handleCurrentChange = (page) => {
   currentPage.value = page;
 };
+
 // 转换数据格式并设置元素
 const processqAOPData = () => {
   tableData.value = Object.keys(qAOP.value).map(key => {
@@ -384,6 +395,45 @@ const processqAOPData = () => {
       sensitive: aopItem.sensitive
     };
   });
+};
+
+// 切换排序
+const toggleSort = () => {
+  sortOrder.value = sortOrder.value === 'asc' ? 'desc' : 'asc';
+};
+
+// 计算筛选后的数据
+const filteredTableData = computed(() => {
+  let filteredData = tableData.value;
+  if (sensitiveFilter.value !== null) {
+    filteredData = filteredData.filter(item => item.sensitive === sensitiveFilter.value);
+  }
+  // 按 qValue 排序
+  return filteredData.sort((a, b) => {
+    const qValueA = typeof a.qValue === 'number' ? a.qValue : Number.NEGATIVE_INFINITY;
+    const qValueB = typeof b.qValue === 'number' ? b.qValue : Number.NEGATIVE_INFINITY;
+    return sortOrder.value === 'asc' ? qValueA - qValueB : qValueB - qValueA; // 根据当前排序方式排序
+  });
+});
+
+// 计算分页数据
+const paginatedData = computed(() => {
+  const start = (currentPage.value - 1) * pageSize.value;
+  const end = start + pageSize.value;
+  return filteredTableData.value.slice(start, end);
+});
+
+const rowClassName = (row) => {
+  // 检查当前行的 AOP_id 是否与指定的 sAOP 值相等
+  if (row.row.AOP_id === sAOP.value) {
+    // 如果相等，返回高亮样式类名
+    console.info("相等")
+    return 'success-row';
+  } else {
+    console.info("不等")
+    // 如果不相等，返回空字符串，表示不使用任何特殊样式
+    return '';
+  }
 };
 
 const fetchData = () => {
@@ -455,7 +505,7 @@ const fetchData = () => {
 
 onMounted(async () => {
   try {
-    const progressValues = [10, 50, 90]; // 定义进度值
+    const progressValues = [10,30,50,70,90]; // 定义进度值
     let index = 0;
     const interval = setInterval(() => {
       if (index < progressValues.length) {
@@ -465,7 +515,7 @@ onMounted(async () => {
       } else {
         clearInterval(interval); // 达到90%后停止
       }
-    }, 10000); // 每秒更新一次
+    }, 5000); // 更新一次
     const predictresponse = await axios.get(`/PredictDL?input=${encodedSmiles}`);
     // 解析 result 字符串为对象
     const resultObject = JSON.parse(predictresponse.data.result);
@@ -473,6 +523,7 @@ onMounted(async () => {
     AOP_Data.value = resultObject.localAOP;
     Node_Info.value = resultObject.info;
     sEvent.value=resultObject.sEvent;
+    sAOP.value=resultObject.sAOP;
     qAOP.value=resultObject.AOP;
     console.info("qAOP",qAOP.value);
     processqAOPData();
@@ -491,7 +542,7 @@ onMounted(async () => {
           selector: 'node[type="AO"]', // 选择 type 为 AO且活性 的节点
           style: {
             'shape': 'ellipse',
-            'background-color': '#ff8e8e',
+            'background-color': '#73cfff',
             'label': 'data(id)',
             'text-valign': 'center',
             'text-halign': 'center',
@@ -509,7 +560,7 @@ onMounted(async () => {
         {
           selector: 'node[type="KE"]', // 选择 type 为 KE 的节点
           style: {
-            'background-color': '#2ad8ff',
+            'background-color': '#7eabd2',
             'label': 'data(id)',
             'text-valign': 'center',
             'text-halign': 'center',
@@ -529,7 +580,7 @@ onMounted(async () => {
         {
           selector: `node[id="${sEvent.value}"]`, // 选择高亮节点
           style: {
-            'background-color': '#cde508',
+            'background-color': '#ff8e8e',
             'label': 'data(id)',
             'text-valign': 'center',
             'text-halign': 'center',
@@ -648,12 +699,12 @@ onMounted(async () => {
     cySucess.value = true; // 更新加载状态
   } catch (error) {
     console.error('获取数据失败:', error);
-    ElMessage({
-      showClose: true,
-      message: 'Oops! Prediction error, please try again later.',
-      type: 'error',
-      duration: 0,
-    })
+    // ElMessage({
+    //   showClose: true,
+    //   message: 'Oops! Prediction error, please try again later.',
+    //   type: 'error',
+    //   duration: 0,
+    // })
 
   } finally {
     // console.info("data", AOP_Data.value);
@@ -664,6 +715,9 @@ onMounted(async () => {
 </script>
 
 <style>
+.el-table .success-row {
+  --el-table-tr-bg-color: var(--el-color-success-light-9);
+}
 .el-loading-spinner .el-loading-text {
   color: var(--el-color-primary);
   font-size: 14px;

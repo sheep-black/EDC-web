@@ -14,8 +14,6 @@ import java.io.IOException;
 public class DownloadController {
     @GetMapping("/download")
     public ResponseEntity<Resource> downloadFile(@RequestParam String fileName) throws IOException {
-        System.out.println("文件名：");
-        System.out.print(fileName);
         Resource resource = new ClassPathResource("files/" + fileName); //文件路径：src/main/resources/files
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)

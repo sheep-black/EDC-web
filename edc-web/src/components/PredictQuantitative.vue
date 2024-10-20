@@ -121,22 +121,39 @@
           </div>
           <template #footer>
             <strong style="display: grid;place-items: center; /* 水平和垂直居中 */">
-              Sensitive AO :  {{ sEvent}}
+              Sensitive AO :  {{ sEvent}}({{sEventName}})
             </strong>
           </template>
         </el-card>
       </el-col>
     </el-row>
     <el-divider />
-    <p style="font-size: 25px;
+      <p style="font-size: 25px;
                   padding-left: 13%;
                   font-weight: bold;
                   justify-content: left;
                   display: flex;
                   color: #1e1a1a;
                   text-shadow: 2px 2px 2px #ffcc66;">
-      qAOP Information
-    </p>
+        qAOP Information
+        <el-popover
+            placement="right-start"
+            title="Download"
+            :width="300"
+            trigger="hover"
+            content="Click to download the event related information file">
+          <template #reference>
+            <el-link :underline="false">
+              <el-icon style="font-size: 20px;margin-top:10px;padding-left: 10px" @click="EventInfoDownload('event_info.xlsx')">
+                <InfoFilled />
+              </el-icon>
+            </el-link>
+
+          </template>
+        </el-popover>
+      </p>
+
+
 
     <div style="justify-content: center;display: flex;">
       <el-table
@@ -270,7 +287,7 @@ import {useRoute} from 'vue-router';
 import axios from "axios";
 import cytoscape from "cytoscape";
 import {ElMessage} from "element-plus";
-import {ArrowLeftBold, Document} from "@element-plus/icons-vue";
+import {ArrowLeftBold, Document, InfoFilled} from "@element-plus/icons-vue";
 const eventImageSrc=ref("")
 const AOP_Data = ref([]);
 const route = useRoute();
@@ -287,6 +304,7 @@ const tableData=ref([]);
 const cy = ref(null); // 用于存储 Cytoscape 实例
 const drawer=ref(false)
 const sEvent=ref('');
+const sEventName=ref('');
 const sAOP=ref('');
 const percentage = ref(10); // 初始进度百分比
 const progressText = ref('Processing Smiles...'); // 初始进度文本
@@ -313,7 +331,21 @@ const updateProgressText = () => {
     progressText.value = 'Model Prediction In Progress...';
   }
 };
-
+const EventInfoDownload = async (filename) => {
+  const url =`/download?fileName=${filename}`;
+  try {
+    const response = await axios.get(url, { responseType: 'blob' });
+    const downloadUrl = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = downloadUrl;
+    link.setAttribute('download', filename);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  } catch (error) {
+    console.error('Error downloading file:', error);
+  }
+};
 const getEdgeWidth = (WOE) => {
   switch (WOE) {
     case 'high':
@@ -427,10 +459,8 @@ const rowClassName = (row) => {
   // 检查当前行的 AOP_id 是否与指定的 sAOP 值相等
   if (row.row.AOP_id === sAOP.value) {
     // 如果相等，返回高亮样式类名
-    console.info("相等")
     return 'success-row';
   } else {
-    console.info("不等")
     // 如果不相等，返回空字符串，表示不使用任何特殊样式
     return '';
   }
@@ -523,6 +553,7 @@ onMounted(async () => {
     AOP_Data.value = resultObject.localAOP;
     Node_Info.value = resultObject.info;
     sEvent.value=resultObject.sEvent;
+    sEventName.value = Node_Info.value[sEvent.value].Name;
     sAOP.value=resultObject.sAOP;
     qAOP.value=resultObject.AOP;
     console.info("qAOP",qAOP.value);

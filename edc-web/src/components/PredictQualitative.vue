@@ -112,7 +112,7 @@
               {{ clickNode ? clickNode.data().nodetype  : ' ' }}
             </p>
             <el-divider>
-              <p>AD Image</p>
+              <p>Application domain (image)</p>
             </el-divider>
             <div style="display: grid;place-items: center; /* 水平和垂直居中 */">
               <el-image :src="eventImageSrc" :fit="'fill'" class="event-image" style="width: 300px; height: 300px;" >

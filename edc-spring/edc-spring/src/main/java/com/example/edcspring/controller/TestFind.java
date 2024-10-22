@@ -23,7 +23,6 @@ public class TestFind {
     @GetMapping("/getEventData")
     public List<EventData> getEventData() {
         return edcMapper.getEventData();
-
     }
 
 }

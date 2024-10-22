@@ -55,16 +55,12 @@ public class SearchController {
     }
     @PostMapping("/dataScreen")
     public List<TestData> Screen(@RequestBody ScreenData filterRequest) {
-
         // 获取前端发送的筛选条件
         List<String> assay = filterRequest.getAssay();
         List<String> endpoints = filterRequest.getEndpoint();
         String activities = filterRequest.getActivity();
-
         // 调用TestDataMapper中的方法进行数据库查询
-
         return edcMapper.combinedFilter(endpoints,assay, activities);
-
     }
 
 }

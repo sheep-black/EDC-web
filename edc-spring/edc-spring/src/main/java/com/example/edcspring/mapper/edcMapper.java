@@ -1,9 +1,6 @@
 package com.example.edcspring.mapper;
 
-import com.example.edcspring.entity.AOPData;
-import com.example.edcspring.entity.EventData;
-import com.example.edcspring.entity.PredictResult;
-import com.example.edcspring.entity.TestData;
+import com.example.edcspring.entity.*;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -15,6 +12,18 @@ public interface edcMapper {
 //    @Select("SELECT * FROM refine WHERE cas LIKE CONCAT('%', #{keyword}, '%')")
 //    List<TestData> searchData(@Param("keyword") String keyword);
 
+    @Select("SELECT * FROM result_dx WHERE SMILES LIKE CONCAT('%', #{smiles}, '%') LIMIT #{offset}, #{limit}")
+    List<ResultDX> searchSMILESDX(@Param("smiles") String smiles, @Param("offset") int offset, @Param("limit") int limit);
+    @Select("SELECT COUNT(*) FROM result_dx WHERE SMILES LIKE CONCAT('%', #{smiles}, '%')")
+    int countSMILESDX(@Param("smiles") String smiles);
+    @Select("SELECT * FROM result_dx LIMIT #{offset}, #{limit}")
+    List<ResultDX> getDXResult(@Param("offset") int offset, @Param("limit") int limit);
+    @Select("SELECT * FROM result_dl WHERE SMILES LIKE CONCAT('%', #{smiles}, '%') LIMIT #{offset}, #{limit}")
+    List<ResultDL> searchSMILESDL(@Param("smiles") String smiles, @Param("offset") int offset, @Param("limit") int limit);
+    @Select("SELECT COUNT(*) FROM result_dl WHERE SMILES LIKE CONCAT('%', #{smiles}, '%')")
+    int countSMILESDL(@Param("smiles") String smiles);
+    @Select("SELECT * FROM result_dl LIMIT #{offset}, #{limit}")
+    List<ResultDL> getDLResult(@Param("offset") int offset, @Param("limit") int limit);
     @Select("SELECT * FROM refine WHERE ${columnName} LIKE CONCAT('%', #{keyword}, '%')")
     List<TestData> searchData(@Param("columnName") String columnName, @Param("keyword") String keyword);
     @Select("SELECT * FROM event_title WHERE ${columnName} LIKE CONCAT('%', #{keyword}, '%')")
@@ -48,5 +57,6 @@ public interface edcMapper {
     @Insert("INSERT INTO predict_result (smile) VALUES (#{smile})")
     @Options(useGeneratedKeys = true, keyProperty = "id") // 获取自增 ID
     void insertPredictResult(PredictResult predictResult);
+
 
 }

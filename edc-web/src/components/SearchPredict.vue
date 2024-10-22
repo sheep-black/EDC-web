@@ -78,63 +78,16 @@
                   justify-content: center;
                   display: flex;
                   color: #000000;">
-        Begin your Smiles Predict Result search from over about 230,000 records
+        Search from over about 230,000 records
       </p>
 
-        <div style="justify-content: center;display: flex;">
-          <el-input
-              v-model="SearchText"
-              style="max-width: 600px"
-              size="large"
-              placeholder="Please enter Event Title or ID"
-              @keyup.enter="handleSearch"
-          >
-            <template #append>
-              <el-button :icon="Search" @click="handleSearch"/>
-            </template>
-          </el-input>
-
-        </div>
-        <div style="justify-content: center;display: flex; margin-top: 0px;">
-          <el-space wrap>
-            <p style="font-size: 14px;font-weight: bold;justify-content: center;display: flex;margin-right: 20px" >Search By</p>
-            <el-radio-group  v-model="selectedOptions">
-              <el-radio label="EventTitle"></el-radio>
-              <el-radio label="EventID"></el-radio>
-            </el-radio-group>
-          </el-space>
-        </div>
-        <div style="justify-content: center;display: flex; margin-top: 10px;">
-        <el-table
-                  v-loading="loading"
-                  stripe
-                  max-height="400"
-                  :data="currentPageData" border style="width: 60%;"
-                  :header-cell-style="{ background: '#dedede', color: '#000' }">
-          <el-table-column prop="eventId" label="ID" width="150" align="center"></el-table-column>
-          <el-table-column prop="eventTitle" label="Title" width="200" align="center"></el-table-column>
-          <el-table-column prop="aops" label="AOPs" align="center">
-            <template #default="scope">
-              <div>
-                <el-button
-                    v-for="number in scope.row.aops.split(',')"
-                    :key="number"
-                    type="text"
-                    @click="handleRowClick(number)"
-                >AOP_{{ number }}</el-button>
-              </div>
-            </template>
-          </el-table-column>
-        </el-table>
-        </div>
-        <el-pagination
-            style="justify-content: center;display: flex;margin-top: 10px"
-            @current-change="handleCurrentChange"
-            :current-page="currentPage"
-            :page-size=pageSize
-            layout="prev, pager, next, jumper"
-            :total="total">
-        </el-pagination>
+        <el-radio-group fill="#ffcc66" v-model="selected" text-color="#1e1a1a"
+                        style="font-weight: bold;justify-content: center;display: flex;">
+          <el-radio-button label="qualitative_model" value="qualitative_model" size="large" />
+          <el-radio-button label="quantitative_model" value="quantitative_model" size="large" />
+        </el-radio-group>
+        <el-divider />
+        <component :is="selectedComponent" />
       </el-main>
 
     </el-container>
@@ -169,88 +122,27 @@
 
 <script setup>
 
-import { ref, reactive, watch, onMounted } from "vue";
+import {ref, reactive, watch, onMounted, computed} from "vue";
 import axios from "axios";
 import {Search} from "@element-plus/icons-vue";
 import router from "@/router/index.js";
+import SearchDXresult from "@/components/SearchDXresult.vue";
+import SearchDLresult from "@/components/SearchDLresult.vue";
 
 const tableData = reactive([]);
 const activeIndex = ref('1-3')
-const selected = ref('TextSearch')
+const selected = ref('qualitative_model')
 const pageSize = ref(20);
-const SearchText = ref('');
 const loading = ref(true);
 const currentPageData = ref(tableData.slice(0, pageSize.value));
-const selectedOptions = ref('EventTitle');
-const currentPage = ref(1);
-const total = ref(100); // 假设总数据量为 100
-const handleCurrentChange = (page) => {
-  currentPage.value = page;
-};
-const handleRowClick = (id) => {
 
-  router.push('/SearchAOPResult/'+ id);
-};
-const handleSearch = async () => {
-  currentPage.value=1
-  const keyword = encodeURIComponent(SearchText.value)
-  const columnName = encodeURIComponent(selectedOptions.value)
-  console.info("keyword",keyword)
-  console.info("columnName",columnName)
-  loading.value = true;
-  // 处理搜索逻辑，这里只是简单地打印搜索关键词
-  // console.info('搜索关键词:', SearchText.value);
-  try {
-    const response = await axios.get(`/searchEvent?keyword=${keyword}&columnName=${columnName}`);
-    tableData.value = response.data;
-    //拿到数据之后 需要初始化一系列参数
-    currentPageData.value = tableData.value.slice(0, pageSize.value);
-    total.value=response.data.length;
-    // console.info('currentPageData:', currentPageData.value);
-    // console.info('total:', total.value);
-  } catch (error) {
-    console.error('Error searching:', error);
-  } finally {
-    loading.value = false;
+const selectedComponent = computed(() => {
+  if (selected.value === 'qualitative_model') {
+    return SearchDXresult;
+  } else{
+    return SearchDLresult;
   }
-
-
-};
-const fetchData = async () => {
-  try {
-    const response = await axios.get('/getEventData');
-    // console.info("response",response.data);
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching data:', error);
-    return [];
-  }
-};
-
-watch([tableData,currentPage, pageSize], () => {
-  const startIndex = (currentPage.value - 1) * pageSize.value;
-  const endIndex = startIndex + pageSize.value;
-  currentPageData.value = tableData.value.slice(startIndex, endIndex);
-  total.value = tableData.value.length;
-  // console.info("数据变化")
-},{ deep: true });
-
-onMounted( () => {
-  //页面加载的初始化
-  // 手动调用一次处理当前页码改变的方法，确保在页面刚加载时显示第一页的内容
-  handleCurrentChange(currentPage.value);
-  // 初始时先接收数据
-  fetchData().then(data => {
-    tableData.value = data; // 将获取到的数据赋值给 tabledata
-    //拿到数据之后 需要初始化一系列参数
-    currentPageData.value = tableData.value.slice(0, pageSize.value);
-    total.value=data.length;
-    loading.value=false
-    // console.info("currentPageData.value",currentPageData.value); // 打印获取到的数据
-  }).catch(error => {
-    console.error('Error:', error); // 打印错误信息
-  });
-})
+});
 
 
 </script>

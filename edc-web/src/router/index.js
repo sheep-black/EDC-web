@@ -79,9 +79,9 @@ const routes = [
         }
     },
     {
-        path:'/PredictResult/:smiles',
-        name:'PredictResult',
-        component:PredictResult,
+        path: '/PredictResult/:smiles/:ifAD',
+        name: 'PredictResult',
+        component: PredictResult,
         meta: {
             title: 'Predict结果'
         }

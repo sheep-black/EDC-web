@@ -2,81 +2,36 @@
 import { ref } from 'vue';
 import axios from "axios";
 const SearchText = ref('');
-const showTable = ref(false);
-const tableData = ref([]);
-const showDialog = ref(false);
+const ifAD = ref('noAD');
 import router from "@/router/index.js";
-const handleSearch = async () => {
-  const keyword = encodeURIComponent(SearchText.value)
-
-  console.info('搜索关键词:', keyword);
-  router.push('/PredictResult/' + keyword);
-
+import {Search} from "@element-plus/icons-vue";
+const handleSearch = () => {
+  const keyword = encodeURIComponent(SearchText.value);
+  console.info('搜索关键词:', keyword,ifAD.value);
+  router.push(`/PredictResult/${keyword}/${ifAD.value}`);
 };
 
-const handleRowClick=()=>{
-  showDialog.value=true;
-
-}
 </script>
 
 <template>
   <div style="justify-content: center;display: flex;">
     <el-input
         v-model="SearchText"
-        style="max-width: 600px;height: 50px;margin-top: 10px;"
-        size="large"
+        style="max-width: 600px"
         placeholder="Please input smiles"
+        size="large"
         @keyup.enter="handleSearch"
     >
+      <template #prepend>
+        <el-select v-model="ifAD" placeholder="Options" style="width: 170px" size="large">
+          <el-option label="with AD image" value="AD" />
+          <el-option label="no AD image" value="noAD" />
+        </el-select>
+      </template>
       <template #append>
-        <el-button @click="handleSearch">
-        Input
-        </el-button>
+        <el-button :icon="Search" @click="handleSearch" />
       </template>
     </el-input>
-
-  </div>
-  <p v-if="showTable" style="font-size: 20px;
-                  margin-top: 30px;
-                  margin-left: 20%;
-                  font-weight: bold;
-                  display: flex;
-                  color: #1B497BFF;">
-    Predict Results
-  </p>
-  <div style="justify-content: center;display: flex; margin-top: 10px;">
-    <el-table
-        :data="tableData"
-        height="300"
-        style="width: 60%"
-        :header-cell-style="{ background: '#dedede', color: '#000' }"
-        v-if="showTable">
-      <el-table-column prop="Assay ID" label="ID" align="center" >
-        <template #default="scope">
-          <el-button type="text" @click="handleRowClick(scope.row)">{{ scope.row.ID}}</el-button>
-        </template>
-      </el-table-column>
-      <el-table-column prop="date" label="Date" width="180" align="center" />
-      <el-table-column prop="name" label="Name" width="180" align="center" />
-      <el-table-column prop="address" label="Address" align="center" />
-    </el-table>
-    <el-dialog
-    v-model="showDialog"
-    title="Tips"
-    width="500"
-    :before-close="handleClose"
-  >
-
-    <template #footer>
-      <div class="dialog-footer">
-        <el-button @click="showDialog = false">Cancel</el-button>
-        <el-button type="primary" @click="showDialog = false">
-          Confirm
-        </el-button>
-      </div>
-    </template>
-  </el-dialog>
   </div>
 
 </template>

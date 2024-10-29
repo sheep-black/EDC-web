@@ -111,11 +111,11 @@
               </strong>
               {{ clickNode ? clickNode.data().nodetype  : ' ' }}
             </p>
-            <el-divider>
+            <el-divider v-if="ifAD === 'AD'">
               <p>Application domain (image)</p>
             </el-divider>
-            <div style="display: grid;place-items: center; /* 水平和垂直居中 */">
-              <el-image :src="eventImageSrc" :fit="'fill'" class="event-image" style="width: 300px; height: 300px;" >
+            <div v-if="ifAD === 'AD'" style="display: grid; place-items: center; /* 水平和垂直居中 */">
+              <el-image :src="eventImageSrc" :fit="'fill'" class="event-image" style="width: 300px; height: 300px;">
               </el-image>
             </div>
           </div>
@@ -212,6 +212,7 @@ const AOP_Data = ref([]);
 const route = useRoute();
 const loading = ref(true); // 用于控制加载状态
 const smiles = route.params.smiles;
+const ifAD = route.params.ifAD;
 const encodedSmiles = encodeURIComponent(smiles);
 const cyContainer = ref(null);
 const elements = ref([]);
@@ -297,15 +298,17 @@ const resultExport = async (fileName) => {
 
 };
 const getEventImage=async (id) => {
-  const PreType = 'DX'; // 设置当前预测类型
-  const getImageUrl = `/getEventImage?PreType=${PreType}&smiles=${encodedSmiles}&id=${id}`;
-  const response = await axios.get(getImageUrl, {
-    responseType: 'blob', // 指定响应类型为 blob
-  });
-  console.info("response",response)
-  // 创建一个 URL 对象来引用 blob 数据
-  const url = URL.createObjectURL(response.data);
-  eventImageSrc.value = url; // 设置图片源
+  if(ifAD==='AD'){
+    const PreType = 'DX'; // 设置当前预测类型
+    const getImageUrl = `/getEventImage?PreType=${PreType}&smiles=${encodedSmiles}&id=${id}`;
+    const response = await axios.get(getImageUrl, {
+      responseType: 'blob', // 指定响应类型为 blob
+    });
+    console.info("response",response)
+    // 创建一个 URL 对象来引用 blob 数据
+    const url = URL.createObjectURL(response.data);
+    eventImageSrc.value = url; // 设置图片源
+  }
 };
 // 转换数据格式并设置元素
 const fetchData = () => {
@@ -373,7 +376,8 @@ onMounted(async () => {
         clearInterval(interval); // 达到90%后停止
       }
     }, 10000); // 每秒更新一次
-    const predictresponse = await axios.get(`/PredictDX?input=${encodedSmiles}`);
+
+    const predictresponse = await axios.get(`/PredictDX?input=${encodedSmiles}&ifAD=${ifAD}`);
     // 解析 result 字符串为对象
     const resultObject = JSON.parse(predictresponse.data.result);
     console.info("resultObject",resultObject);
@@ -604,12 +608,12 @@ onMounted(async () => {
     cySucess.value = true; // 更新加载状态
   } catch (error) {
     console.error('获取数据失败:', error);
-    // ElMessage({
-    //   showClose: true,
-    //   message: 'Oops! Prediction error, please try again later.',
-    //   type: 'error',
-    //   duration:0,
-    // })
+    ElMessage({
+      showClose: true,
+      message: 'Oops! Prediction error, please try again later.',
+      type: 'error',
+      duration:0,
+    })
   } finally {
     // console.info("data", AOP_Data.value);
 

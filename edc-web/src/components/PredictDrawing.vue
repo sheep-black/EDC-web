@@ -4,8 +4,7 @@ import axios from "axios";
 import router from '../router'
 const loading = ref(true); // 定义一个响应式变量，用于控制加载状态
 const ketcherSmiles = ref(''); // 定义一个响应式变量，用于存储 SMILES 字符串
-const showTable = ref(false);
-
+const ifAD=ref('noAD');
 const Predict = async () => {
   const ketcherFrame = document.getElementById("katcher");
   const ketcher = ketcherFrame.contentWindow.ketcher;
@@ -14,7 +13,7 @@ const Predict = async () => {
         ketcherSmiles.value = res;
         console.log("ketcherSmiles", ketcherSmiles.value);
         const keyword = encodeURIComponent(ketcherSmiles.value)
-        router.push('/PredictResult/' + keyword);
+        router.push(`/PredictResult/${keyword}/${ifAD.value}`);
       }).catch((e) => {
     console.log(e);
   });
@@ -39,8 +38,7 @@ onMounted(() => {
   <div v-loading="loading" style="justify-content: center;display: flex;">
     <iframe id="katcher" src="/ketcher/standalone/index.html" style="width: 60%; min-height: 500px; border: none;"></iframe>
   </div>
-
-  <div style=" display: flex;justify-content: center;">
+  <div style=" display: flex;justify-content: center;margin-top: 5px;">
     <el-popover
         placement="top"
         title="Tips:"
@@ -57,7 +55,12 @@ onMounted(() => {
       </template>
     </el-popover>
   </div>
-
+  <div style="justify-content: center;display: flex; margin-top: 5px;">
+    <el-radio-group  v-model="ifAD">
+      <el-radio label="AD">With AD image</el-radio>
+      <el-radio label="noAD">No AD image</el-radio>
+    </el-radio-group>
+  </div>
 
 </template>
 

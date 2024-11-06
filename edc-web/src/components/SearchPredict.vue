@@ -16,7 +16,7 @@
             <!--      菜单左侧标志-->
             <img src="../assets/network.svg" style="height: 45px; width: 45px;" alt="Your Icon" />
             <p style="font-size: 18px;margin-left: 6px;font-weight: bold;text-shadow: 1px 1px 2px black;">
-              EDC-Web
+              EDCNDP.ai
             </p>
           </el-menu-item>
           <div class="flex-grow" />
@@ -34,7 +34,7 @@
               <p style="justify-content: center;">EDC-DATA</p>
             </el-menu-item>
             <el-menu-item index="1-3" style="justify-content: center;" @click="router.push('/SearchPredict')">
-              <p style="justify-content: center;">Predict-Result</p>
+              <p style="justify-content: center;">EDC-GECs</p>
             </el-menu-item>
           </el-sub-menu>
           <el-menu-item index="2" @click="router.push('/Predict')">
@@ -64,7 +64,7 @@
         </el-menu>
       </el-header>
       <el-main class="SearchAOP-main">
-        <p style="font-size: 45px;
+        <p style="font-size: 40px;
                   margin-left: 6px;
                   font-weight: bold;
                   justify-content: center;
@@ -72,13 +72,40 @@
                   color: #1e1a1a;
                   text-shadow: 2px 2px 2px #ffcc66;"
                   >
-          Predict-Result  Search
-        </p><p style="font-size: 25px;
+          EDC-GECs  Search
+          <el-popover
+              placement="right-start"
+              title="Tips:"
+              :width="320"
+              trigger="hover"
+          >
+            <p style="font-size: 14px">Click here to download the complete file: </p>
+            <el-link type="primary" @click="DownloadPredictResult('test.txt')" style="justify-content: center;
+                  display: flex;">
+              <el-icon size="20"><Memo /></el-icon>
+              <p style="font-size: 14px;
+                        text-align: justify; /* 文本两端对齐 */
+                        line-height: 1%; /* 设置行高 */
+                        ">
+                test.txt (txt)
+              </p>
+              <el-icon size="20"><Memo /></el-icon>
+            </el-link>
+            <template #reference>
+              <el-icon style="font-size: 20px; ">
+                <InfoFilled />
+              </el-icon>
+            </template>
+          </el-popover>
+        </p>
+        <p style="font-size: 16px;
                   margin-top: -10px;
+                  margin-left: 20%;
                   justify-content: center;
                   display: flex;
+                  width: 60%;
                   color: #000000;">
-        Search from over about 230,000 records
+        Search the prediction results from over about 230,000 globally existing chemicals that were collected from three inventories, including the Inventory of Existing Chemical Substances of China (IECSC), the Toxic Substances Control Act (TSCA) chemical substance inventory of the US, and the Classification and Labelling (C&L) inventory of the EU.
       </p>
 
         <el-radio-group fill="#ffcc66" v-model="selected" text-color="#1e1a1a"
@@ -97,13 +124,13 @@
           <h3 style="color: #f8f8f8;letter-spacing: 1px;">Copyright</h3>
           <el-divider />
           <p style="color: #ffffff;">All Rights © 2024</p>
-          <p style="color: #ffffff;">Reserved</p>
+          <p style="color: #ffffff;">Nanjing University Reserved</p>
         </div>
         <div class="footer-section">
           <h3 style="color: #f8f8f8;letter-spacing: 1px;">Contact</h3>
           <el-divider />
-          <p style="color: #ffffff;">E-mail：example@example.com</p>
-          <p style="color: #ffffff;">Tel：123-456-7890</p>
+          <p style="color: #ffffff;">E-mail：njutanhaoyue@nju.edu.cn</p>
+          <p style="color: #ffffff;">Postcode：210023</p>
         </div>
         <div class="footer-section">
           <h3 style="color: #f8f8f8;letter-spacing: 1px;">Registration</h3>
@@ -124,7 +151,7 @@
 
 import {ref, reactive, watch, onMounted, computed} from "vue";
 import axios from "axios";
-import {Search} from "@element-plus/icons-vue";
+import {InfoFilled, Memo, Search} from "@element-plus/icons-vue";
 import router from "@/router/index.js";
 import SearchDXresult from "@/components/SearchDXresult.vue";
 import SearchDLresult from "@/components/SearchDLresult.vue";
@@ -143,7 +170,22 @@ const selectedComponent = computed(() => {
     return SearchDLresult;
   }
 });
-
+const DownloadPredictResult = async (filename) => {
+  console.info('文件名:',filename);
+  const url =`/download?fileName=${filename}`;
+  try {
+    const response = await axios.get(url, { responseType: 'blob' });
+    const downloadUrl = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = downloadUrl;
+    link.setAttribute('download', filename);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  } catch (error) {
+    console.error('Error downloading file:', error);
+  }
+};
 
 </script>
 

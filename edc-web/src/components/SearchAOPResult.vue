@@ -16,7 +16,7 @@
             <!--      菜单左侧标志-->
             <img src="../assets/network.svg" style="height: 45px; width: 45px;" alt="Your Icon" />
             <p style="font-size: 18px;margin-left: 6px;font-weight: bold;text-shadow: 1px 1px 2px black;">
-              EDC-Web
+              EDCNDP.ai
             </p>
           </el-menu-item>
           <div class="flex-grow" />
@@ -34,7 +34,7 @@
               <p style="justify-content: center;">EDC-DATA</p>
             </el-menu-item>
             <el-menu-item index="1-3" style="justify-content: center;" @click="router.push('/SearchPredict')">
-              <p style="justify-content: center;">Predict-Result</p>
+              <p style="justify-content: center;">EDC-GECs</p>
             </el-menu-item>
           </el-sub-menu>
           <el-menu-item index="2" @click="router.push('/Predict')">
@@ -147,13 +147,13 @@
           <h3 style="color: #f8f8f8;letter-spacing: 1px;">Copyright</h3>
           <el-divider />
           <p style="color: #ffffff;">All Rights © 2024</p>
-          <p style="color: #ffffff;">Reserved</p>
+          <p style="color: #ffffff;">Nanjing University Reserved</p>
         </div>
         <div class="footer-section">
           <h3 style="color: #f8f8f8;letter-spacing: 1px;">Contact</h3>
           <el-divider />
-          <p style="color: #ffffff;">E-mail：example@example.com</p>
-          <p style="color: #ffffff;">Tel：123-456-7890</p>
+          <p style="color: #ffffff;">E-mail：njutanhaoyue@nju.edu.cn</p>
+          <p style="color: #ffffff;">Postcode：210023</p>
         </div>
         <div class="footer-section">
           <h3 style="color: #f8f8f8;letter-spacing: 1px;">Registration</h3>

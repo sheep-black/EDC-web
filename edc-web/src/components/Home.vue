@@ -15,7 +15,7 @@
             <!--      菜单左侧标志-->
             <img src="../assets/network.svg" style="height: 45px; width: 45px;" alt="Your Icon" />
             <p style="font-size: 18px;margin-left: 6px;font-weight: bold;text-shadow: 1px 1px 2px black;">
-              EDC-Web
+              EDCNDP.ai
             </p>
           </el-menu-item>
           <div class="flex-grow" />
@@ -33,7 +33,7 @@
               <p style="justify-content: center;">EDC-DATA</p>
             </el-menu-item>
             <el-menu-item index="1-3" style="justify-content: center;" @click="router.push('/SearchPredict')">
-              <p style="justify-content: center;">Predict-Result</p>
+              <p style="justify-content: center;">EDC-GECs</p>
             </el-menu-item>
           </el-sub-menu>
           <el-menu-item index="2" @click="router.push('/Predict')">
@@ -73,9 +73,10 @@
                     justify-content: flex-start;
                     padding-left: 15vh;
                     ">
-              <p class="intro-text">EDC Network & Database & Predictor is a free web server that provides information on endocrine disruptors (EDCs) adverse outcome pathways (AOPs) and retrieval of trial data. It also provides a prediction service for screening potential EDCs. Through predictive modelling, statistical testing and a user-friendly web interface, EDC Network & Database & Predictor helps biologists observe novel EDCs and accelerate related research.
+              <p class="intro-text">
+                EDC Network & Database & Predictor (EDCNPD.ai) is a free web server that provides information on endocrine disrupting chemicals (EDCs) related adverse outcome pathways (AOPs) and study data retrieval. It also provides a prediction service for screening potential EDCs. Through predictive modelling, statistical testing and a user-friendly web interface, EDCNDP.ai helps toxicologists identify endocrine disrupting patterns of EDCs and accelerate related research.
                 <br>
-                We are constantly adding new data and working on improving interfaces to EDCs information. Please check back often!
+                We are constantly adding new data and working to improve interfaces to EDCs information. Please check back often!
                 <br>
 
               </p>
@@ -121,7 +122,7 @@
             <el-link style="margin-left: 15vh;margin-top: 2%" type="primary" @click="router.push('/About')" :underline="false">
               <transition name="fade">
                 <p v-if="isVisible" style="font-size: 25px;margin-top: -5%;font-weight: bold;color: #ffffff;text-shadow: 5px 5px 5px #054079;">
-                  Learn More About EDC-Web >
+                  Learn More About EDCNDP.ai >
                 </p>
               </transition>
             </el-link>
@@ -138,13 +139,13 @@
         <h3 style="color: #f8f8f8;letter-spacing: 1px;">Copyright</h3>
         <el-divider />
         <p style="color: #ffffff;">All Rights © 2024</p>
-        <p style="color: #ffffff;">Reserved</p>
+        <p style="color: #ffffff;">Nanjing University Reserved</p>
       </div>
       <div class="footer-section">
         <h3 style="color: #f8f8f8;letter-spacing: 1px;">Contact</h3>
         <el-divider />
-        <p style="color: #ffffff;">E-mail：example@example.com</p>
-        <p style="color: #ffffff;">Tel：123-456-7890</p>
+        <p style="color: #ffffff;">E-mail：njutanhaoyue@nju.edu.cn</p>
+        <p style="color: #ffffff;">Postcode：210023</p>
       </div>
       <div class="footer-section">
         <h3 style="color: #f8f8f8;letter-spacing: 1px;">Registration</h3>

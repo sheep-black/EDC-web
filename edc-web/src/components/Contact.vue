@@ -17,7 +17,7 @@
             <!--      菜单左侧标志-->
             <img src="../assets/network.svg" style="height: 45px; width: 45px;" alt="Your Icon" />
             <p style="font-size: 18px;margin-left: 6px;font-weight: bold;text-shadow: 1px 1px 2px black;">
-              EDC-Web
+              EDCNDP.ai
             </p>
           </el-menu-item>
           <div class="flex-grow" />
@@ -35,7 +35,7 @@
               <p style="justify-content: center;">EDC-DATA</p>
             </el-menu-item>
             <el-menu-item index="1-3" style="justify-content: center;" @click="router.push('/SearchPredict')">
-              <p style="justify-content: center;">Predict-Result</p>
+              <p style="justify-content: center;">EDC-GECs</p>
             </el-menu-item>
           </el-sub-menu>
           <el-menu-item index="2" @click="router.push('/Predict')">
@@ -77,8 +77,16 @@
         <div style="display: flex;
                     justify-content: center;
                     padding: 0 20px; /* 左右间距为 20px，根据需要调整 */">
-          <p class="contact-text"> All chemical information can be found on this platform. If needed, please contact us for further communication and data acquisition. Contact: Prof. Shi Wei, School of Environment, Nanjing University (njushiwei@nju.edu.cn)；
-
+          <p class="contact-text">
+            All chemical information can be found on this platform. If needed, please contact us for further communication and data acquisition.
+            <br>
+            <b>Authors</b>: Haoyue Tan, Tong Bao, Jinsha Jin, Rong Zhang, and Wei Shi.
+            <br>
+            <b>Corresponding authors</b>: Haoyue Tan (njutanhaoyue@nju.edu.cn) and Wei Shi (njushiwei@nju.edu.cn)
+            <br>
+            <b>Address</b>:
+            <br>1. State Key Laboratory of Pollution Control and Resources Reuse, School of Environment, Nanjing University, Nanjing 210023, Jiangsu, China.
+            <br>2. Jiangsu Province Ecology and Environment Protection Key Laboratory of Chemical Safety and Health Risk, Nanjing 210023, Jiangsu, China.
           </p>
         </div>
 
@@ -92,13 +100,13 @@
           <h3 style="color: #f8f8f8;letter-spacing: 1px;">Copyright</h3>
           <el-divider />
           <p style="color: #ffffff;">All Rights © 2024</p>
-          <p style="color: #ffffff;">Reserved</p>
+          <p style="color: #ffffff;">Nanjing University Reserved</p>
         </div>
         <div class="footer-section">
           <h3 style="color: #f8f8f8;letter-spacing: 1px;">Contact</h3>
           <el-divider />
-          <p style="color: #ffffff;">E-mail：example@example.com</p>
-          <p style="color: #ffffff;">Tel：123-456-7890</p>
+          <p style="color: #ffffff;">E-mail：njutanhaoyue@nju.edu.cn</p>
+          <p style="color: #ffffff;">Postcode：210023</p>
         </div>
         <div class="footer-section">
           <h3 style="color: #f8f8f8;letter-spacing: 1px;">Registration</h3>
@@ -134,16 +142,16 @@ const handleSelect = (key: string, keyPath: string[]) => {
 .contact-text {
   /* 中间介绍字体的样式*/
   font-size: 18px;
-  max-width: 800px; /* 设置最大宽度，以避免文本过长 */
+  max-width: 880px; /* 设置最大宽度，以避免文本过长 */
   text-align: justify; /* 文本两端对齐 */
   line-height: 200%; /* 设置行高 */
 }
 .contact-main{
   /* 设置图片作为背景 */
-  background-image: url('../assets/back.png');
+  background-image: url('../assets/contact_back.png');
   /* 背景设置为覆盖整个容器 */
   min-width: 1080px;
-  min-height: 80vh;
+  min-height: 90vh;
   background-size: cover;
   background-position: center;
   /* //height: 500px; 根据需要设置高度 */

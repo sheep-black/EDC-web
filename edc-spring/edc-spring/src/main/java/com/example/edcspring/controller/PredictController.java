@@ -59,7 +59,10 @@ public class PredictController {
                 if (resultFolder.exists() && resultFolder.isDirectory()) {
                     String ADPath = "scripts/edc_backend_models_v3/edc_backend_models_v3/result/" + existingRecord.getId() + "/DX/AD";
                     File ADFolder = new File(ADPath); // 创建 File 对象以检查文件夹
+                    String runJsonPath = "scripts/edc_backend_models_v3/edc_backend_models_v3/result/" + existingRecord.getId() + "/DX/runs.json"; // 构建 run.json 的路径
+                    File runJsonFile = new File(runJsonPath); // 创建 File 对象以检查 run.json 文件
                     String[] files = ADFolder.list();
+                    //数据库有记录且需要AD图 但AD文件夹里内容为空
                     if (files != null && "AD".equals(ifAD) && files.length == 0) {
                         String outFilePath = "../result/"+existingRecord.getId()+"/DX";
                         List<String> command = new ArrayList<>();
@@ -69,6 +72,32 @@ public class PredictController {
                         command.add("-o");
                         command.add(outFilePath);
                         command.add("-s");
+                        // 调用 exe 文件
+                        ProcessBuilder pb = new ProcessBuilder(command);
+                        pb.directory(workingDirectory); // 设置工作目录
+                        pb.redirectOutput(new File("output.log")); // 将标准输出重定向到文件
+                        pb.redirectError(new File("error.log")); // 将错误输出重定向到文件
+                        Process process = pb.start();
+                        int exitCode = process.waitFor();
+                        if (exitCode != 0) {
+                            return "Error: Process exited with code " + exitCode;
+                        }
+                        // 读取生成的 JSON 文件
+                        return readJsonFromFolder(jsonFilePath);//按照文件夹读结果
+                    }
+                    if (!runJsonFile.exists() || !runJsonFile.isFile()) {
+                        // run.json 文件不存在：
+                        String outFilePath = "../result/"+existingRecord.getId()+"/DX";
+                        List<String> command = new ArrayList<>();
+                        command.add(exePath);
+                        command.add("-i");
+                        command.add(input);
+                        command.add("-o");
+                        command.add(outFilePath);
+                        // 根据 ifAD 的值添加 "-s" 参数
+                        if ("AD".equals(ifAD)) {
+                            command.add("-s");
+                        }
                         // 调用 exe 文件
                         ProcessBuilder pb = new ProcessBuilder(command);
                         pb.directory(workingDirectory); // 设置工作目录
@@ -161,6 +190,8 @@ public class PredictController {
                 if (resultFolder.exists() && resultFolder.isDirectory()) {
                     String ADPath = "scripts/edc_backend_models_v3/edc_backend_models_v3/result/" + existingRecord.getId() + "/DL/AD";
                     File ADFolder = new File(ADPath); // 创建 File 对象以检查文件夹
+                    String runJsonPath = "scripts/edc_backend_models_v3/edc_backend_models_v3/result/" + existingRecord.getId() + "/DL/runs.json"; // 构建 run.json 的路径
+                    File runJsonFile = new File(runJsonPath); // 创建 File 对象以检查 run.json 文件
                     String[] files = ADFolder.list();
                     if (files != null && "AD".equals(ifAD) && files.length == 0) {
                         String outFilePath = "../result/"+existingRecord.getId()+"/DL";
@@ -171,6 +202,32 @@ public class PredictController {
                         command.add("-o");
                         command.add(outFilePath);
                         command.add("-s");
+                        // 调用 exe 文件
+                        ProcessBuilder pb = new ProcessBuilder(command);
+                        pb.directory(workingDirectory); // 设置工作目录
+                        pb.redirectOutput(new File("output.log")); // 将标准输出重定向到文件
+                        pb.redirectError(new File("error.log")); // 将错误输出重定向到文件
+                        Process process = pb.start();
+                        int exitCode = process.waitFor();
+                        if (exitCode != 0) {
+                            return "Error: Process exited with code " + exitCode;
+                        }
+                        // 读取生成的 JSON 文件
+                        return readJsonFromFolder(jsonFilePath);//按照文件夹读结果
+                    }
+                    if (!runJsonFile.exists() || !runJsonFile.isFile()) {
+                        // run.json 文件不存在：
+                        String outFilePath = "../result/"+existingRecord.getId()+"/DL";
+                        List<String> command = new ArrayList<>();
+                        command.add(exePath);
+                        command.add("-i");
+                        command.add(input);
+                        command.add("-o");
+                        command.add(outFilePath);
+                        // 根据 ifAD 的值添加 "-s" 参数
+                        if ("AD".equals(ifAD)) {
+                            command.add("-s");
+                        }
                         // 调用 exe 文件
                         ProcessBuilder pb = new ProcessBuilder(command);
                         pb.directory(workingDirectory); // 设置工作目录

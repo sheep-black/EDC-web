@@ -80,14 +80,14 @@
               trigger="hover"
           >
             <p style="font-size: 14px">Click here to download the complete file: </p>
-            <el-link type="primary" @click="DownloadPredictResult('test.txt')" style="justify-content: center;
+            <el-link type="primary" @click="DownloadPredictResult('23w substances predict result.zip')" style="justify-content: center;
                   display: flex;">
               <el-icon size="20"><Memo /></el-icon>
               <p style="font-size: 14px;
                         text-align: justify; /* 文本两端对齐 */
                         line-height: 1%; /* 设置行高 */
                         ">
-                test.txt (txt)
+                23w substances predict result (zip)
               </p>
               <el-icon size="20"><Memo /></el-icon>
             </el-link>

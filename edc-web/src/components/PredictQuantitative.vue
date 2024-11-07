@@ -144,7 +144,7 @@
             content="Click to download the event related information file">
           <template #reference>
             <el-link :underline="false">
-              <el-icon style="font-size: 20px;margin-top:10px;padding-left: 10px" @click="EventInfoDownload('event_info.xlsx')">
+              <el-icon style="font-size: 20px;margin-top:10px;padding-left: 10px" @click="EventInfoDownload('NodeInfo.xlsx')">
                 <InfoFilled />
               </el-icon>
             </el-link>

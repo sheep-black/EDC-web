@@ -102,7 +102,7 @@
         <div class="footer-section">
           <h3 style="color: #f8f8f8;letter-spacing: 1px;">Contact</h3>
           <el-divider />
-          <p style="color: #ffffff;">E-mail：njutanhaoyue@nju.edu.cn</p>
+          <p style="color: #ffffff;">E-mail：njutanhaoyue@nju.edu.cn & njushiwei@nju.edu.cn</p>
           <p style="color: #ffffff;">Postcode：210023</p>
         </div>
         <div class="footer-section">

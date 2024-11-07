@@ -73,41 +73,27 @@
                   text-shadow: 2px 2px 2px #ffcc66;"
                   >
           EDC-GECs  Search
-          <el-popover
-              placement="right-start"
-              title="Tips:"
-              :width="320"
-              trigger="hover"
-          >
-            <p style="font-size: 14px">Click here to download the complete file: </p>
-            <el-link type="primary" @click="DownloadPredictResult('23w substances predict result.zip')" style="justify-content: center;
-                  display: flex;">
-              <el-icon size="20"><Memo /></el-icon>
-              <p style="font-size: 14px;
+        </p>
+        <p style="font-size: 16px;
+          margin-top: -10px;
+          margin-left: 20%;
+          width: 65%;
+          color: #000000;
+          text-align: center;">
+          Search the prediction results from over about 230,000 globally existing chemicals (GECs) that were collected from three inventories, including the Inventory of Existing Chemical Substances of China (IECSC), the Toxic Substances Control Act (TSCA) chemical substance inventory of the US, and the Classification and Labelling (C&L) inventory of the EU.
+        </p>
+        <el-link :underline="false" type="primary"
+                 @click="DownloadPredictResult('230000result.zip')"
+                 style="justify-content: center;display: flex;margin-top: -10px; padding-bottom: 30px">
+          <el-icon size="20"><Memo /></el-icon>
+          <p style="font-size: 14px;
                         text-align: justify; /* 文本两端对齐 */
                         line-height: 1%; /* 设置行高 */
                         ">
-                23w substances predict result (zip)
-              </p>
-              <el-icon size="20"><Memo /></el-icon>
-            </el-link>
-            <template #reference>
-              <el-icon style="font-size: 20px; ">
-                <InfoFilled />
-              </el-icon>
-            </template>
-          </el-popover>
-        </p>
-        <p style="font-size: 16px;
-                  margin-top: -10px;
-                  margin-left: 20%;
-                  justify-content: center;
-                  display: flex;
-                  width: 60%;
-                  color: #000000;">
-        Search the prediction results from over about 230,000 globally existing chemicals that were collected from three inventories, including the Inventory of Existing Chemical Substances of China (IECSC), the Toxic Substances Control Act (TSCA) chemical substance inventory of the US, and the Classification and Labelling (C&L) inventory of the EU.
-      </p>
-
+            click here to download 23w substances predict result (zip)
+          </p>
+          <el-icon size="20"><Memo /></el-icon>
+        </el-link>
         <el-radio-group fill="#ffcc66" v-model="selected" text-color="#1e1a1a"
                         style="font-weight: bold;justify-content: center;display: flex;">
           <el-radio-button label="qualitative_model" value="qualitative_model" size="large" />
@@ -129,7 +115,7 @@
         <div class="footer-section">
           <h3 style="color: #f8f8f8;letter-spacing: 1px;">Contact</h3>
           <el-divider />
-          <p style="color: #ffffff;">E-mail：njutanhaoyue@nju.edu.cn</p>
+          <p style="color: #ffffff;">E-mail：njutanhaoyue@nju.edu.cn & njushiwei@nju.edu.cn</p>
           <p style="color: #ffffff;">Postcode：210023</p>
         </div>
         <div class="footer-section">
@@ -170,22 +156,19 @@ const selectedComponent = computed(() => {
     return SearchDLresult;
   }
 });
-const DownloadPredictResult = async (filename) => {
-  console.info('文件名:',filename);
-  const url =`/download?fileName=${filename}`;
-  try {
-    const response = await axios.get(url, { responseType: 'blob' });
-    const downloadUrl = window.URL.createObjectURL(new Blob([response.data]));
-    const link = document.createElement('a');
-    link.href = downloadUrl;
-    link.setAttribute('download', filename);
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-  } catch (error) {
-    console.error('Error downloading file:', error);
-  }
+const DownloadPredictResult = (filename) => {
+  console.info('文件名:', filename);
+
+  // 获取 axios 的基础 URL
+  const baseURL = axios.defaults.baseURL;
+
+  // 构建完整的下载 URL
+  const url = `${baseURL}/download?fileName=${filename}`;
+
+  // 使用 window.open 直接打开下载链接
+  window.open(url, '_blank');
 };
+
 
 </script>
 

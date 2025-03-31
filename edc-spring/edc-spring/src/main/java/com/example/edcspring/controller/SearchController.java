@@ -38,19 +38,13 @@ public class SearchController {
     @GetMapping("/findID")
     public List<TestData> findID(@RequestParam String ID) {
         int id = Integer.parseInt(ID); // 将字符串类型的 ID 转换为整数
-        System.out.println(id);
         List<TestData> result = edcMapper.findByID(id);
-        // 打印查询结果
-        System.out.println("查询结果：" + result);
         return edcMapper.findByID(id);
     }
     @GetMapping("/findAOPID")
     public List<AOPData> findAOPID(@RequestParam String ID) {
         int id = Integer.parseInt(ID); // 将字符串类型的 ID 转换为整数
-        System.out.println(id);
         List<AOPData> result = edcMapper.findByAOPID(id);
-        // 打印查询结果
-        System.out.println("查询结果：" + result);
         return edcMapper.findByAOPID(id);
     }
     @PostMapping("/dataScreen")

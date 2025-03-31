@@ -2,6 +2,7 @@
 import { createRouter,createWebHashHistory } from "vue-router";
 
 import Home from '../components/Home.vue'
+import Login from '../components/Login.vue'
 import Contact from '../components/Contact.vue'
 import About from '../components/About.vue'
 import SearchAOP from '../components/SearchAOP.vue'
@@ -20,6 +21,14 @@ const routes = [
         component:Home,
         meta: {
             title: '主页'
+        }
+    },
+    {
+        path:'/Login',
+        name:'Login',
+        component:Login,
+        meta: {
+            title: '登录'
         }
     },
     {

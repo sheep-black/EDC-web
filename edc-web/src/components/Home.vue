@@ -54,9 +54,17 @@
           </el-menu-item>
           <el-menu-item index="4" @click="router.push('/Contact')">
             <template #title>
-              <el-icon :size="20"><UserFilled /></el-icon>
+              <el-icon :size="20"><Message /></el-icon>
               <p style="font-size: 16px;text-shadow: 0px 0px 2px black;">
                 Contact
+              </p>
+            </template>
+          </el-menu-item>
+          <el-menu-item index="5" @click="router.push('/Login')">
+            <template #title>
+              <el-icon :size="20"><UserFilled /></el-icon>
+              <p style="font-size: 16px;text-shadow: 0px 0px 2px black;">
+                Login
               </p>
             </template>
           </el-menu-item>

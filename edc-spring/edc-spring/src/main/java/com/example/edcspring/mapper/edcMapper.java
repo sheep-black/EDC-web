@@ -9,9 +9,6 @@ import java.util.List;
 public interface edcMapper {
     @Select("SELECT * FROM refine")
     List<TestData> getAllData();
-//    @Select("SELECT * FROM refine WHERE cas LIKE CONCAT('%', #{keyword}, '%')")
-//    List<TestData> searchData(@Param("keyword") String keyword);
-
     @Select("SELECT * FROM result_dx WHERE SMILES LIKE CONCAT('%', #{smiles}, '%') LIMIT #{offset}, #{limit}")
     List<ResultDX> searchSMILESDX(@Param("smiles") String smiles, @Param("offset") int offset, @Param("limit") int limit);
     @Select("SELECT COUNT(*) FROM result_dx WHERE SMILES LIKE CONCAT('%', #{smiles}, '%')")

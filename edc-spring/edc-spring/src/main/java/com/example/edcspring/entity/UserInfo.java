@@ -6,8 +6,8 @@ public class UserInfo {
     private String password;
     private String email;
     private String region;
-    private int VIP;
-    private int predictTimes;
+    private int vip;
+    private int predicttimes;
 
     public int getUserId() {
         return userId;
@@ -49,19 +49,19 @@ public class UserInfo {
         this.region = region;
     }
 
-    public int getVIP() {
-        return VIP;
+    public int getVip() {
+        return vip;
     }
 
-    public void setVIP(int VIP) {
-        this.VIP = VIP;
+    public void setVip(int vip) {
+        this.vip = vip;
     }
 
-    public int getPredictTimes() {
-        return predictTimes;
+    public int getPredicttimes() {
+        return predicttimes;
     }
 
-    public void setPredictTimes(int predictTimes) {
-        this.predictTimes = predictTimes;
+    public void setPredicttimes(int predicttimes) {
+        this.predicttimes = predicttimes;
     }
 }

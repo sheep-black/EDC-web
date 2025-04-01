@@ -14,5 +14,5 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedMethods("GET", "POST", "PUT", "DELETE") // 允许的请求方法
                 .allowedHeaders("*"); // 允许的请求头
     }
-}
 
+}

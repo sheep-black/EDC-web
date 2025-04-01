@@ -1,36 +1,47 @@
 package com.example.edcspring.controller;
 
 import com.example.edcspring.entity.UserInfo;
-import com.example.edcspring.util.Ip2RegionUtil;
+import com.example.edcspring.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 public class RegisterController {
 
-    private final Ip2RegionUtil ip2RegionUtil;
+    private final AuthService authService;
 
     @Autowired
-    public RegisterController(Ip2RegionUtil ip2RegionUtil) {
-        this.ip2RegionUtil = ip2RegionUtil;
+    public RegisterController(AuthService authService) {
+        this.authService = authService;
     }
 
     @PostMapping("/register")
-    public String register(@RequestBody UserInfo request, HttpServletRequest httpRequest) {
-        String username = request.getUserName();
-        String password = request.getPassword();
-        String email = request.getEmail();
-        String ipAddress = httpRequest.getRemoteAddr();
-
-        // 查询IP地区
-        String ipRegion = ip2RegionUtil.getRegionFromIp(ipAddress);
-
-        System.out.println("IP地址: " + ipAddress);
-        System.out.println("IP地区: " + ipRegion);
-
-        // TODO: 这里可以添加注册逻辑，例如验证和保存用户信息
-
-        return "Registration successful for user: " + username + ", IP location: " + ipRegion;
+    public ResponseEntity<Map<String, Object>> register(@RequestBody UserInfo request, HttpServletRequest httpRequest) {
+//        String ipAddress = httpRequest.getRemoteAddr(); // 获取真实IP地址
+        String ipAddress = "49.234.4.144"; // 获取真实IP地址
+        Map<String, Object> response = authService.register(request, ipAddress);
+        if (response.get("success").equals(true)) {
+            return ResponseEntity.ok(response);
+        } else {
+            return ResponseEntity.badRequest().body(response);
+        }
     }
+    @PostMapping("/login")
+    public ResponseEntity<Map<String, Object>> login(@RequestBody UserInfo request) {
+        String username = request.getUserName(); // 从请求中获取用户名
+        String password = request.getPassword(); // 从请求中获取密码
+        // 调用服务进行登录验证
+        Map<String, Object> response = authService.login(username, password);
+        // 根据登录结果返回相应的响应
+        if (response.get("success").equals(true)) {
+            return ResponseEntity.ok(response); // 登录成功
+        } else {
+            return ResponseEntity.badRequest().body(response); // 登录失败
+        }
+    }
+
 }

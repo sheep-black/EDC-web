@@ -85,7 +85,7 @@ const submitForm = async () => {
         });
         console.info(response.data); // 打印响应
         ElMessage.success('Register Success！'); // 使用 success 而不是 error
-        router.push('/');
+        router.push('/Login');
       } catch (error) {
         console.error('注册失败:', error);
         // 检查 error 对象是否包含 response

@@ -1,5 +1,5 @@
 <script setup>
-import router from '../router'
+import router from '../../router/index.js'
 
 </script>
 
@@ -12,9 +12,9 @@ import router from '../router'
     EDC Database
   </p>
   <el-divider border-style="dashed" />
-    <img style="display: flex;justify-content: center;width: 80%;margin-left: 10%" src="../assets/predictor1.png">
+    <img style="display: flex;justify-content: center;width: 80%;margin-left: 10%" src="../../assets/predictor1.png">
 <!--    <el-image style="width: 1100px;" :src=predictor1  />-->
-    <img style="display: flex;justify-content: center;width:80%;margin-left: 10%" src="../assets/predictor2.png">
+    <img style="display: flex;justify-content: center;width:80%;margin-left: 10%" src="../../assets/predictor2.png">
 <!--    <el-image style="width: 1100px;" :src=predictor2  />-->
 
   <div style="display: flex;

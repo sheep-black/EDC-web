@@ -1,11 +1,17 @@
 package com.example.edcspring.config;
 
+import com.example.edcspring.interceptor.PredictLimitInterceptor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
+
+    @Autowired
+    private PredictLimitInterceptor predictLimitInterceptor;
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
@@ -15,4 +21,11 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedHeaders("*"); // 允许的请求头
     }
 
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        // 添加预测次数限制拦截器，并指定拦截的路径
+        registry.addInterceptor(predictLimitInterceptor)
+                .addPathPatterns("/PredictDX"); // 拦截所有预测相关的请求路径
+        // 如果有需要排除的路径，可以使用 .excludePathPatterns("/api/predict/exclude/**");
+    }
 }

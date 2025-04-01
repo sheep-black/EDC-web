@@ -200,7 +200,7 @@
 <script  setup>
 
 import {computed, nextTick, onMounted, ref} from 'vue'
-import router from '../router'
+import router from '../../router/index.js'
 
 import {useRoute} from 'vue-router';
 import axios from "axios";

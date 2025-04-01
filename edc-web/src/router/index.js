@@ -1,99 +1,114 @@
 // import Vue from 'vue'
-import { createRouter,createWebHashHistory } from "vue-router";
+import { createRouter, createWebHashHistory } from "vue-router";
 
-import Home from '../components/Home.vue'
-import Login from '../components/UserInfoPage/Login.vue'
-import Register from '../components/UserInfoPage/Register.vue'
-import Contact from '../components/Contact.vue'
-import About from '../components/About.vue'
-import SearchAOP from '../components/SearchAOP.vue'
-import SearchDATA from '../components/SearchDATA.vue'
-import SearchDATAResult from "../components/SearchDATAResult.vue"
-import SearchAOPResult from "../components/SearchAOPResult.vue"
-import PredictResult from "../components/PredictResult.vue"
-import Predict from '../components/Predict.vue'
-import SearchPredict from "../components/SearchPredict.vue";
-
+import Home from '../components/Home.vue';
+import Login from '../components/UserInfoPage/Login.vue';
+import Register from '../components/UserInfoPage/Register.vue';
+import Contact from '../components/Contact.vue';
+import About from '../components/About.vue';
+import SearchAOP from '../components/SearchPage/SearchAOP.vue';
+import SearchDATA from '../components/SearchPage/SearchDATA.vue';
+import SearchDATAResult from "../components/SearchPage/SearchDATAResult.vue";
+import SearchAOPResult from "../components/SearchPage/SearchAOPResult.vue";
+import PredictResult from "../components/PredictPage/PredictResult.vue";
+import Predict from '../components/AboutPage/Predict.vue';
+import SearchPredict from "../components/SearchPage/SearchPredict.vue";
+import UserCount from "@/components/UserInfoPage/UserCount.vue";
+import store from "@/store/index.js";
 
 const routes = [
     {
-        path:'/',
-        name:'Home',
-        component:Home,
+        path: '/',
+        name: 'Home',
+        component: Home,
         meta: {
-            title: '主页'
+            title: 'Home'
         }
     },
     {
-        path:'/Register',
-        name:'Register',
-        component:Register,
+        path: '/Register',
+        name: 'Register',
+        component: Register,
         meta: {
-            title: '注册'
+            title: 'Register'
         }
     },
     {
-        path:'/Login',
-        name:'Login',
-        component:Login,
+        path: '/Login',
+        name: 'Login',
+        component: Login,
         meta: {
-            title: '登录'
+            title: 'Login'
         }
     },
     {
-        path:'/Contact',
-        name:'Contact',
-        component:Contact,
+        path: '/UserCount',
+        name: 'UserCount',
+        component: UserCount,
         meta: {
-            title: '联系'
+            title: 'UserCount',
+            requiresAuth: true // 需要认证
         }
     },
     {
-        path:'/About',
-        name:'About',
-        component:About,
+        path: '/Contact',
+        name: 'Contact',
+        component: Contact,
         meta: {
-            title: '关于'
+            title: 'Contact'
         }
     },
     {
-        path:'/SearchAOP',
-        name:'SearchAOP',
-        component:SearchAOP,
+        path: '/About',
+        name: 'About',
+        component: About,
         meta: {
-            title: 'AOP搜索'
+            title: 'About'
         }
     },
     {
-        path:'/SearchDATA',
-        name:'SearchDATA',
-        component:SearchDATA,
+        path: '/SearchAOP',
+        name: 'SearchAOP',
+        component: SearchAOP,
         meta: {
-            title: 'DATA搜索'
+            title: 'SearchAOP',
+            requiresAuth: true // 需要认证
         }
     },
     {
-        path:'/SearchPredict',
-        name:'SearchPredict',
-        component:SearchPredict,
+        path: '/SearchDATA',
+        name: 'SearchDATA',
+        component: SearchDATA,
         meta: {
-            title: 'Predict搜索'
+            title: 'SearchDATA',
+            requiresAuth: true // 需要认证
         }
     },
     {
-        path:'/SearchDATAResult/:dataId',
-        name:'SearchDATAResult',
-        component:SearchDATAResult,
+        path: '/SearchPredict',
+        name: 'SearchPredict',
+        component: SearchPredict,
         meta: {
-            title: 'DATA搜索结果'
+            title: 'SearchPredict',
+            requiresAuth: true // 需要认证
         }
     },
     {
-        path:'/SearchAOPResult/:dataId',
-        name:'SearchAOPResult',
-        component:SearchAOPResult,
+        path: '/SearchDATAResult/:dataId',
+        name: 'SearchDATAResult',
+        component: SearchDATAResult,
         meta: {
-            title: 'AOP搜索结果'
+            title: 'SearchDATAResult',
+            requiresAuth: true // 需要认证
+        }
+    },
+    {
+        path: '/SearchAOPResult/:dataId',
+        name: 'SearchAOPResult',
+        component: SearchAOPResult,
+        meta: {
+            title: 'SearchAOPResult',
+            requiresAuth: true // 需要认证
         }
     },
     {
@@ -101,20 +116,45 @@ const routes = [
         name: 'PredictResult',
         component: PredictResult,
         meta: {
-            title: 'Predict结果'
+            title: 'PredictResult',
+            requiresAuth: true // 需要认证
         }
     },
     {
-        path:'/Predict',
-        name:'Predict',
-        component:Predict,
+        path: '/Predict',
+        name: 'Predict',
+        component: Predict,
         meta: {
-            title: '预测'
+            title: 'Predict',
+            requiresAuth: true // 需要认证
         }
     },
-  ]
+];
+
 const router = createRouter({
-    history:createWebHashHistory(),
+    history: createWebHashHistory(),
     routes
-})
-  export default router;
+});
+
+// 全局路由守卫
+router.beforeEach((to, from, next) => {
+    // 更新页面标题
+    document.title = to.meta.title || '默认标题';
+
+    const isAuthenticated = store.getters.isAuthenticated; // 从 Vuex Store 获取认证状态
+
+    if (to.meta.requiresAuth && !isAuthenticated) {
+        // 保存用户想要访问的路径，登录后可以重定向回来
+        next({
+            name: 'Login',
+            query: { redirect: to.fullPath }
+        });
+    } else if (isAuthenticated && (to.name === 'Login' || to.name === 'Register')) {
+        // 如果已经登录，访问登录或注册页面时重定向到首页
+        next({ name: 'Home' });
+    } else {
+        next(); // 继续导航
+    }
+});
+
+export default router;

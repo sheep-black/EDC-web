@@ -14,18 +14,17 @@
         </el-form-item>
 
         <el-form-item label="Password" prop="password" :rules="rules.password">
-          <el-input type="password" v-model="form.password" />
+          <el-input type="password" v-model="form.password" show-password @keyup.enter="submitForm" />
         </el-form-item>
       </el-form>
 
       <el-link type="primary" @click="goToRegister" :underline="false" style="display: flex; justify-content: left;">
         <p style="font-size: 12px;margin-top: -5%;margin-bottom: -5%;">
-            Don't have an account? Register here
+          Don't have an account? Register here
         </p>
       </el-link>
       <template #footer>
-        <el-button type="primary" plain @click="submitForm" style="width: 100%;">Login</el-button>
-
+        <el-button type="primary" plain @click="submitForm" style="width: 100%;" :loading="loading">Login</el-button>
       </template>
     </el-card>
   </el-container>
@@ -33,14 +32,20 @@
 
 <script setup>
 import { ref } from 'vue';
-import axios from 'axios';
+import { useStore } from 'vuex';
 import { ElMessage } from "element-plus";
-import router from "@/router/index.js"; // 导入路由
+import { useRouter, useRoute } from 'vue-router';
+
+const store = useStore();
+const router = useRouter();
+const route = useRoute();
 
 const form = ref({
   username: '',
   password: ''
 });
+
+const loading = ref(false);
 
 const rules = {
   username: [{ required: true, message: 'Please enter your username', trigger: 'blur' }],
@@ -52,30 +57,37 @@ const formRef = ref(null);
 const submitForm = async () => {
   formRef.value.validate(async (valid) => {
     if (valid) {
+      loading.value = true;
+
       // 创建用户数据对象
       const userData = {
         userName: form.value.username,
         password: form.value.password
       };
+
       try {
-        // 发送 POST 请求到后端进行登录
-        console.info(userData);
-        const response = await axios.post('/login', userData, {
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        });
-        console.info(response.data); // 打印响应
-        ElMessage.success('Login Success！'); // 显示成功消息
-        router.push('/'); // 登录成功后跳转到主页
+        // 使用Vuex action进行登录
+        await store.dispatch('login', userData);
+
+        ElMessage.success('Login Success!');
+
+        // 获取重定向路径（如果存在）
+        const redirectPath = route.query.redirect || '/';
+        // 添加短暂延迟，确保状态已更新
+        setTimeout(() => {
+          router.push(redirectPath);
+        }, 100);
       } catch (error) {
-        console.error('登录失败:', error);
+        console.error('Login failed:', error);
+
         // 检查 error 对象是否包含 response
         if (error.response && error.response.data && error.response.data.message) {
           ElMessage.error(error.response.data.message); // 显示后端返回的错误信息
         } else {
-          ElMessage.error('Login Error！'); // 默认错误信息
+          ElMessage.error(error.message || 'Login Error!'); // 显示错误信息
         }
+      } finally {
+        loading.value = false;
       }
     } else {
       console.log('error submit!!');
@@ -86,7 +98,7 @@ const submitForm = async () => {
 
 // 跳转到注册页面
 const goToRegister = () => {
-  router.push('/register'); // 确保路由配置中有注册页面的路径
+  router.push('/register');
 };
 </script>
 
@@ -106,3 +118,4 @@ const goToRegister = () => {
   background-position: center;
 }
 </style>
+

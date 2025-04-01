@@ -1,7 +1,7 @@
 <script setup>
 import axios from "axios";
-import router from '../router'
-import databaseimage from '../assets/database-image.png'
+import router from '../../router/index.js'
+import databaseimage from '../../assets/database-image.png'
 
 const DownloadAOPData = async (filename) => {
 
@@ -32,7 +32,7 @@ const DownloadAOPData = async (filename) => {
     EDC Database
   </p>
   <el-divider border-style="dashed" />
-    <img style="display: flex;width: 80%;margin-left: 10%;" src="../assets/database-image.png">
+    <img style="display: flex;width: 80%;margin-left: 10%;" src="../../assets/database-image.png">
     <!--      <el-image style="display: flex;max-height: 100vh;width: auto" :src=intro_image  />-->
   <div style="display: flex;
                     justify-content: center;

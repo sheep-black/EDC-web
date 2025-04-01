@@ -1,68 +1,8 @@
 <template>
   <div>
-    <el-container style="margin-top: -2px;">
-      <el-header>
-        <!--        头部菜单栏-->
-        <el-menu
-            :default-active="activeIndex"
-            style="min-width: 1080px; margin-left: -25px;margin-right: -25px;margin-top: -5px"
-            mode="horizontal"
-            background-color="#3a3b3d"
-            text-color="#fff"
-            active-text-color="#ffcc66"
-            :ellipsis="false"
-        >
-          <el-menu-item index="0" @click="router.push('/')">
-            <!--      菜单左侧标志-->
-            <img src="../assets/network.svg" style="height: 45px; width: 45px;" alt="Your Icon" />
-            <p style="font-size: 18px;margin-left: 6px;font-weight: bold;text-shadow: 1px 1px 2px black;">
-              EDCNDP.ai
-            </p>
-          </el-menu-item>
-          <div class="flex-grow" />
-          <el-sub-menu index="1">
-            <template #title >
-              <el-icon :size="20"><Search /></el-icon>
-              <p style="font-size: 16px;text-shadow: 0px 0px 2px black;">
-                Search
-              </p>
-            </template>
-            <el-menu-item index="1-1" style="justify-content: center;" @click="router.push('/SearchAOP')">
-              <p style="justify-content: center;">EDC-AOP</p>
-            </el-menu-item>
-            <el-menu-item index="1-2" style="justify-content: center;" @click="router.push('/SearchDATA')">
-              <p style="justify-content: center;">EDC-DATA</p>
-            </el-menu-item>
-            <el-menu-item index="1-3" style="justify-content: center;" @click="router.push('/SearchPredict')">
-              <p style="justify-content: center;">EDC-GECs</p>
-            </el-menu-item>
-          </el-sub-menu>
-          <el-menu-item index="2" @click="router.push('/Predict')">
-            <template #title>
-              <el-icon :size="20"><Odometer /></el-icon>
-              <p style="font-size: 16px;text-shadow: 0px 0px 2px black;">
-                Predict
-              </p>
-            </template>
-          </el-menu-item>
-          <el-menu-item index="3" @click="router.push('/About')">
-            <template #title>
-              <el-icon :size="20"><InfoFilled /></el-icon>
-              <p style="font-size: 16px;text-shadow: 0px 0px 2px black;">
-                About
-              </p>
-            </template>
-          </el-menu-item>
-          <el-menu-item index="4" @click="router.push('/Contact')">
-            <template #title>
-              <el-icon :size="20"><UserFilled /></el-icon>
-              <p style="font-size: 16px;text-shadow: 0px 0px 2px black;">
-                Contact
-              </p>
-            </template>
-          </el-menu-item>
-        </el-menu>
-      </el-header>
+    <div class="page-container">
+      <!-- 使用导航栏组件 -->
+      <HeaderNav />
       <el-main class="SearchAOP-main">
         <p style="font-size: 40px;
                   margin-left: 6px;
@@ -103,31 +43,8 @@
         <component :is="selectedComponent" />
       </el-main>
 
-    </el-container>
-    <footer class="footer">
-      <div class="footer-content">
-        <div class="footer-section">
-          <h3 style="color: #f8f8f8;letter-spacing: 1px;">Copyright</h3>
-          <el-divider />
-          <p style="color: #ffffff;">All Rights © 2024</p>
-          <p style="color: #ffffff;">Nanjing University Reserved</p>
-        </div>
-        <div class="footer-section">
-          <h3 style="color: #f8f8f8;letter-spacing: 1px;">Contact</h3>
-          <el-divider />
-          <p style="color: #ffffff;">E-mail：njutanhaoyue@nju.edu.cn & njushiwei@nju.edu.cn</p>
-          <p style="color: #ffffff;">Postcode：210023</p>
-        </div>
-        <div class="footer-section">
-          <h3 style="color: #f8f8f8;letter-spacing: 1px;">Registration</h3>
-          <el-divider />
-          <ul>
-            <li><a href="#">2024--</a></li>
-            <li><a href="#">苏ICP备000000号</a></li>
-          </ul>
-        </div>
-      </div>
-    </footer>
+    </div>
+    <FooterNav />
 
   </div>
 
@@ -139,8 +56,10 @@ import {ref, reactive, watch, onMounted, computed} from "vue";
 import axios from "axios";
 import {InfoFilled, Memo, Search} from "@element-plus/icons-vue";
 import router from "@/router/index.js";
-import SearchDXresult from "@/components/SearchDXresult.vue";
-import SearchDLresult from "@/components/SearchDLresult.vue";
+import SearchDXresult from "@/components/SearchPage/SearchDXresult.vue";
+import SearchDLresult from "@/components/SearchPage/SearchDLresult.vue";
+import HeaderNav from "@/components/HeaderNav.vue";
+import FooterNav from "@/components/FooterNav.vue";
 
 const tableData = reactive([]);
 const activeIndex = ref('1-3')
@@ -159,14 +78,23 @@ const selectedComponent = computed(() => {
 const DownloadPredictResult = (filename) => {
   console.info('文件名:', filename);
 
-  // 获取 axios 的基础 URL
-  const baseURL = axios.defaults.baseURL;
-
-  // 构建完整的下载 URL
-  const url = `${baseURL}/download?fileName=${filename}`;
-
-  // 使用 window.open 直接打开下载链接
-  window.open(url, '_blank');
+  // 使用axios发送请求，它会自动包含认证头
+  axios({
+    url: `/download?fileName=${filename}`,
+    method: 'GET',
+    responseType: 'blob', // 重要，指定响应类型为二进制数据
+  }).then((response) => {
+    // 创建一个blob链接并点击下载
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', filename);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }).catch(error => {
+    console.error("下载文件出错:", error);
+  });
 };
 
 
@@ -204,7 +132,7 @@ const DownloadPredictResult = (filename) => {
 }
 .SearchAOP-main{
   /* 设置图片作为背景 */
-  background-image: url('../assets/back.png');
+  background-image: url('../../assets/back.png');
   /* 背景设置为覆盖整个容器 */
   min-width: 1080px;
   min-height: 80vh;

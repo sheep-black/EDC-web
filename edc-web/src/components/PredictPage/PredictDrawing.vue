@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import axios from "axios";
-import router from '../router'
+import router from '../../router/index.js'
 const loading = ref(true); // 定义一个响应式变量，用于控制加载状态
 const ketcherSmiles = ref(''); // 定义一个响应式变量，用于存储 SMILES 字符串
 const ifAD=ref('noAD');

@@ -25,7 +25,7 @@ public class WebConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         // 添加预测次数限制拦截器，并指定拦截的路径
         registry.addInterceptor(predictLimitInterceptor)
-                .addPathPatterns("/PredictDX"); // 拦截所有预测相关的请求路径
+                .addPathPatterns("/PredictDX","/PredictDL"); // 拦截所有预测相关的请求路径
         // 如果有需要排除的路径，可以使用 .excludePathPatterns("/api/predict/exclude/**");
     }
 }

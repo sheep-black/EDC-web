@@ -24,7 +24,7 @@ public class PredictLimitInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        // 从请求中获取用户ID (假设JWT过滤器已经解析并设置)
+        // 从请求中获取用户ID (JWT过滤器已经解析并设置)
         Object userIdObj = request.getAttribute("userId");
         if (userIdObj == null) {
             response.setStatus(401);

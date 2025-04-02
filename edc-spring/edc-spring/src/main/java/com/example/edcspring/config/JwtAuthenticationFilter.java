@@ -35,7 +35,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             if (StringUtils.hasText(jwt) && validateToken(jwt)) {
                 String username = getUsernameFromJWT(jwt);
-
                 // 从JWT获取userId
                 Integer userId = getUserIdFromJWT(jwt);
 
@@ -44,7 +43,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     request.setAttribute("userId", userId);
                     logger.info("设置request中的userId: " + userId);
                 }
-
 
                 // 设置Spring Security上下文
                 UsernamePasswordAuthenticationToken authentication =

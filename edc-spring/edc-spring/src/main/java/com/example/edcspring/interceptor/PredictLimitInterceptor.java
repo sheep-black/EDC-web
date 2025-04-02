@@ -2,8 +2,11 @@ package com.example.edcspring.interceptor;
 
 import com.example.edcspring.entity.UserInfo;
 import com.example.edcspring.service.AuthService;
+//import com.example.edcspring.service.Impl.AuthServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -17,13 +20,16 @@ import java.util.Map;
 public class PredictLimitInterceptor implements HandlerInterceptor {
 
     @Autowired
-    private AuthService authService;
+    private AuthService authService;  // 注入接口而不是实现类
 
     @Autowired
     private ObjectMapper objectMapper;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        // 首先从 Security 上下文中获取认证信息
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
         // 从请求中获取用户ID (JWT过滤器已经解析并设置)
         Object userIdObj = request.getAttribute("userId");
         if (userIdObj == null) {

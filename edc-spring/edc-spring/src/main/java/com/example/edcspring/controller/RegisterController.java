@@ -2,6 +2,7 @@ package com.example.edcspring.controller;
 
 import com.example.edcspring.entity.UserInfo;
 import com.example.edcspring.service.AuthService;
+//import com.example.edcspring.service.Impl.AuthServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +13,8 @@ import java.util.Map;
 @RestController
 public class RegisterController {
 
-    private final AuthService authService;
+    @Autowired
+    private AuthService authService;  // 注入接口而不是实现类
 
     @Autowired
     public RegisterController(AuthService authService) {

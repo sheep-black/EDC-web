@@ -7,16 +7,21 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 
 public interface PredictService {
     List<PredictResult> getAllPredictResults();
 
-    CompletableFuture<Map<String, String>> predictDX(String input, String ifAD);
+    // 同步接口 - 保持不变
+    Map<String, String> predictDX(String input, String ifAD);
 
-    CompletableFuture<Map<String, String>> predictDL(String input, String ifAD);
+    // 异步接口 - 返回类型改为Map<String, Object>包含taskId
+    Map<String, Object> predictDL(String input, String ifAD);
+
+    // 新增任务状态查询接口
+    Map<String, Object> getTaskStatus(String taskId);
 
     ResponseEntity<FileSystemResource> downloadPredictFile(String preType, String smiles, String fileName);
 
     ResponseEntity<ByteArrayResource> getEventImage(String preType, String smiles, String id);
 }
+

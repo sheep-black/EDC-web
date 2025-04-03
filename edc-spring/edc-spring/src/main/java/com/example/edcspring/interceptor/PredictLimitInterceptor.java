@@ -28,7 +28,6 @@ public class PredictLimitInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         // 首先从 Security 上下文中获取认证信息
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         // 从请求中获取用户ID (JWT过滤器已经解析并设置)
         Object userIdObj = request.getAttribute("userId");

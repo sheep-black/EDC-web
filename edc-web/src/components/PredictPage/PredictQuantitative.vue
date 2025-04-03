@@ -284,7 +284,7 @@ import {computed, nextTick, onMounted, ref} from 'vue'
 import router from '../../router/index.js'
 
 import {useRoute} from 'vue-router';
-import axios from "axios";
+import axios from 'axios';
 import cytoscape from "cytoscape";
 import {ElMessage} from "element-plus";
 import {ArrowLeftBold, Document, InfoFilled} from "@element-plus/icons-vue";
@@ -294,7 +294,7 @@ const route = useRoute();
 const loading = ref(true); // 用于控制加载状态
 const smiles = route.params.smiles;
 const ifAD = route.params.ifAD;
-const encodedSmiles = encodeURIComponent(smiles);
+const encodedSmiles = smiles;
 const cyContainer = ref(null);
 const elements = ref([]);
 const Node_Info=ref('0');
@@ -538,213 +538,273 @@ const fetchData = () => {
 
 onMounted(async () => {
   try {
-    const progressValues = [10,30,50,70,90]; // 定义进度值
-    let index = 0;
-    const interval = setInterval(() => {
-      if (index < progressValues.length) {
-        percentage.value = progressValues[index];
+    loading.value = true;
+    percentage.value = 0;
+    updateProgressText();
+    console.info("encodedSmiles",encodedSmiles)
+// 发送异步预测请求，获取任务ID
+    const submitResponse = await axios.post('/PredictDL',
+        // 请求体
+        {
+          input: encodedSmiles,
+          ifAD: ifAD
+        },
+
+    );
+
+    if (!submitResponse.data.taskId) {
+      throw new Error('Failed to get taskId from server');
+    }
+
+    const taskId = submitResponse.data.taskId;
+    console.info("Task submitted, ID:", taskId);
+
+    // 清除原有的固定进度更新
+    clearInterval(window.progressInterval);
+
+    // 定义轮询函数
+    const pollTaskStatus = async () => {
+      try {
+        const statusResponse = await axios.get(`/status/${taskId}`);
+        const taskData = statusResponse.data;
+
+        // 更新进度条
+        percentage.value = taskData.progress;
         updateProgressText();
-        index++;
-      } else {
-        clearInterval(interval); // 达到90%后停止
-      }
-    }, 5000); // 更新一次
-    const predictresponse = await axios.get(`/PredictDL?input=${encodedSmiles}&ifAD=${ifAD}`);
-    // 解析 result 字符串为对象
-    const resultObject = JSON.parse(predictresponse.data.result);
-    console.info("resultObject", resultObject);
-    AOP_Data.value = resultObject.localAOP;
-    Node_Info.value = resultObject.info;
-    sEvent.value=resultObject.sEvent;
-    sEventName.value = Node_Info.value[sEvent.value].Name;
-    sAOP.value=resultObject.sAOP;
-    qAOP.value=resultObject.AOP;
-    console.info("qAOP",qAOP.value);
-    processqAOPData();
-    console.info("tableData",tableData)
-    fetchData();
-    loading.value = false;
 
-    // 使用 nextTick 确保 DOM 更新完成
-    await nextTick();
+        if (taskData.status === 'completed') {
+          // 任务完成，处理结果
+          const resultObject = JSON.parse(taskData.result.result);
+          console.info("resultObject", resultObject);
 
-    cy.value = cytoscape({
-      container: cyContainer.value, // 使用 ref 引用的容器
-      elements: elements.value,
-      style: [
-        {
-          selector: 'node[type="AO"]', // 选择 type 为 AO且活性 的节点
-          style: {
-            'shape': 'ellipse',
-            'background-color': '#73cfff',
-            'label': 'data(id)',
-            'text-valign': 'center',
-            'text-halign': 'center',
-            'color': '#2c2c2c',
-            'font-size': '30px',
-            'font-weight': 'bold',
-            'width': '200px',
-            'height': '100px',
-            'text-wrap': 'wrap',
-            'text-max-width': '140px',
-            'border-width': '8px',
-            'border-color': '#2c2c2c',
-          }
-        },
-        {
-          selector: 'node[type="KE"]', // 选择 type 为 KE 的节点
-          style: {
-            'background-color': '#7eabd2',
-            'label': 'data(id)',
-            'text-valign': 'center',
-            'text-halign': 'center',
-            'color': '#2c2c2c',  // 黑色文本
-            'font-size': '30px', // 增大字体大小
-            'font-weight': 'bold', // 加粗字体
-            'width': '180px',
-            'height': '100px',
-            'shape': 'round-rectangle', // 设置为圆角矩形
-            'text-wrap': 'wrap',
-            'text-max-width': '140px', // 限制文本最大宽度
-            'border-width': '8px',  // 设置边框宽度
-            'border-color': '#2c2c2c',
-            'border-radius': '20px', // 设置圆角半径
-          }
-        },
-        {
-          selector: `node[id="${sEvent.value}"]`, // 选择高亮节点
-          style: {
-            'background-color': '#ff8e8e',
-            'label': 'data(id)',
-            'text-valign': 'center',
-            'text-halign': 'center',
-            'color': '#2c2c2c',  // 黑色文本
-            'font-size': '30px', // 增大字体大小
-            'font-weight': 'bold', // 加粗字体
-            'width': '210px',
-            'height': '170px',
-            'shape': 'star', // 设置为star
-            'text-wrap': 'wrap',
-            'text-max-width': '140px', // 限制文本最大宽度
-            'border-width': '8px',  // 设置边框宽度
-            'border-color': '#2c2c2c',
-            'border-radius': '20px', // 设置圆角半径
-          }
-        },
-        {
-          selector: 'edge',
-          style: {
-            'width': 'data(width)',
-            'line-color': '#464646',
-            'target-arrow-shape': 'triangle', // 添加箭头
-            'target-arrow-color': '#424242', // 箭头颜色
-            'curve-style': 'bezier', // 使用贝塞尔曲线
-            'line-style': function (ele) {
-              const value = ele.data('width');
-              return value === 1 ? 'dotted' :
-                  value === 3 ? 'dashed' :
-                      'solid'; // 默认实线
-            },
-            'dash-pattern': '10 1',
-            'opacity': function (ele) {
-              const width = ele.data('width');
-              if (width === 1) {
-                return 0.1;   // 透明度为 0
-              } else if (width === 3) {
-                return 0.3; // 透明度为 50%
-              } else if (width === 6) {
-                return 0.5;   // 透明度为 100%
-              } else {
-                return 0.5;   // 默认透明度
-              }
-            },
-          }
-        }
+          // 更新数据
+          AOP_Data.value = resultObject.localAOP;
+          Node_Info.value = resultObject.info;
+          sEvent.value = resultObject.sEvent;
+          sEventName.value = Node_Info.value[sEvent.value].Name;
+          sAOP.value = resultObject.sAOP;
+          qAOP.value = resultObject.AOP;
+          console.info("qAOP", qAOP.value);
 
-      ],
-      wheelSensitivity: 0.2 // 调整滚轮缩放的灵敏度
-    });
+          // 处理数据和渲染图表
+          processqAOPData();
+          console.info("tableData", tableData);
+          fetchData();
 
-    cy.value.on('tap', 'node', function (evt) {
-      clickNode.value = evt.target;
-      console.log('Node clicked:', clickNode.value.data());
-      getEventImage(clickNode.value.data().id)
-    });
-// 布局终点节点
-    const terminalNodes = cy.value.nodes('[type="KE"]');
-    let centerX = 0;
-    let centerY = 0;
-    terminalNodes.layout({
-      name: 'circle',
-      radius: 300, // 圆圈半径
-      avoidOverlap: true, // 避免节点重叠
-      animate: true, // 动画效果
-      minNodeSpacing: 50, // 增加节点之间的最小间距
-      spacingFactor: 0.8, // 增加间距因子
-      animationDuration: 1000, // 动画持续时间
-      ready: function () {
-        // 布局完成后计算圆心坐标
-        const boundingBox = terminalNodes.boundingBox();
-        centerX = boundingBox.x1 + (boundingBox.w / 2);
-        centerY = boundingBox.y1 + (boundingBox.h / 2);
-      }
-    }).run();
+          // 任务完成，更新UI状态
+          loading.value = false;
 
-// 布局中间节点和起始节点
-    const nonTerminalNodes = cy.value.nodes('[type != "KE"]');
-    const radius = 800; // 圆的半径
-    nonTerminalNodes.layout({
-      name: 'cose',
-      fit: true, // 是否调整视口以适应图形
-      padding: 30, // 调整视口时的填充量
-      boundingBox: {x1: centerX - radius, y1: centerY - radius, w: 2 * radius, h: 2 * radius}, // 限制布局边界
-      avoidOverlap: true, // 防止节点重叠
-      nodeDimensionsIncludeLabels: false, // 计算节点边界框时不包含标签
-      animate: true, // 是否启用动画
-      animationDuration: 1000, // 动画持续时间
-      animationEasing: undefined, // 动画的缓动函数
-      ready: function () { // 布局准备好时的回调函数
-      },
-      stop: function () { // 布局停止时的回调函数
-        // 布局完成后进行随机扰动
-        nonTerminalNodes.forEach(node => {
-          const position = node.position();
-          const offsetX = (Math.random() - 0.5) * 300; // 随机偏移量，范围为 [-10, 10]
-          const offsetY = (Math.random() - 0.5) * 300; // 随机偏移量，范围为 [-10, 10]
-          node.position({
-            x: position.x + offsetX,
-            y: position.y + offsetY
+          // 使用 nextTick 确保 DOM 更新完成后再初始化图表
+          await nextTick();
+
+          // 初始化cytoscape图表
+          initCytoscapeGraph();
+
+        } else if (taskData.status === 'failed') {
+          // 任务失败
+          console.error("Task failed:", taskData.error);
+          ElMessage({
+            showClose: true,
+            message: `Prediction failed: ${taskData.error}`,
+            type: 'error',
+            duration: 0
           });
+          loading.value = false;
+        } else {
+          // 任务仍在处理中，继续轮询
+          setTimeout(pollTaskStatus, 2000); // 每2秒轮询一次
+        }
+      } catch (error) {
+        console.error("Error polling task status:", error);
+        ElMessage({
+          showClose: true,
+          message: 'Failed to get task status, please try again later.',
+          type: 'error',
+          duration: 0
         });
-      },
-      transform: function (node, position) { // 转换给定节点位置的函数
-        return position;
-      },
-      idealEdgeLength: 100, // 理想的边长
-      nodeRepulsion: 4000, // 节点之间的排斥力
-      edgeElasticity: 100, // 边的弹性
-      nestingFactor: 0.1, // 节点嵌套因子
-      gravity: 1, // 重力
-      numIter: 1000, // 迭代次数
-      initialTemp: 200, // 初始温度
-      coolingFactor: 0.95, // 冷却因子
-      minTemp: 1.0 // 最低温度
-    }).run();
-    cySucess.value = true; // 更新加载状态
+        loading.value = false;
+      }
+    };
+
+    // 开始轮询
+    pollTaskStatus();
+
   } catch (error) {
-    console.error('获取数据失败:', error);
+    console.error('Failed to start prediction:', error);
     ElMessage({
       showClose: true,
       message: 'Oops! Prediction error, please try again later.',
       type: 'error',
-      duration: 0,
-    })
-
-  } finally {
-    // console.info("data", AOP_Data.value);
-
+      duration: 0
+    });
+    loading.value = false;
   }
 });
+
+// 将cytoscape图表初始化提取为独立函数
+function initCytoscapeGraph() {
+  cy.value = cytoscape({
+    container: cyContainer.value,
+    elements: elements.value,
+    style: [
+      {
+        selector: 'node[type="AO"]',
+        style: {
+          'shape': 'ellipse',
+          'background-color': '#73cfff',
+          'label': 'data(id)',
+          'text-valign': 'center',
+          'text-halign': 'center',
+          'color': '#2c2c2c',
+          'font-size': '30px',
+          'font-weight': 'bold',
+          'width': '200px',
+          'height': '100px',
+          'text-wrap': 'wrap',
+          'text-max-width': '140px',
+          'border-width': '8px',
+          'border-color': '#2c2c2c',
+        }
+      },
+      {
+        selector: 'node[type="KE"]',
+        style: {
+          'background-color': '#7eabd2',
+          'label': 'data(id)',
+          'text-valign': 'center',
+          'text-halign': 'center',
+          'color': '#2c2c2c',
+          'font-size': '30px',
+          'font-weight': 'bold',
+          'width': '180px',
+          'height': '100px',
+          'shape': 'round-rectangle',
+          'text-wrap': 'wrap',
+          'text-max-width': '140px',
+          'border-width': '8px',
+          'border-color': '#2c2c2c',
+          'border-radius': '20px',
+        }
+      },
+      {
+        selector: `node[id="${sEvent.value}"]`,
+        style: {
+          'background-color': '#ff8e8e',
+          'label': 'data(id)',
+          'text-valign': 'center',
+          'text-halign': 'center',
+          'color': '#2c2c2c',
+          'font-size': '30px',
+          'font-weight': 'bold',
+          'width': '210px',
+          'height': '170px',
+          'shape': 'star',
+          'text-wrap': 'wrap',
+          'text-max-width': '140px',
+          'border-width': '8px',
+          'border-color': '#2c2c2c',
+          'border-radius': '20px',
+        }
+      },
+      {
+        selector: 'edge',
+        style: {
+          'width': 'data(width)',
+          'line-color': '#464646',
+          'target-arrow-shape': 'triangle',
+          'target-arrow-color': '#424242',
+          'curve-style': 'bezier',
+          'line-style': function (ele) {
+            const value = ele.data('width');
+            return value === 1 ? 'dotted' :
+                value === 3 ? 'dashed' :
+                    'solid';
+          },
+          'dash-pattern': '10 1',
+          'opacity': function (ele) {
+            const width = ele.data('width');
+            if (width === 1) {
+              return 0.1;
+            } else if (width === 3) {
+              return 0.3;
+            } else if (width === 6) {
+              return 0.5;
+            } else {
+              return 0.5;
+            }
+          },
+        }
+      }
+    ],
+    wheelSensitivity: 0.2
+  });
+
+  cy.value.on('tap', 'node', function (evt) {
+    clickNode.value = evt.target;
+    console.log('Node clicked:', clickNode.value.data());
+    getEventImage(clickNode.value.data().id);
+  });
+
+  // 布局终点节点
+  const terminalNodes = cy.value.nodes('[type="KE"]');
+  let centerX = 0;
+  let centerY = 0;
+  terminalNodes.layout({
+    name: 'circle',
+    radius: 300,
+    avoidOverlap: true,
+    animate: true,
+    minNodeSpacing: 50,
+    spacingFactor: 0.8,
+    animationDuration: 1000,
+    ready: function () {
+      const boundingBox = terminalNodes.boundingBox();
+      centerX = boundingBox.x1 + (boundingBox.w / 2);
+      centerY = boundingBox.y1 + (boundingBox.h / 2);
+    }
+  }).run();
+
+  // 布局中间节点和起始节点
+  const nonTerminalNodes = cy.value.nodes('[type != "KE"]');
+  const radius = 800;
+  nonTerminalNodes.layout({
+    name: 'cose',
+    fit: true,
+    padding: 30,
+    boundingBox: {x1: centerX - radius, y1: centerY - radius, w: 2 * radius, h: 2 * radius},
+    avoidOverlap: true,
+    nodeDimensionsIncludeLabels: false,
+    animate: true,
+    animationDuration: 1000,
+    animationEasing: undefined,
+    ready: function () {},
+    stop: function () {
+      nonTerminalNodes.forEach(node => {
+        const position = node.position();
+        const offsetX = (Math.random() - 0.5) * 300;
+        const offsetY = (Math.random() - 0.5) * 300;
+        node.position({
+          x: position.x + offsetX,
+          y: position.y + offsetY
+        });
+      });
+    },
+    transform: function (node, position) {
+      return position;
+    },
+    idealEdgeLength: 100,
+    nodeRepulsion: 4000,
+    edgeElasticity: 100,
+    nestingFactor: 0.1,
+    gravity: 1,
+    numIter: 1000,
+    initialTemp: 200,
+    coolingFactor: 0.95,
+    minTemp: 1.0
+  }).run();
+
+  cySucess.value = true;
+}
 
 </script>
 

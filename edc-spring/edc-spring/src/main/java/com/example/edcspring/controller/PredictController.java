@@ -27,34 +27,14 @@ public class PredictController {
     }
 
     @GetMapping("/PredictDX")
-    public CompletableFuture<Map<String, String>> processStringDX(@RequestParam String input, @RequestParam String ifAD) {
-        // 记录收到的请求参数
-        System.out.println("收到预测请求 - 输入: " + input + ", ifAD: " + ifAD);
-
-        // 获取当前认证用户信息(在主线程中)，打印更多细节
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        System.out.println("主线程认证信息: " + (auth != null ? auth.getName() : "无认证信息"));
-        if (auth != null) {
-            System.out.println("主线程权限: " + auth.getAuthorities());
-            System.out.println("认证详情: " + auth.getDetails());
-            System.out.println("认证类型: " + auth.getClass().getName());
-        }
-
-        // 调用异步服务并添加回调以记录结果
-        return predictService.predictDX(input, ifAD)
-                .thenApply(result -> {
-                    System.out.println("预测完成，结果: " + result);
-                    return result;
-                })
-                .exceptionally(ex -> {
-                    System.err.println("预测过程发生错误: " + ex.getMessage());
-                    ex.printStackTrace();
-                    throw new CompletionException(ex);
-                });
+    public Map<String, String> processStringDX(@RequestParam String input, @RequestParam String ifAD) {
+        return predictService.predictDX(input, ifAD);
     }
 
-    @GetMapping("/PredictDL")
-    public CompletableFuture<Map<String, String>> processStringDL(@RequestParam String input, @RequestParam String ifAD) {
+    @PostMapping("/PredictDL")
+    public Map<String, Object> predictDL(@RequestBody Map<String, String> request) {
+        String input = request.get("input");
+        String ifAD = request.get("ifAD");
         return predictService.predictDL(input, ifAD);
     }
 
@@ -72,6 +52,11 @@ public class PredictController {
             @RequestParam String smiles,
             @RequestParam String id) {
         return predictService.getEventImage(PreType, smiles, id);
+    }
+
+    @GetMapping("/status/{taskId}")
+    public Map<String, Object> getTaskStatus(@PathVariable String taskId) {
+        return predictService.getTaskStatus(taskId);
     }
 }
 

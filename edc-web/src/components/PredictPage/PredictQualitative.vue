@@ -376,7 +376,9 @@ onMounted(async () => {
         clearInterval(interval); // 达到90%后停止
       }
     }, 10000); // 每秒更新一次
+    console.info("encodedSmiles",encodedSmiles)
     const predictresponse = await axios.get(`/PredictDX?input=${encodedSmiles}&ifAD=${ifAD}`);
+    console.info(`/PredictDX?input=${encodedSmiles}&ifAD=${ifAD}`)
     const resultObject = JSON.parse(predictresponse.data.result);
     console.info("resultObject",resultObject);
     AOP_Data.value = resultObject.localAOP;

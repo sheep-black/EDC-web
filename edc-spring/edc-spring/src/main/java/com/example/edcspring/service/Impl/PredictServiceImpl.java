@@ -1,6 +1,7 @@
 package com.example.edcspring.service.Impl;
 
 import com.example.edcspring.entity.PredictResult;
+import com.example.edcspring.entity.TaskStatus;
 import com.example.edcspring.mapper.edcMapper;
 import com.example.edcspring.service.PredictService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,10 +11,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+
+import jakarta.annotation.PreDestroy;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -21,7 +21,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class PredictServiceImpl implements PredictService {
@@ -32,6 +38,14 @@ public class PredictServiceImpl implements PredictService {
     private static final String RESULT_PATH = BASE_SCRIPT_PATH + "/result/";
     private static final String OUTPUT_LOG = "output.log";
     private static final String ERROR_LOG = "error.log";
+    private final Map<String, CompletableFuture<String>> ongoingTasks = new ConcurrentHashMap<>();
+    // 创建自定义线程池，用于执行模型调用
+    private final ExecutorService executorService = Executors.newFixedThreadPool(
+            Runtime.getRuntime().availableProcessors()
+    );
+
+    // 任务状态存储 - 生产环境可考虑使用Redis或数据库
+    private final Map<String, TaskStatus> taskStatusMap = new ConcurrentHashMap<>();
 
     @Override
     public List<PredictResult> getAllPredictResults() {
@@ -39,71 +53,187 @@ public class PredictServiceImpl implements PredictService {
     }
 
     @Override
-    @Async("taskExecutor")
-    public CompletableFuture<Map<String, String>> predictDX(String input, String ifAD) {
-        // 获取当前线程的SecurityContext (不需要再获取一次，因为已经配置了委托执行器)
+    public Map<String, String> predictDX(String input, String ifAD) {
         Map<String, String> response = new HashMap<>();
-
         try {
-            // 打印更详细的认证信息，包括权限
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            System.out.println("异步线程认证信息: " + (auth != null ? auth.getName() : "无认证信息"));
-            if (auth != null) {
-                System.out.println("异步线程权限: " + auth.getAuthorities());
-            }
-
-            String result = callExeFile(input, ifAD, "DX", "qualitative_model");
+            // 使用异步方式调用exe文件
+            String result = callExeFileAsync(input, ifAD, "DX", "qualitative_model").get();
             response.put("result", result);
             response.put("ifAD", ifAD);
-            return CompletableFuture.completedFuture(response);
-        } catch (Exception e) {
-            e.printStackTrace();
-            response.put("error", "处理请求时出错: " + e.getMessage());
-            return CompletableFuture.completedFuture(response);
-        }
-    }
-
-    @Override
-    @Async("taskExecutor")
-    public CompletableFuture<Map<String, String>> predictDL(String input, String ifAD) {
-        Map<String, String> response = new HashMap<>();
-        try {
-            String result = callExeFile(input, ifAD, "DL", "quantitative_model");
-            response.put("result", result);
-            return CompletableFuture.completedFuture(response);
         } catch (Exception e) {
             e.printStackTrace();
             response.put("error", "Error processing request: " + e.getMessage());
-            return CompletableFuture.completedFuture(response);
+        }
+        return response;
+    }
+
+    @Override
+    public Map<String, Object> predictDL(String input, String ifAD) {
+        // 生成唯一任务ID
+        String taskId = UUID.randomUUID().toString();
+
+        // 创建任务状态对象
+        TaskStatus taskStatus = new TaskStatus();
+        taskStatus.setTaskId(taskId);
+        taskStatus.setStatus("processing");
+        taskStatus.setProgress(0);
+        taskStatus.setInput(input);
+        taskStatus.setIfAD(ifAD);
+
+        // 存储任务状态
+        taskStatusMap.put(taskId, taskStatus);
+
+        // 异步提交任务，不等待结果
+        CompletableFuture.runAsync(() -> {
+            try {
+                // 更新进度 - 开始处理
+                updateTaskProgress(taskId, 10, "开始处理任务");
+
+                // 异步调用模型
+                String result = callExeFileAsync(input, ifAD, "DL", "quantitative_model").get();
+
+                // 更新进度 - 处理完成
+                updateTaskProgress(taskId, 100, "处理完成");
+
+                // 存储结果
+                Map<String, String> resultMap = new HashMap<>();
+                resultMap.put("result", result);
+                resultMap.put("ifAD", ifAD);
+                taskStatus.setResult(resultMap);
+                taskStatus.setStatus("completed");
+            } catch (Exception e) {
+                e.printStackTrace();
+                taskStatus.setStatus("failed");
+                taskStatus.setError("Error processing request: " + e.getMessage());
+            }
+        }, executorService);
+
+        // 立即返回任务信息
+        Map<String, Object> response = new HashMap<>();
+        response.put("taskId", taskId);
+        response.put("status", "processing");
+        response.put("message", "任务已提交，请通过taskId查询结果");
+        return response;
+    }
+
+    /**
+     * 获取任务状态
+     */
+    @Override
+    public Map<String, Object> getTaskStatus(String taskId) {
+        TaskStatus taskStatus = taskStatusMap.get(taskId);
+        Map<String, Object> response = new HashMap<>();
+
+        if (taskStatus == null) {
+            response.put("status", "not_found");
+            response.put("message", "未找到指定的任务ID");
+            return response;
+        }
+
+        response.put("taskId", taskId);
+        response.put("status", taskStatus.getStatus());
+        response.put("progress", taskStatus.getProgress());
+        response.put("message", taskStatus.getMessage());
+
+        // 如果任务完成，返回结果
+        if ("completed".equals(taskStatus.getStatus())) {
+            response.put("result", taskStatus.getResult());
+
+            // 可选：任务完成一段时间后清理内存
+            scheduleTaskCleanup(taskId);
+        } else if ("failed".equals(taskStatus.getStatus())) {
+            response.put("error", taskStatus.getError());
+        }
+
+        return response;
+    }
+
+    /**
+     * 更新任务进度
+     */
+    private void updateTaskProgress(String taskId, int progress, String message) {
+        TaskStatus taskStatus = taskStatusMap.get(taskId);
+        if (taskStatus != null) {
+            taskStatus.setProgress(progress);
+            taskStatus.setMessage(message);
         }
     }
 
+    /**
+     * 计划清理完成的任务状态（防止内存泄漏）
+     */
+    private void scheduleTaskCleanup(String taskId) {
+        CompletableFuture.runAsync(() -> {
+            try {
+                // 任务完成后30分钟清理
+                Thread.sleep(30 * 60 * 1000);
+                taskStatusMap.remove(taskId);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }, executorService);
+    }
+
+
+    // 异步版本的callExeFile方法（带去重机制）
+    private CompletableFuture<String> callExeFileAsync(String input, String ifAD, String modelType, String modelFolder) {
+        // 创建一个唯一键，结合多个参数
+        String taskKey = input + "-" + ifAD + "-" + modelType;
+
+        // 检查是否已有相同任务在执行，如有则复用，没有则创建新任务
+        return ongoingTasks.computeIfAbsent(taskKey, k -> {
+            CompletableFuture<String> future = CompletableFuture.supplyAsync(() -> {
+                try {
+                    String exePath = BASE_SCRIPT_PATH + "/" + modelFolder + "/model.exe";
+                    File workingDirectory = new File(BASE_SCRIPT_PATH + "/" + modelFolder + "/");
+
+                    // 查询或创建记录 - 需要同步操作，避免并发问题
+                    PredictResult record;
+                    synchronized (this) {
+                        record = getOrCreateRecord(input);
+                    }
+
+                    String jsonFilePath = RESULT_PATH + record.getId() + "/" + modelType;
+                    String outFilePath = "../result/" + record.getId() + "/" + modelType;
+
+                    // 检查是否需要运行模型
+                    if (shouldRunModel(jsonFilePath, ifAD)) {
+                        runModel(exePath, workingDirectory, input, outFilePath, ifAD);
+                    }
+
+                    // 读取生成的JSON文件
+                    return readJsonFromFolder(jsonFilePath);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return "Error processing string: " + e.getMessage();
+                } finally {
+                    // 设置延迟移除，避免短时间内的频繁请求仍然导致重复执行
+                    CompletableFuture.runAsync(() -> {
+                        try {
+                            // 为了防止任务刚完成就被移除，然后立即又有新请求，保留一段时间
+                            Thread.sleep(5000); // 5秒后移除
+                            ongoingTasks.remove(taskKey);
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                        }
+                    }, executorService);
+                }
+            }, executorService);
+
+            return future;
+        });
+    }
+
+    // 原有的同步方法保留，但内部改为调用异步方法
     private String callExeFile(String input, String ifAD, String modelType, String modelFolder) {
         try {
-            String exePath = BASE_SCRIPT_PATH + "/" + modelFolder + "/model.exe";
-            File workingDirectory = new File(BASE_SCRIPT_PATH + "/" + modelFolder + "/");
-
-            // 查询或创建记录
-            PredictResult record = getOrCreateRecord(input);
-            String jsonFilePath = RESULT_PATH + record.getId() + "/" + modelType;
-            String outFilePath = "../result/" + record.getId() + "/" + modelType;
-
-            // 检查是否需要运行模型
-            if (shouldRunModel(jsonFilePath, ifAD)) {
-                runModel(exePath, workingDirectory, input, outFilePath, ifAD);
-            }
-
-            // 读取生成的JSON文件
-            return readJsonFromFolder(jsonFilePath);
-        } catch (Exception e) {
+            return callExeFileAsync(input, ifAD, modelType, modelFolder).get();
+        } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
             return "Error processing string: " + e.getMessage();
         }
     }
 
-    // 其余方法保持不变...
-
-    // 以下是您原有的方法，保持不变
     private PredictResult getOrCreateRecord(String input) {
         // 方法实现保持不变
         PredictResult existingRecord = edcMapper.findBySmile(input);
@@ -249,4 +379,19 @@ public class PredictServiceImpl implements PredictService {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+    // 添加线程池的优雅关闭方法
+    @PreDestroy
+    public void shutdown() {
+        executorService.shutdown();
+        try {
+            if (!executorService.awaitTermination(60, TimeUnit.SECONDS)) {
+                executorService.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            executorService.shutdownNow();
+            Thread.currentThread().interrupt();
+        }
+    }
 }
+

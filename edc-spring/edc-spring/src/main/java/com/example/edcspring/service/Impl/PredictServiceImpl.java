@@ -3,7 +3,10 @@ package com.example.edcspring.service.Impl;
 import com.example.edcspring.entity.PredictResult;
 import com.example.edcspring.entity.TaskStatus;
 import com.example.edcspring.mapper.edcMapper;
+import com.example.edcspring.entity.ADGenerationTask;
+import com.example.edcspring.entity.ADGenerationResult;
 import com.example.edcspring.service.PredictService;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.FileSystemResource;
@@ -34,10 +37,18 @@ public class PredictServiceImpl implements PredictService {
     @Autowired
     private edcMapper edcMapper;
 
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
+
     private static final String BASE_SCRIPT_PATH = "scripts/edc_backend_models_v3/edc_backend_models_v3";
     private static final String RESULT_PATH = BASE_SCRIPT_PATH + "/result/";
     private static final String OUTPUT_LOG = "output.log";
     private static final String ERROR_LOG = "error.log";
+
+    // RabbitMQ 队列名称
+    private static final String AD_TASK_QUEUE = "ad-generation-tasks";
+    private static final String AD_RESULT_QUEUE = "ad-generation-results";
+
     private final Map<String, CompletableFuture<String>> ongoingTasks = new ConcurrentHashMap<>();
     // 创建自定义线程池，用于执行模型调用
     private final ExecutorService executorService = Executors.newFixedThreadPool(
@@ -174,54 +185,158 @@ public class PredictServiceImpl implements PredictService {
         }, executorService);
     }
 
+    /**
+     * 将任务发送到RabbitMQ队列
+     */
+    private CompletableFuture<String> sendToRabbitMQ(String input, String ifAD, String modelType, String modelFolder, String taskKey) {
+        CompletableFuture<String> future = new CompletableFuture<>();
 
-    // 异步版本的callExeFile方法（带去重机制）
+        try {
+            // 查询或创建记录
+            PredictResult record;
+            synchronized (this) {
+                record = getOrCreateRecord(input);
+            }
+
+            String jsonFilePath = RESULT_PATH + record.getId() + "/" + modelType;
+            String outFilePath = "../result/" + record.getId() + "/" + modelType;
+
+            // 如果不需要运行模型（结果已存在），直接返回结果
+            if (!shouldRunModel(jsonFilePath, ifAD)) {
+                String result = readJsonFromFolder(jsonFilePath);
+                future.complete(result);
+                return future;
+            }
+
+            // 创建AD生成任务
+            ADGenerationTask task = new ADGenerationTask();
+            task.setTaskId(taskKey);
+            task.setInput(input);
+            task.setModelType(modelType);
+            task.setModelFolder(modelFolder);
+            task.setRecordId(record.getId());
+            task.setResultPath(outFilePath);
+            task.setIfAD(ifAD);
+
+            // 发送任务到RabbitMQ
+
+            rabbitTemplate.convertAndSend(AD_TASK_QUEUE, task);
+
+            // 存储Future以便结果回调时完成
+            ongoingTasks.put(taskKey, future);
+
+            // 设置超时处理
+            scheduleTimeout(taskKey, future, 30);
+
+        } catch (Exception e) {
+            future.completeExceptionally(e);
+        }
+
+        return future;
+    }
+
+    /**
+     * 设置任务超时
+     */
+    private void scheduleTimeout(String taskKey, CompletableFuture<String> future, int timeoutMinutes) {
+        CompletableFuture.runAsync(() -> {
+            try {
+                // 等待指定分钟
+                Thread.sleep(timeoutMinutes * 60 * 1000);
+
+                // 如果任务仍未完成，则标记为超时
+                if (!future.isDone()) {
+                    future.completeExceptionally(
+                            new TimeoutException("任务处理超时，请稍后重试")
+                    );
+                    ongoingTasks.remove(taskKey);
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }, executorService);
+    }
+
+    // 异步版本的callExeFile方法（带去重机制和分布式处理）
     private CompletableFuture<String> callExeFileAsync(String input, String ifAD, String modelType, String modelFolder) {
         // 创建一个唯一键，结合多个参数
         String taskKey = input + "-" + ifAD + "-" + modelType;
-
         // 检查是否已有相同任务在执行，如有则复用，没有则创建新任务
         return ongoingTasks.computeIfAbsent(taskKey, k -> {
-            CompletableFuture<String> future = CompletableFuture.supplyAsync(() -> {
-                try {
-                    String exePath = BASE_SCRIPT_PATH + "/" + modelFolder + "/model.exe";
-                    File workingDirectory = new File(BASE_SCRIPT_PATH + "/" + modelFolder + "/");
+            // 判断是否为AD图生成任务
+//          if ("AD".equals(ifAD) && ("DX".equals(modelType) || "DL".equals(modelType))) {AD才是正确的输入判断 改成true是为了判断失败 进而走单机预测
+            if ("true".equals(ifAD) && ("DX".equals(modelType) || "DL".equals(modelType))) {
+                // AD图生成任务发送到RabbitMQ
+                return sendToRabbitMQ(input, ifAD, modelType, modelFolder, taskKey);
+            } else {
+                // 非AD图任务在本地处理
+                CompletableFuture<String> future = CompletableFuture.supplyAsync(() -> {
+                    try {
+                        String exePath = BASE_SCRIPT_PATH + "/" + modelFolder + "/model.exe";
+                        File workingDirectory = new File(BASE_SCRIPT_PATH + "/" + modelFolder + "/");
 
-                    // 查询或创建记录 - 需要同步操作，避免并发问题
-                    PredictResult record;
-                    synchronized (this) {
-                        record = getOrCreateRecord(input);
-                    }
-
-                    String jsonFilePath = RESULT_PATH + record.getId() + "/" + modelType;
-                    String outFilePath = "../result/" + record.getId() + "/" + modelType;
-
-                    // 检查是否需要运行模型
-                    if (shouldRunModel(jsonFilePath, ifAD)) {
-                        runModel(exePath, workingDirectory, input, outFilePath, ifAD);
-                    }
-
-                    // 读取生成的JSON文件
-                    return readJsonFromFolder(jsonFilePath);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    return "Error processing string: " + e.getMessage();
-                } finally {
-                    // 设置延迟移除，避免短时间内的频繁请求仍然导致重复执行
-                    CompletableFuture.runAsync(() -> {
-                        try {
-                            // 为了防止任务刚完成就被移除，然后立即又有新请求，保留一段时间
-                            Thread.sleep(5000); // 5秒后移除
-                            ongoingTasks.remove(taskKey);
-                        } catch (InterruptedException e) {
-                            Thread.currentThread().interrupt();
+                        // 查询或创建记录 - 需要同步操作，避免并发问题
+                        PredictResult record;
+                        synchronized (this) {
+                            record = getOrCreateRecord(input);
                         }
-                    }, executorService);
-                }
-            }, executorService);
 
-            return future;
+                        String jsonFilePath = RESULT_PATH + record.getId() + "/" + modelType;
+                        String outFilePath = "../result/" + record.getId() + "/" + modelType;
+
+                        // 检查是否需要运行模型
+                        if (shouldRunModel(jsonFilePath, ifAD)) {
+                            runModel(exePath, workingDirectory, input, outFilePath, ifAD);
+                        }
+
+                        // 读取生成的JSON文件
+                        return readJsonFromFolder(jsonFilePath);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return "Error processing string: " + e.getMessage();
+                    } finally {
+                        // 设置延迟移除，避免短时间内的频繁请求仍然导致重复执行
+                        CompletableFuture.runAsync(() -> {
+                            try {
+                                // 为了防止任务刚完成就被移除，然后立即又有新请求，保留一段时间
+                                Thread.sleep(5000); // 5秒后移除
+                                ongoingTasks.remove(taskKey);
+                            } catch (InterruptedException e) {
+                                Thread.currentThread().interrupt();
+                            }
+                        }, executorService);
+                    }
+                }, executorService);
+
+                return future;
+            }
         });
+    }
+
+    /**
+     * 处理从RabbitMQ返回的结果
+     * 此方法将由RabbitMQ监听器调用
+     */
+    public void handleADGenerationResult(ADGenerationResult result) {
+        String taskId = result.getTaskId();
+        CompletableFuture<String> future = ongoingTasks.get(taskId);
+
+        if (future != null) {
+            if ("COMPLETED".equals(result.getStatus())) {
+                try {
+                    // 从结果路径读取JSON
+                    String jsonResult = readJsonFromFolder(result.getResultPath());
+                    future.complete(jsonResult);
+                } catch (Exception e) {
+                    future.completeExceptionally(new RuntimeException("无法读取结果: " + e.getMessage()));
+                }
+            } else {
+                future.completeExceptionally(new RuntimeException(result.getErrorMessage()));
+            }
+
+            // 任务已处理，从映射中移除
+            ongoingTasks.remove(taskId);
+        }
     }
 
     // 原有的同步方法保留，但内部改为调用异步方法
@@ -266,9 +381,13 @@ public class PredictServiceImpl implements PredictService {
         }
 
         // 如果请求AD但AD文件夹为空，需要运行模型
+
         if ("AD".equals(ifAD)) {
             String adPath = jsonFilePath + "/AD";
             File adFolder = new File(adPath);
+            if (!adFolder.exists() || !adFolder.isDirectory()) {
+                return true;
+            }
             String[] files = adFolder.list();
             if (files == null || files.length == 0) {
                 return true;
@@ -391,6 +510,13 @@ public class PredictServiceImpl implements PredictService {
         } catch (InterruptedException e) {
             executorService.shutdownNow();
             Thread.currentThread().interrupt();
+        }
+    }
+
+    // TimeoutException内部类
+    private static class TimeoutException extends RuntimeException {
+        public TimeoutException(String message) {
+            super(message);
         }
     }
 }
